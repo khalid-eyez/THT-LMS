@@ -28,7 +28,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'pobox')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'level')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'level')->textInput(['maxlength' => true])->label("BR/HQ") ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
