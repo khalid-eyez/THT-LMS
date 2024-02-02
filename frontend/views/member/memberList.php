@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody>
             <?php $i = 0; ?>
             <?php foreach($members as $member): ?>
-          
+              
             <tr>
             <td><?= ++$i; ?></td>
             <td><?= $member->fullName()?></td>
@@ -60,8 +60,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             }
             ?>
-            
+             <?php if($member->userID!=yii::$app->user->identity->id){?>
             <a href="#"  id=<?=$member->memberID?> data-toggle="tooltip" data-title="Delete User" class="mr-1  userdel"><i class="fa fa-trash"></i></a> 
+          <?php } ?>
             </td>
             </tr>
         
