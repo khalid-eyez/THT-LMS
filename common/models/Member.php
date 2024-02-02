@@ -34,14 +34,14 @@ public $role;
     {
         return 'member';
     }
-    public function behaviors()
-    {
-        return [
-            'auditEntryBehaviors' => [
-                'class' => AuditEntryBehaviors::class
-             ],
-        ];
-    }
+    // public function behaviors()
+    // {
+    //     return [
+    //         'auditEntryBehaviors' => [
+    //             'class' => AuditEntryBehaviors::class
+    //          ],
+    //     ];
+    // }
 
     /**
      * {@inheritdoc}
