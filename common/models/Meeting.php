@@ -309,8 +309,7 @@ class Meeting extends \yii\db\ActiveRecord
             foreach($assignedpart as $part)
             {
                 if($part==null){continue;}
-                $mb=((User::findIdentity($part->user_id))!=null)?(User::findIdentity($part->user_id))->member:new member;
-                array_push($participants,$mb);
+                array_push($participants,(User::findIdentity($part->user_id))->member);
             }
             
         }
