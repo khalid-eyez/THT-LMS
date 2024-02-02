@@ -13,6 +13,7 @@ $user=yii::$app->user;
   <?php } ?>
   <?php if($user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")){ ?>
   <a href="<?=Url::to('/member/member-list')?>" class="members"><i class="nav-icon fa fa-group"></i><span class="mn"> Members</span></a>
+  <a href="<?=Url::to('/branch')?>" class="members"><i class="nav-icon fa fa-list"></i><span class="mn"> Branches</span></a>
   <?php } ?>
   <a href="<?=Url::to('/meeting/meetings')?>" class="menuitem meetings"><i class="nav-icon fas fa-comments" aria-hidden="true"></i> <span class="mn">Meetings</span></a>
   <a href="<?=Url::to('/repos/docs')?>" class="menuitem repository"><i class="nav-icon fa fa-file" aria-hidden="true"></i> <span class="mn">Repository</span></a>
