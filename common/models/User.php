@@ -51,9 +51,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
-            'auditEntryBehaviors' => [
-                'class' => AuditEntryBehaviors::class
-             ],
+            // 'auditEntryBehaviors' => [
+            //     'class' => AuditEntryBehaviors::class
+            //  ],
         ];
     }
 
