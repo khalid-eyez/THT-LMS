@@ -70,8 +70,18 @@ class MemberController extends Controller
      */
     public function actionMemberList()
     {
-    
-       $members=Member::find()->all();
+       $members=null;
+
+       if(yii::$app->user->can("CHAIRPERSON HQ") || yii::$app->user->can("GENERAL SECRETARY HQ"))
+       {
+        $members=Member::find()->all();
+       }
+       else
+       {
+        $branch=yii::$app->user->identity->member->branch;
+        $members=Member::find()->where(['branch'=>$branch])->all();
+       }
+       
 
         return $this->render('memberList', [
             'members' =>$members,
@@ -153,9 +163,15 @@ class MemberController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->role="MEMBER";
+        if(yii::$app->request->isPost)
+        {
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => urlencode(base64_encode($model->memberID))]);
+            yii::$app->session->setFlash("success","<i class='fa fa-info-circle'></i> Member Updated Successfully !");
+            return $this->redirect(['view', 'id' =>urlencode(base64_encode($model->memberID))]);
+        }
+       
         }
 
         return $this->render('update', [
@@ -183,7 +199,7 @@ class MemberController extends Controller
         }
         else
         {
-            return $this->asJson(['failure'=>'User Deleting Failed ! '.Html::errorSummary($model)]);
+            return $this->asJson(['failure'=>'User Deleting Failed ! '.Html::errorSummary($member)]);
            
         }
     }

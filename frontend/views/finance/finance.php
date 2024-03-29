@@ -1,5 +1,6 @@
 
 <?php
+use common\models\Budgetyear;
 use common\models\Meeting;
 use yii\helpers\Url;
 use yii\helpers\Html;
@@ -12,10 +13,28 @@ $this->params["pageTitle"]="Finance dashboard";
         
 <div class="card shadow-lg">
 <div class="card-header p-1 bg-success text-sm">
-              
+     
  </div>
     <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
-    <span class="text-lg text-success">Financial Year <?=$annualbudget->year->title?></span>
+    <form class="float-left" method="post" action="/finance/switch-financial-year">
+      <div class="form-group row">
+        <div class="col-sm-10">
+      <select class="form-control pl-1" name="year">
+        <?php
+          $financialyears=Budgetyear::find()->orderBy(['yearID'=>SORT_DESC])->all();
+          foreach($financialyears as $financialyear)
+          {
+        ?>
+        <option value=<?=$financialyear->yearID?> <?=($financialyear->yearID==yii::$app->session->get("financialYear")->yearID)?"selected":""?>>Financial Year <?=$financialyear->startingyear?></option>
+        <?php } ?>
+      </select>
+</div><div class="col-sm-2 p-0">
+<input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken; ?>" />
+      <button type="submit" class="form-control p-2"><i class="fa fa-refresh"></i></button>
+      </div>
+      </div>
+    </form> 
+    
     <?php if(!$annualbudget->isOpen()){?>
     <a href="<?=Url::to(['/finance/open-annual-budget','budget'=>urlencode(base64_encode($annualbudget->budgetID))])?>" class="btn btn-sm btn-success float-right" data-toggle="tooltip" data-title="Open Budget">
     <i class="fas fa-door-open"></i></a>
@@ -24,43 +43,55 @@ $this->params["pageTitle"]="Finance dashboard";
     <i class="fas fa-door-closed"></i></a>
     <?php } ?>
     <a href="<?=Url::to(['/finance/monthly-incomes','budget'=>urlencode(base64_encode($annualbudget->budgetID))])?>" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-arrow-right" data-toggle="tooltip" data-title="Go To Monthly Incomes"></i></a>
-    <a href="#" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-download" data-toggle="tooltip" data-title="Download Balance sheet report"></i></a>
-    <a href="#" class="btn btn-sm btn-success mr-1 float-right" data-toggle="modal" data-target="#incomemodal"><i class="fa fa-arrow-down" data-toggle="tooltip" data-title="Acquire New Income"></i></a>
+    <a href="/finance/download-annual-report" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-download" data-toggle="tooltip" data-title="Download Annual Report"></i></a>
+    <a href="#" class="btn btn-sm btn-success mr-1 float-right" data-toggle="modal" data-target="#otherincome"><i class="fa fa-arrow-down" data-toggle="tooltip" data-title="Acquire Other Incomes"></i></a>
+    <a href="#" class="btn btn-sm btn-success mr-1 float-right" data-toggle="modal" data-target="#incomemodal"><i class="fa fa-donate" data-toggle="tooltip" data-title="Acquire Monthly collections"></i></a>
+    
 </div>
 </div>
 <div class="card shadow-lg">
-    <div class="card-header p-1 bg-success text-sm">
-         Financial Overview 
+    <div class="card-header p-1 bg-success text-sm pl-2">
+         <i class="fa fa-money"></i> Financial Overview 
     </div>
         
         <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
             
              <div class="row">
-              <div class="col">
-                <span class="text-bold">Expected Income</span><br>
-                <?=$annualbudget->expectedIncome()?>
-              </div>
+            
               <div class="col">
                 <span class="text-bold ">Total Revenue</span><br>
+                <?=$annualbudget->totalRevenue()?>
+              </div>
+              <div class="col">
+                <span class="text-bold ">Member Contributions</span><br>
                 <?=$annualbudget->totalIncome()?>
               </div>
               <div class="col">
-                <span class="text-bold ">Deficit</span><br>
-                <?=$annualbudget->deficit()?>
+                <span class="text-bold ">Other Incomes</span><br>
+                <?=$annualbudget->otherIncomeTotal()?>
+              </div>
+              <div class="col">
+                <span class="text-bold">Branch Returns</span><br>
+                <?=-$annualbudget->totalReturns()?>
+              </div>
+              <div class="col">
+                <span class="text-bold ">HQ Revenue</span><br>
+                <?=$annualbudget->HQrevenue()?>
               </div>
               <div class="col">
                 <span class="text-bold ">Unallocated</span><br>
                 <?=$annualbudget->unallocated()?>
               </div>
               <div class="col">
+                <span class="text-bold ">Total Expenses</span><br>
+                <?=-$annualbudget->getTotalExpenses()?>
+              </div>
+           
+              <div class="col">
                 <span class="text-bold ">Balance</span><br>
                 <?=$annualbudget->getBalance()?>
               </div>
-              <div class="col">
-                <span class="text-bold ">Total Expenses</span><br>
-                <?=$annualbudget->getTotalExpenses()?>
-              </div>
-
+           
              </div>
 
         </div>
@@ -69,15 +100,15 @@ $this->params["pageTitle"]="Finance dashboard";
 </div>
 
  <div class="card shadow-lg">
-    <div class="card-header p-1 bg-success text-sm">
+    <div class="card-header p-1 bg-success text-sm pl-2">
  
-          
+          <i class="fa fa-building"></i> Branches Budget
                
     </div>
         
         <div class="card-body " style="font-family:lucida sans serif;font-size:11.5px">
             
-                    <div class="row text-bold mb-2"><div class="col-sm-1">#</div><div class="col">Branch</div><div class="col">Expected Income</div><div class="col">Total Revenue</div><div class="col">Deficit</div><div class="col">Balance</div><div class="col">Total Expenses</div><div class="col"></div></div>
+                    <div class="row text-bold mb-2"><div class="col-sm-1">#</div><div class="col">Branch</div><div class="col">Projection</div><div class="col">Total Revenue</div><div class="col">Deficit</div><div class="col">Total Expenses</div><div class="col">Balance</div><div class="col"></div></div>
                     
                         <?php
                         $count=0;
@@ -86,7 +117,13 @@ $this->params["pageTitle"]="Finance dashboard";
                           foreach($branchbudgets as $bbudget)
                           {
                         ?>
-                          <div class="row"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$bbudget->branch0->branch_short?></div><div class="col"><?=$bbudget->expectedIncome()?></div><div class="col"><?=$bbudget->totalIncome()?></div><div class="col"><?=$bbudget->deficit()?></div><div class="col"><?=$bbudget->getBalance()?></div><div class="col"><?=$bbudget->getTotalExpenses()?></div>
+                          <div class="row"><div class="col-sm-1"><?=++$count?></div>
+                          <div class="col"><?=$bbudget->branch0->branch_short?></div>
+                          <div class="col"><?=$bbudget->projected()?></div>
+                          <div class="col"><?=$bbudget->branchTotalRevenue()?></div>
+                          <div class="col"><?=$bbudget->deficit()?></div>
+                          <div class="col"><?=$bbudget->getTotalExpenses()?></div>
+                          <div class="col"><?=$bbudget->getBalance()?></div>
                           <div class="col">
                           <a href="<?=Url::to(['/finance/branch-finance','budget'=>urlencode(base64_encode($bbudget->bbID))])?>" data-toggle="tooltip" data-title="Go To Branch Budget"><i class="fa fa-arrow-circle-right text-success" style="font-size:20px"></i></a>
                           </div></div>
@@ -98,6 +135,7 @@ $this->params["pageTitle"]="Finance dashboard";
         </div>
   
   <?=$this->render('newincome')?>
+  <?=$this->render('otherincome')?>
 </div>
 </div>
 </div>

@@ -1,30 +1,20 @@
 <?php
 namespace frontend\controllers;
-
-use frontend\models\ResendVerificationEmailForm;
-use frontend\models\VerifyEmailForm;
+use common\models\Annualbudget;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use frontend\models\RegisterInstructorForm;
-use frontend\models\RegisterHodForm;
-use frontend\models\UploadStudentForm;
-use common\models\Instructor;
-use common\models\Student;
-use common\models\College;
-use common\models\Department;
-use common\models\Hod;
-use common\models\Program;
-use common\models\Course;
-use yii\helpers\ArrayHelper;
-use common\models\AuthItem;
-use yii\helpers\URL;
 use common\models\TblAuditEntry;
 use common\models\TblAuditEntrySearch;
 use yii\data\ActiveDataProvider;
+use common\models\User;
+use common\models\Member;
+use common\models\Budgetyear;
+use common\models\Branch;
+use yii\helpers\Html;
 //use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 //use yii\filters\VerbFilter;
@@ -50,17 +40,14 @@ public $defaultAction = 'dashboard';
                     [
                         'actions' => [
                             'dashboard',
-                            'instructor-list',
-                            'hod-list',
-                            'create-instructor',
-                            'create-hod',
-                            'create-student',
-                            'student-list',
                             'activity-logs',
-                            'delete' => ['POST'],
+                            'users-list',
+                            'budget-year',
+                            'migrate',
+                            'migrate-back'
                         ],
                         'allow' => true,
-                        'roles' => ['SYS_ADMIN'],
+                        'roles' => ['ADMIN'],
                     ],
                 ],
             ],
@@ -83,99 +70,166 @@ public $defaultAction = 'dashboard';
      */
     public function actionDashboard()
     {
-        $searchModel = new TblAuditEntrySearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-         //passing the numbers of users to the admin dashboard
-         $instructors = Instructor::find()->all();
-         $instructorsnumber=count($instructors);
- 
-         $students = Student::find()->all();
-         $studentsnumber=count($students);
- 
-         $programs = Program::find()->all();
-         $programsnumber=count($programs);
- 
-         $courses = Course::find()->all();
-         $coursesnumber=count($courses);
-
-        return $this->render('index', ['searchModel' => $searchModel,'dataProvider' => $dataProvider,'instructorsnumber'=> $instructorsnumber,'studentsnumber'=>$studentsnumber,
-            'programsnumber'=> $programsnumber,'coursesnumber'=> $coursesnumber,
+        //$searchModel = new TblAuditEntrySearch();
+        //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $users=User::find()->count();
+        $members=Member::find()->count();
+        $branches=Branch::find()->count();
+        $financialyear=Budgetyear::find()->where(['operationstatus'=>'open'])->one();
+        return $this->render('index', [
+            //'searchModel' => $searchModel,
+            //'dataProvider' => $dataProvider,
+            'year'=>$financialyear,
+            'branches'=>$branches,
+            'members'=>$members,
+            'users'=>$users
+           
         ]);
     }
-    //Create instructor
-    public function actionCreateInstructor(){
-        $model = new RegisterInstructorForm;
-        $roles = ArrayHelper::map(AuthItem::find()->where(['name'=>'INSTRUCTOR & HOD'])->orwhere(['name'=>'INSTRUCTOR'])->all(), 'name', 'name');
-        $departments = ArrayHelper::map(Department::find()->where(['collegeID'=>Yii::$app->user->identity->admin->college->collegeID])->all(), 'departmentID', 'department_name');
-        
-        try{
-        
-        if($model->load(Yii::$app->request->post())){
-            if($model->createi()){
-            Yii::$app->session->setFlash('success', 'Instructor registered successfully');
-            return $this->redirect(Yii::$app->request->referrer);
-            }else{
-            Yii::$app->session->setFlash('error', 'Something went Wrong!');
-        }
-         } 
-        
-    }catch(\Exception $e){
-          Yii::$app->session->setFlash('error', 'Something went wrong'.$e->getMessage());
+    public function actionUsersList(){
+        $users=User::find()->all();
+
+        return $this->render('users_list',['users'=>$users]);
     }
-        return $this->render('create_instructor', ['model'=>$model, 'departments'=>$departments, 'roles'=>$roles]);
-    }
-
-
-        //Create hod
-        public function actionCreateHod(){
-            $model = new RegisterHodForm;
-            $roles = ArrayHelper::map(AuthItem::find()->where(['name'=>'HOD'])->all(), 'name', 'name');
-            $departments = ArrayHelper::map(Department::find()->where(['collegeID'=>Yii::$app->user->identity->admin->college->collegeID])->all(), 'departmentID', 'department_name');
-            try{
-            
-            if($model->load(Yii::$app->request->post())){
-                if($model->create()){
-                Yii::$app->session->setFlash('success', 'Hod registered successfully');
-                }else{
-                    Yii::$app->session->setFlash('error', 'Something went Wrong!');
-                }
-           
-                    
-             } 
-            
-        }catch(\Exception $e){
-            Yii::$app->session->setFlash('error', 'Something went wrong'.$e->getMessage());
-        }
-            return $this->render('create_hod', ['model'=>$model, 'departments'=>$departments, 'roles'=>$roles]);
-        }
-    
-    
-
-    //get instructor list
-    public function actionInstructorList(){
-        $instructors = Instructor::find()->all();
-        return $this->render('instructor_list', ['instructors'=>$instructors]);
-    }
-
-    //get Hod list
-    public function actionHodList(){
-        $hods = Hod::find()->all();
-        return $this->render('hod_list', ['hods'=>$hods]);
-    }
-
-//get list of students
-
-  public function actionStudentList(){
-    $students = Student::find()->all();
-    return $this->render('student_list', ['students'=>$students]);
-}
-
 // get Activity Logs
     public function actionActivityLogs(){
         $searchModel = new TblAuditEntrySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('activity_logs', ['searchModel' => $searchModel,'dataProvider' => $dataProvider]);
+    }
+
+    public function actionBudgetYear()
+    {
+        $budgetyears=BudgetYear::find()->all();
+        return $this->render('budgetyear',['budgetyears'=>$budgetyears]);
+    }
+    public function actionMigrate()
+    {
+        $budget=(new Budgetyear)->getBudgetYear();
+
+        //migration to the next budget year
+
+        $newbudget=new Budgetyear;
+        $transaction=yii::$app->db->beginTransaction();
+
+        try{
+            //constructing the new budget year details
+            $starting=$budget->startingyear;
+            $ending=$budget->endingyear;
+            ++$starting;
+            ++$ending;
+
+            //does the year already exist
+
+            $followingyear=Budgetyear::find()->where(['startingyear'=>$starting,'endingyear'=>$ending])->one();
+
+            if($followingyear!=null)
+            {
+                $followingyear->operationstatus="open"; //reopen it only  
+                if(!$followingyear->save())
+                {
+                    throw new \Exception("Could not migrate to the next budget year! ".Html::errorSummary($followingyear));
+                }
+
+                $newbudget=$followingyear;
+            }
+            else
+            {
+            //create a fresh budget year
+            $newbudget->startingyear=$starting;
+            $newbudget->endingyear=$ending;
+            $newbudget->title=$newbudget->startingyear." - ".$newbudget->endingyear;
+            $newbudget->operationstatus="open";
+
+            if(!$newbudget->save())
+            {
+                throw new \Exception("Could not migrate to the next budget year! ".Html::errorSummary($newbudget));
+            }
+            }
+            //closing the current budget year
+            $budget->operationstatus="closed";
+
+            if(!$budget->save())
+            {
+                throw new \Exception("Could not close the current budget year! ".Html::errorSummary($budget));
+            }
+
+            //creating the annual budget for the new budget year
+            $annualbudget=new Annualbudget;
+            $annualbudget->projected_amount=0; // no projection for annual budget
+            $annualbudget->yearID=$newbudget->yearID;
+            $annualbudget->status="open";
+
+            if(!$annualbudget->save())
+            {
+                throw new \Exception("Could not create annual budget for this budget year! ".Html::errorSummary($annualbudget));  
+            }
+
+            //creating branch budget years
+
+            (new Branch)->createAnnualBudgets($annualbudget->budgetID);
+
+            $transaction->commit();
+
+            yii::$app->session->setFlash("success","Budget Year Migration Successful!");
+            return $this->redirect(yii::$app->request->referrer);
+        }
+        catch(\Exception $y)
+        {
+           $transaction->rollBack();
+
+           yii::$app->session->setFlash("error","Budget migration failed ! ".$y->getMessage());
+           return $this->redirect(yii::$app->request->referrer);
+        }
+    }
+    public function actionMigrateBack()
+    {
+        $budget=(new Budgetyear)->getBudgetYear();
+
+        //migration to the next budget year
+        $transaction=yii::$app->db->beginTransaction();
+        
+        try{
+            //updating the current budget year
+
+            $budget->operationstatus="closed";
+
+            if(!$budget->save())
+            {
+                throw new \Exception("Could not close the current budget ! ".Html::errorSummary($budget));
+            }
+
+            //moving the pointer to the previous budget year
+            $start=--$budget->startingyear;
+            $end=--$budget->endingyear;
+
+            $previousbudget=Budgetyear::find()->where(['startingyear'=>$start,'endingyear'=>$end])->one();
+            
+            //No previous budget year found
+
+            if($previousbudget==null)
+            {
+                throw new \Exception("No Previous Budget Year Found! ");
+            }
+            //actualizing to the current budget
+
+            $previousbudget->operationstatus="open";
+
+            if(!$previousbudget->save())
+            {
+                throw new \Exception("Could not migrate back to previous budget year! ".Html::errorSummary($previousbudget));
+            }
+
+            $transaction->commit();
+            yii::$app->session->setFlash("success","Budget Year Migration Successful!");
+            return $this->redirect(yii::$app->request->referrer);
+        }
+        catch(\Exception $b)
+        {
+          $transaction->rollBack();
+          yii::$app->session->setFlash("error","Budget migration failed ! ".$b->getMessage());
+           return $this->redirect(yii::$app->request->referrer);
+        }
     }
 
 }

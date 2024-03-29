@@ -51,9 +51,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
-            // 'auditEntryBehaviors' => [
-            //     'class' => AuditEntryBehaviors::class
-            //  ],
+            'auditEntryBehaviors' => [
+                'class' => AuditEntryBehaviors::class
+             ],
         ];
     }
 
@@ -71,6 +71,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['password_hash','default','value'=>'$2y$13$.kIiLCr/VFHDJULiTjtIk.7oKy4UN3dYlX2WKa1eJ3/mNpXhWVW96'],
             ['username','unique'],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
@@ -234,7 +235,7 @@ class User extends ActiveRecord implements IdentityInterface
   
     public function hasDefaultPassword()
     {
-        $pass=$this->member->phone;
+        $pass=($this->member!=null)?$this->member->phone:"123";
         return $this->validatePassword($pass);
     }
 
@@ -299,6 +300,17 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $role;
     }
+    public function getBranch()
+    {
+        $HQ=(new Branch)->getHQ();
+        $branch=($this->member!=null)?$this->member->branch0:$HQ;
 
+        return $branch;
+    }
+
+    public function isMember()
+    {
+        return $this->member!=null;
+    }
 
 }

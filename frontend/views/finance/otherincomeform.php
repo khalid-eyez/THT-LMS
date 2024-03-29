@@ -23,13 +23,10 @@ $months=[
 ?>
 <div class="income-form">
 
-    <?php $form = ActiveForm::begin(['method'=>'post','action'=>'/finance/new-income']); ?>
-
-    <?= $form->field($model, 'receivedAmount')->textInput(['placeholder' =>"Received Amount (TZS)"])->label(false) ?>
+    <?php $form = ActiveForm::begin(['method'=>'post','action'=>'/finance/other-income']); ?>
+    <?= $form->field($model, 'incomeType')->textInput(['placeholder' =>"Source Type"])->label(false) ?>
+    <?= $form->field($model, 'amount')->textInput(['placeholder' =>"Received Amount (TZS)"])->label(false) ?>
     <?= $form->field($model, 'month')->dropDownList($months,['prompt' =>"--Month--"])->label(false) ?>
-    <div class="container-fluid pt-0 mb-2 border border-default"><div class="row bg-success mb-2"><div class="col-sm-12">Special Contribution</div></div>
-    <?= $form->field($model, 'contributionType')->textInput(['placeholder' =>"Contribution Type"])->label(false) ?>
-    <?= $form->field($model, 'individualAmount')->textInput(['placeholder' =>"Contribution Factor (Amount/Member)"])->label(false) ?>
     </div>
    
     <div class="form-group">

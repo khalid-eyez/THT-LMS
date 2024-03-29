@@ -26,6 +26,7 @@ foreach($incomes as $income)
 ?>
 <div class="card shadow-lg" data-toggle="collapse" data-target="#collapse<?=$income->incomeID?>" aria-expanded="true" aria-controls="collapse<?=$income->incomeID?>">
     <div class="card-header p-1 bg-success text-sm">
+         <i class="float-right fa fa-trash m-1 del" id=<?=$income->incomeID ?> data-toggle="tooltip" data-title="Delete Income"></i> 
     </div>
         
         <div class="card-body text-center text-sm" style="font-family:lucida sans serif">
@@ -91,7 +92,55 @@ $script = <<<JS
     $('document').ready(function(){
     $('.finance').addClass("active");
     
-  
+  $(document).on('click', '.del', function(){
+  var id = $(this).attr('id');
+  Swal.fire({
+  title: 'Delete Income?',
+  text: "You won't be able to revert this!",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Delete'
+  }).then((result) => {
+  if (result.isConfirmed) {
+
+  $.ajax({
+  url:'/finance/delete-income',
+  method:'post',
+  async:false,
+  dataType:'JSON',
+  data:{income:id},
+  success:function(data){
+  if(data.success){
+  Swal.fire(
+  'Done !',
+  data.success,
+  'success'
+  )
+  setTimeout(function(){
+  window.location.reload();
+  }, 100);
+
+
+  }
+  else
+  {
+  Swal.fire(
+  'Failed!',
+  data.failure,
+  'error'
+  )
+
+
+  }
+  }
+  })
+
+  }
+  })
+
+  })  
 
    })
 JS;

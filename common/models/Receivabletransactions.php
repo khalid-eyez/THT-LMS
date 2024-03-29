@@ -35,7 +35,7 @@ class Receivabletransactions extends \yii\db\ActiveRecord
             [['projID', 'receivedamount'], 'required'],
             [['projID', 'receivedamount', 'authority'], 'integer'],
             [['datereceived'], 'safe'],
-            [['authority'], 'exist', 'skipOnError' => true, 'targetClass' => Member::className(), 'targetAttribute' => ['authority' => 'memberID']],
+            [['authority'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['authority' => 'id']],
             [['projID'], 'exist', 'skipOnError' => true, 'targetClass' => Budgetprojections::className(), 'targetAttribute' => ['projID' => 'projID']],
         ];
     }

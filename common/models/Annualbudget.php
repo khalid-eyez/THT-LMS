@@ -17,6 +17,7 @@ use Yii;
  * @property Member $authority0
  * @property BranchAnnualBudget[] $branchAnnualBudgets
  * @property Monthlyincome[] $monthlyincomes
+ * @property Otherincomes[] $otherincomes
  */
 class Annualbudget extends \yii\db\ActiveRecord
 {
@@ -94,14 +95,65 @@ class Annualbudget extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Monthlyincome::className(), ['budgetID' => 'budgetID']);
     }
+    public function getOtherincomes()
+    {
+        return $this->hasMany(Otherincomes::className(), ['budget' => 'budgetID']);
+    }
 
     public function getCurrentBudget()
     {
-        return $this->find()->where(['yearID'=>((new Budgetyear)->getBudgetYear())->yearID])->one();
+        //return $this->find()->where(['yearID'=>(yii::$app->session->get("financialYear"))->yearID])->one();
     }
     public function totalIncome()
     {
         return (new Monthlyincome)->getTotalIncome($this->budgetID);
+    }
+    public function totalRevenue()
+    {
+        return $this->totalIncome()+$this->otherIncomeTotal();
+    }
+    public function HQrevenue()
+    {
+        $branchbudgets=$this->branchAnnualBudgets;
+
+        if($branchbudgets==null){return 0;}
+
+        foreach($branchbudgets as $branchbudget)
+        {
+            if($branchbudget->branch0->isHQ())
+            {
+                return $branchbudget->totalIncome()+$this->otherIncomeTotal()+$this->totalspcontributions();
+            }
+        }
+    }
+    public function otherIncomeTotal()
+    {
+       $otherincomes=$this->otherincomes;
+  
+       if($otherincomes==null)
+       {
+         return 0;
+       }
+       $otherincometotal=0;
+       foreach($otherincomes as $otherincome)
+       {
+        $otherincometotal+=$otherincome->amount;
+       }
+
+       return $otherincometotal;
+    }
+    public function totalReturns()
+    {
+        $incomes=$this->monthlyincomes;
+        $totalreturns=0;
+
+        if($incomes==null){return 0;}
+
+        foreach($incomes as $income)
+        {
+            $totalreturns+=$income->getTotalReturns();
+        }
+      return $totalreturns;
     }
     public function deficit()
     {
@@ -122,7 +174,7 @@ class Annualbudget extends \yii\db\ActiveRecord
         {
             $allocated+=$brachbudget->totalIncome();
         }
-        return $allocated;
+        return $allocated+$this->totalspcontributions();
     }
     public function getTotalExpenses()
     {
@@ -137,18 +189,24 @@ class Annualbudget extends \yii\db\ActiveRecord
     }
     public function getBalance()
     {
-        return $this->totalIncome()-$this->getTotalExpenses();
+        return $this->totalRevenue()-$this->getTotalExpenses()-$this->totalReturns();
     }
     public function isOpen()
     {
         return $this->status=="open";
     }
-    public function expectedIncome()
+    public function totalspcontributions()
     {
-        $budget=$this->getCurrentBudget();
-        $contributionfactor=$budget->year->contributionfactor;
-        $memberscount=count(Member::find()->all());
+        $incomes=$this->monthlyincomes;
+        $total=0;
 
-        return $contributionfactor*$memberscount;
+        if($incomes==null){return 0;}
+
+        foreach($incomes as $income)
+        {
+            $total+=$income->getSpcontribTotal();
+        }
+
+        return $total;
     }
 }

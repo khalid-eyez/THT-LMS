@@ -10,12 +10,10 @@ use common\models\User;
 /* @var $searchModel common\models\MemberSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Members';
-$this->params['pageTitle']="Members";
-
-$user=yii::$app->user;
+$this->title = 'Users';
+$this->params['pageTitle']="Users";
 ?>
-<div class="container-fluid">
+<div class="container-fluid text-sm">
 
     
         
@@ -26,46 +24,54 @@ $user=yii::$app->user;
       <div class="row">
                <!-- Left col -->
                <section class="col-sm-12 table-responsive">
-                <?php if($user->can("CHAIRPERSON BR")){?>
                <div class="col-sm-12"><?= Html::a('<i class="fa fa-plus-circle"></i> Add Member', ['create'], ['class' => 'btn btn-success btn-sm float-right ml-1','data-toggle'=>'modal','data-target'=>'#membermodal']) ?></div>
-               <?php } ?>
-    <table class="table table-bordered table-striped table-hover " id="memberTable" style="width:100%;">
+    <table class="table table-bordered table-striped table-hover text-sm" id="userTable" style="width:100%">
             <thead>
-            <tr class="bg-success p-1"><th width="1%">#</th><th>Full Name</th><th>Gender</th><th>Email</th><th>Individual Number</th><th>Phone</th><th>Branch</th><th width="10%"></th></tr>
+            <tr class="bg-success p-1"><th width="1%">#</th><th>Username</th><th>Positions</th><th>Email</th><th>Phone</th><th>Branch</th><th>Last Login</th><th width="10%"></th></tr>
             
             </thead>
             <tbody>
             <?php $i = 0; ?>
-            <?php foreach($members as $member): ?>
+            <?php 
+            foreach($users as $user):
+              if($user->id==yii::$app->user->identity->id){continue;}
+             ?>
               
             <tr>
             <td><?= ++$i; ?></td>
-            <td><?= $member->fullName()?></td>
-            <td><?= $member->gender?></td>
-            <td><?= $member->email?></td>
-            
-            <td><?=$member->IndividualNumber ?></td>
-            <td><?= $member->phone?></td>
-            <td><?= $member->branch()?></td>
+            <td><?=$user->username?></td>
             <td>
-            <a href="<?=Url::to(['/member/update','id'=>urlencode(base64_encode($member->memberID))])?>" data-toggle="tooltip" data-title="Update User" class="mr-1"><i class="fas fa-edit"></i></a>  
+              <?php
+
+                $roles=array_keys(Yii::$app->authManager->getAssignments($user->id));
+              ?>
+              
+              <?=implode(",",$roles)?>
+            </td>
+            <td><?=($user->member!=null)?$user->member->email:"N/A"?></td>
+            
+            <td><?=($user->member!=null)?$user->member->phone:"N/A"?></td>
+            <td><?=($user->member!=null)?$user->member->branch():"HQ"?></td>
+            <td><?=$user->last_login?></td>
+            <td>
+            <a href="<?=Url::to(['/users/update','id'=>urlencode(base64_encode($user->id))])?>" data-toggle="tooltip" data-title="Update User" class="mr-1"><i class="fas fa-edit"></i></a>  
             <?php
-            if($member->user!=null && $member->user->isLocked())
+            if($user!=null && $user->isLocked())
             {
             ?>
-            <a href="<?=Url::to(['/member/unlock','id'=>urlencode(base64_encode($member->userID))])?>"  data-toggle="tooltip" data-title="Reactivate/Unlock User" class="mr-1"><i class="fa fa-unlock"></i></a>  
+            <a href="<?=Url::to(['/users/unlock','id'=>urlencode(base64_encode($user->id))])?>"  data-toggle="tooltip" data-title="Reactivate/Unlock User" class="mr-1"><i class="fa fa-unlock"></i></a>  
             <?php
             }
             else
             {
             ?>
-            <a href="<?=Url::to(['/member/lock','id'=> urlencode(base64_encode($member->userID))])?>"  data-toggle="tooltip" data-title="Lock User" class="mr-1"><i class="fas fa-user-lock"></i></a>
+            <a href="<?=Url::to(['/users/lock','id'=> urlencode(base64_encode($user->id))])?>"  data-toggle="tooltip" data-title="Lock User" class="mr-1"><i class="fas fa-user-lock"></i></a>
             <?php
             }
             ?>
-             <?php if($member->userID!=yii::$app->user->identity->id){?>
-            <a href="#"  id=<?=$member->memberID?> data-toggle="tooltip" data-title="Delete User" class="mr-1  userdel"><i class="fa fa-trash"></i></a> 
-          <?php } ?>
+            <a href="<?=Url::to(['/users/reset-password','user'=> urlencode(base64_encode($user->id))])?>"  data-toggle="tooltip" data-title="Reset User Password" class="mr-1"><i class="fa fa-refresh"></i></a>
+            <a href="#"  id=<?=$user->id?> data-toggle="tooltip" data-title="Delete User" class="mr-1  userdel text-danger"><i class="fa fa-trash"></i></a> 
+      
             </td>
             </tr>
         
@@ -75,26 +81,29 @@ $user=yii::$app->user;
         </section>
         </div></div>
  
-<?=$this->render('memberCreate.php')?>
+<?=$this->render('userCreate')?>
 </div>
 <?php
 $script = <<<JS
     $('document').ready(function(){
     $('button').addClass("btn-sm");
-    $('.members').addClass("active");
-
-    $("#memberTable").DataTable({
+    $('.users').addClass("active");
+    $('.priv').select2({
+      width:'resolve',
+      maximumSelectionLength:2
+    });
+    $("#userTable").DataTable({
     responsive:true,
     dom: 'Bfrtip',
         buttons: [
             'csv',
             {
                 extend: 'pdfHtml5',
-                title: 'Members list'
+                title: 'Users list'
             },
             {
                 extend: 'excelHtml5',
-                title: 'Members list'
+                title: 'Users list'
             },
             'print',
         ]
@@ -103,18 +112,18 @@ $script = <<<JS
   $(document).on('click', '.userdel', function(){
       var user = $(this).attr('id');
       Swal.fire({
-  title: 'Delete User?',
+  title: 'Delete Permanently ?',
   text: "You won't be able to revert to this, and the user will not be able to recover his account. consider locking the user instead, if this decision is for temporary reasons !",
   icon: 'question',
   showCancelButton: true,
-  confirmButtonColor: "green",
+  confirmButtonColor: "red",
 
   confirmButtonText: 'Delete'
 }).then((result) => {
   if (result.isConfirmed) {
  
     $.ajax({
-      url:'/member/delete',
+      url:'/users/delete',
       method:'post',
       async:false,
       dataType:'JSON',

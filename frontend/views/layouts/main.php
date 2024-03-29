@@ -165,6 +165,7 @@ div.sidecontent {
         
           
           <div class="navbar float-right navbar-expand p-0 ">
+            [ <?=array_keys(Yii::$app->authManager->getAssignments(yii::$app->user->id))[0];?> ]
 <ul class="navbar-nav ml-auto">
 <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">

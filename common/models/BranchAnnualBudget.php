@@ -18,6 +18,7 @@ use Yii;
  * @property Member $authority0
  * @property BranchMonthlyRevenue[] $branchMonthlyRevenues
  * @property Budgetprojections[] $budgetprojections
+ * @property Branchotherincomes[] $otherincomes
  */
 class BranchAnnualBudget extends \yii\db\ActiveRecord
 {
@@ -96,7 +97,10 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     {
         return $this->hasMany(BranchMonthlyRevenue::className(), ['branchbudget' => 'bbID']);
     }
-
+    public function getOtherincomes()
+    {
+        return $this->hasMany(Branchotherincomes::className(), ['budget' => 'bbID']);
+    }
     /**
      * Gets query for [[Budgetprojections]].
      *
@@ -106,7 +110,31 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Budgetprojections::className(), ['branchbudget' => 'bbID']);
     }
+    public function totalOtherIncomes()
+    {
+        if($this->branch0->isHQ())
+        {
+            return $this->budget->otherIncomeTotal();
+        }
+        $incomes=$this->otherincomes;
+        $total=0;
+        if($incomes==null){return 0;}
 
+        foreach($incomes as $income)
+        {
+            $total+=$income->amount;
+        }
+
+        return $total;
+    }
+
+    public function branchTotalRevenue(){
+        if($this->branch0->isHQ())
+        {
+            return $this->budget->HQrevenue();
+        }
+        return $this->totalIncome()+$this->totalOtherIncomes();
+    }
     public function getTotalExpenses()
     {
         $total=0;
@@ -120,8 +148,10 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     }
     public function getCurrentBudget()
     {
-        $currentbudget=(new Annualbudget)->getCurrentBudget()->budgetID;
-        $branch=yii::$app->user->identity->member->branch;
+        $currentbudget=yii::$app->session->get("financialYear")->annualbudget->budgetID;
+        $member=yii::$app->user->identity->member;
+        $HQ=(new Branch)->getHQ();
+        $branch=($member!=null)?$member->branch:$HQ->branchID;
         return $this->find()->where(['budgetID'=>$currentbudget,'branch'=>$branch])->one();
     }
     public function totalIncome()
@@ -130,7 +160,7 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     }
     public function deficit()
     {
-        $deficit=$this->totalIncome()-$this->expectedIncome();
+        $deficit=$this->projected()-$this->allocated();
         if($deficit>0){return 0;}
         return $deficit;
     }
@@ -158,11 +188,11 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     }
     public function unallocated()
     {
-        return $this->totalIncome()-$this->allocated();
+        return $this->branchTotalRevenue()-$this->allocated();
     }
     public function expectedIncome()
     {
-        $budget=(new Annualbudget)->getCurrentBudget();
+        $budget=yii::$app->session->get("financialYear")->annualbudget;
         $contributionfactor=$budget->year->contributionfactor;
         $memberscount=$this->branch0->membersCount();
 
@@ -193,7 +223,8 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     }
     public function hasAuthority()
     {
-        $userbranch=yii::$app->user->identity->member->branch;
+        $branch=yii::$app->user->identity->getBranch();
+        $userbranch=$branch->branchID;
         return $this->branch==$userbranch;
     }
     

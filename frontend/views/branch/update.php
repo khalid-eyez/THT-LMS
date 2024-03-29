@@ -5,17 +5,20 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\Branch */
 
-$this->title = 'Update Branch: ' . $model->branchID;
-$this->params['breadcrumbs'][] = ['label' => 'Branches', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->branchID, 'url' => ['view', 'id' => $model->branchID]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Update Branch: ' . $model->branch_short;
+$this->params['pageTitle']="Update Branch";
 ?>
-<div class="branch-update">
+<div class="branch-update container pl-5 pr-5">
+    <div class="card card-success">
+        <div class="card-header"><div class="card-title text-bold"><i class="fa fa-edit"></i> <?= Html::encode($this->title) ?></div></div>
+   <div class="card-body p-5">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+
 
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
 
 </div>
+    </div>
+    </div>

@@ -5,8 +5,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 
-$this->params["pageTitle"]="Budget Item Structure";
-$budgetstructures=$projection->itemizedprojections;
+$this->params["pageTitle"]="Branch Budget Planning";
 ?>
 <div class="container-fluid mt-3 meet">
         
@@ -34,26 +33,7 @@ $budgetstructures=$projection->itemizedprojections;
 </div>
 <div class="card-body">
 <?php $form=Activeform::begin(['method'=>'post']) ?>
-    <?php foreach($budgetstructures as $budgetstructure){ ?>
-    <div class="row mb-1 ">
-      <div class="col pl-3 ">
-      <input type="text" name="<?=$budgetstructure->itemName?>[]"   value="<?=$budgetstructure->itemName?>" class="form-control incput" style="border:none; background-color:#eef" placeholder="Item Name"></input>
-    </div>
-    <div class="col">
-    <input type="text" name="<?=$budgetstructure->itemName?>[]" value="<?=$budgetstructure->unit?>" class="form-control valueput" style="border:none; background-color:#eef" placeholder="Unit"></input>
-    </div>
-    <div class="col">
-    <input type="text" name="<?=$budgetstructure->itemName?>[]" value="<?=$budgetstructure->unitcost?>" class="form-control unitput" style="border:none; background-color:#eef" placeholder="Unit cost"></input>
-    </div>
-    <div class="col">
-    <input type="text" name="<?=$budgetstructure->itemName?>[]" value="<?=$budgetstructure->numUnits?>" class="form-control unitput" style="border:none; background-color:#eef" placeholder="No. of Units"></input>
-    </div>
-    <div class="col">
-    <input type="text" name="<?=$budgetstructure->itemName?>[]" value="<?=$budgetstructure->totalcost?>" class="form-control totalput" style="border:none; background-color:#eef" placeholder="Total budget"></input>
-    <input type="hidden" name="<?=$budgetstructure->itemName?>[]" value=<?=$budgetstructure->ipID?> ></input>
-    </div>
-    </div>
-    <?php } ?>
+  
     <div class="row mb-1 initial">
       <div class="col pl-3 ">
       <input type="text" name=""   class="form-control incput" style="border:none; background-color:#eef" placeholder="Item Name"></input>
@@ -70,9 +50,25 @@ $budgetstructures=$projection->itemizedprojections;
     <div class="col">
     <input type="text" name="" class="form-control totalput" style="border:none; background-color:#eef" placeholder="Total budget"></input>
     </div>
-    <input type="hidden" name="" value=0 ></input>
     </div>
-    
+    <div class="row mb-1">
+      <div class="col pl-3 ">
+      <input type="text" name=""   class="form-control incput" style="border:none; background-color:#eef" placeholder="Item Name"></input>
+    </div>
+    <div class="col">
+    <input type="text" name="" class="form-control valueput" style="border:none; background-color:#eef" placeholder="Unit"></input>
+    </div>
+    <div class="col">
+    <input type="text" name="" class="form-control unitput" style="border:none; background-color:#eef" placeholder="Unit cost"></input>
+    </div>
+    <div class="col">
+    <input type="text" name="" class="form-control unitput" style="border:none; background-color:#eef" placeholder="No. of Units"></input>
+    </div>
+    <div class="col">
+    <input type="text" name="" class="form-control totalput" style="border:none; background-color:#eef" placeholder="Total budget"></input>
+    </div>
+    </div>
+
    <button type="submit" class="btn btn-success btn-sm float-right mt-3 sub"><i class="fa fa-save"> Save</i></button>
    <?php $form=Activeform::end() ?>
 </div>

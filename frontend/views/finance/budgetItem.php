@@ -12,8 +12,9 @@ $this->params["pageTitle"]="Budget Item";
         
 <div class="card shadow-lg">
     <div class="card-header p-1 bg-success text-sm">
-         <span class="ml-2"><?=$budgetItem->budgetItem?></span>
-         <a href="<?=Url::to(['/finance/item-allocations','item'=>urlencode(base64_encode($budgetItem->projID))])?>" class="mr-2 float-right" data-toggle="tooltip" data-title="All Allocations"><i class="fa fa-donate"></i></a>
+         <span class="ml-2"><?=$budgetItem->budgetItem?> - Allocations</span>
+         <a href="<?=Url::to(['/finance/item-allocations','item'=>urlencode(base64_encode($budgetItem->projID))])?>" class="mr-2 float-right" data-toggle="tooltip" data-title="All Allocations"><i class="fa fa-donate btn btn-default btn-sm p-1"></i></a>
+         <a href="<?=Url::to(['/finance/budget-projection-itemizer','projection'=>urlencode(base64_encode($budgetItem->projID))])?>" class="mr-2 float-right" data-toggle="tooltip" data-title="Update Budget Item Structure"><i class="fa fa-arrow-right btn btn-default btn-sm p-1"></i></a>
     </div>
         
         <div class="card-body text-center text-sm" style="font-family:lucida sans serif;">
@@ -73,7 +74,8 @@ $this->params["pageTitle"]="Budget Item";
             <div class="col"><?=$itemizedproj->balance()?></div>
             
             <div class="col">
-               <a href="<?=Url::to(['/finance/payments','item'=>urlencode(base64_encode($itemizedproj->ipID))])?>"><i class="fa fa-arrow-right btn btn-success p-0"></i></a>
+               <a href="<?=Url::to(['/finance/payments','item'=>urlencode(base64_encode($itemizedproj->ipID))])?>"><i class="fa fa-arrow-right btn btn-success p-1"></i></a>
+               <a href="#" id=<?=$itemizedproj->ipID?> data-toggle="tooltip" data-title="Delete item" class="idel"><i class="fa fa-trash btn btn-danger p-1"></i> </a>
             </div>
          </div>
          <?php } ?>
@@ -94,7 +96,55 @@ $script = <<<JS
     $('document').ready(function(){
     $('.finance').addClass("active");
     
-  
+    $(document).on('click', '.idel', function(){
+  var id = $(this).attr('id');
+  Swal.fire({
+  title: 'Delete Item?',
+  text: "You won't be able to revert this!",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Delete'
+  }).then((result) => {
+  if (result.isConfirmed) {
+
+  $.ajax({
+  url:'/finance/delete-projection-structure-item',
+  method:'post',
+  async:false,
+  dataType:'JSON',
+  data:{item:id},
+  success:function(data){
+  if(data.success){
+  Swal.fire(
+  'Done !',
+  data.success,
+  'success'
+  )
+  setTimeout(function(){
+  window.location.reload();
+  }, 100);
+
+
+  }
+  else
+  {
+  Swal.fire(
+  'Failed!',
+  data.failure,
+  'error'
+  )
+
+
+  }
+  }
+  })
+
+  }
+  })
+
+  }) 
 
    })
 JS;

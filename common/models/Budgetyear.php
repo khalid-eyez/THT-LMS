@@ -8,14 +8,13 @@ use Yii;
  * This is the model class for table "budgetyear".
  *
  * @property int $yearID
- * @property string|null $startingdate
- * @property string $endingdate
- * @property string $title
+ * @property string|null $startingyear
+ * @property string $endingyear
  * @property int $contributionfactor
- * @property string $status
+ * @property string $title
  * @property string $operationstatus
  *
- * @property Annualbudget[] $annualbudgets
+ * @property Annualbudget $annualbudget
  */
 class Budgetyear extends \yii\db\ActiveRecord
 {
@@ -33,10 +32,10 @@ class Budgetyear extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['startingdate', 'endingdate'], 'safe'],
-            [['endingdate', 'title', 'contributionfactor'], 'required'],
-            [['contributionfactor'], 'integer'],
+            [['startingyear', 'endingyear'], 'safe'],
+            [['endingyear', 'title'], 'required'],
             [['title'], 'string', 'max' => 15],
+            ['contributionfactor','default','value'=>1]
         ];
     }
 
@@ -47,10 +46,9 @@ class Budgetyear extends \yii\db\ActiveRecord
     {
         return [
             'yearID' => 'Year ID',
-            'startingdate' => 'Startingdate',
-            'endingdate' => 'Endingdate',
+            'startingyear' => 'Starting year',
+            'endingyear' => 'Ending year',
             'title' => 'Title',
-            'contributionfactor' => 'Contributionfactor',
         ];
     }
 
@@ -59,13 +57,13 @@ class Budgetyear extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getAnnualbudgets()
+    public function getAnnualbudget()
     {
-        return $this->hasMany(Annualbudget::className(), ['yearID' => 'yearID']);
+        return $this->hasOne(Annualbudget::className(), ['yearID' => 'yearID']);
     }
 
   public function getBudgetYear()
   {
-    return $this->find()->where(['status'=>'ongoing'])->one();
+    return $this->find()->where(['operationstatus'=>'open'])->one();
   }
 }

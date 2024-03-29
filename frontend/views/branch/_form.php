@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="branch-form">
+<div class="branch-form container">
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -18,7 +18,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'location')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'email')->input('email',['maxlength' => true]) ?>
 
     <?= $form->field($model, 'telphone')->textInput(['maxlength' => true]) ?>
 
@@ -28,10 +28,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'pobox')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'level')->textInput(['maxlength' => true])->label("BR/HQ") ?>
-
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success float-right']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

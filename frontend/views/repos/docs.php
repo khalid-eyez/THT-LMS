@@ -39,7 +39,7 @@ $this->params['pageTitle']="Repository";
         <a   href="<?=Url::to(["/repos/update","doc"=>urlencode(base64_encode($doc->docID))])?>"><i class="fa fa-edit text-success float-right p-1" data-toggle="tooltip" data-title="Update Document"></i></a>
      <?php } ?>
      <a href="<?=Url::to(["/repos/download","file"=>urlencode(base64_encode($doc->file))])?>"><i class="fa fa-download text-success float-right p-1" data-toggle="tooltip" data-title="Download document"></i></a></div></div>
-     <div class="row"><div class="col-sm-12 text-muted text-sm text-center ">Uploaded on: <?=$doc->uploadTime?> by <?=array_keys(Yii::$app->authManager->getAssignments($doc->userID))[0]?></div></div>
+     <div class="row"><div class="col-sm-12 text-muted text-sm text-center ">Uploaded on: <?=$doc->uploadTime?> by <?=($doc->userID!=null)?array_keys(Yii::$app->authManager->getAssignments($doc->userID))[0]:"Unknown"?></div></div>
     </div>
    <?php
    }

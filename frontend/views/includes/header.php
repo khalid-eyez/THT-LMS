@@ -8,13 +8,13 @@
  
   
 
-    <span class="text-lg text-success">THTU Management System - TMS</span>
+    <span class="text-lg text-success">THTU Management Information System - [THTU-MIS]</span>
 
      
 
 </div>
 <div class="col-sm-6 d-none d-md-block pt-4 text-lg text-sm text-success text-right  tm" >
-   
+  
 </div>
 </div>
 </div>

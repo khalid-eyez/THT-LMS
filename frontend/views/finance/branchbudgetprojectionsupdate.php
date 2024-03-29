@@ -6,7 +6,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 
-$this->params["pageTitle"]="Branch Monthly Revenues Update";
+$this->params["pageTitle"]="Branch Budget Allocations";
 ?>
 <div class="container-fluid mt-3 meet">
         
@@ -64,7 +64,7 @@ $this->params["pageTitle"]="Branch Monthly Revenues Update";
    </div>
     </div>
     <div class="col-sm-6">
-    <input type="text" name=<?=$projection->projID?> class="form-control incput" style="border:none; background-color:#eef" placeholder="Amount"></input>
+    <input type="text" name=<?=$projection->projID?> class="form-control incput" value=<?=abs($projection->deficit())?> style="border:none; background-color:#eef" placeholder="Amount"></input>
     </div>
     </div>
 

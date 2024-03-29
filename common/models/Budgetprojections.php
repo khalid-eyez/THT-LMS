@@ -56,17 +56,20 @@ class Budgetprojections extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-    public function beforeSave($insert)
+
+    public function beforeDelete()
     {
-        $budget=BranchAnnualBudget::findOne($this->branchbudget);
+        $itemizedprojections=$this->itemizedprojections;
 
-        if($budget->unplanned()<$this->projected_amount)
+        foreach($itemizedprojections as $itemizedprojection)
         {
-            throw new \Exception("Current allocation goes beyond expected Income, Review your budget allocations");
+            if($itemizedprojection->payabletransactions!=null)
+            {
+                throw new \Exception("One of the items has payments ! Consider reviewing the budget instead.");
+            }
         }
-        return parent::beforeSave($insert);
+        return parent::beforeDelete();
     }
-
     /**
      * Gets query for [[Branchbudget0]].
      *
@@ -148,7 +151,8 @@ class Budgetprojections extends \yii\db\ActiveRecord
         foreach($items as $index=>$item)
         {
             if($index=="_csrf-frontend"){continue;}
-            $itemzmodel=new Itemizedprojections;
+            $itemid=$item[5];
+            $itemzmodel=($itemid!=0)?Itemizedprojections::findOne($itemid):new Itemizedprojections;
             $itemzmodel->itemName=$item[0];
             $itemzmodel->unit=$item[1];
             $itemzmodel->unitcost=$item[2];
@@ -201,12 +205,56 @@ class Budgetprojections extends \yii\db\ActiveRecord
                 if($budge==null){continue;}
                 $receivablemodel=new Receivabletransactions;
                 $receivablemodel->projID=$index;
+                $projected=$this->find()->where(['projID'=>$index])->one();
+                if(($projected->allocated()+$budge)>$projected->projected_amount)
+                {
+                    throw new \Exception("Total allocation greater than projection on \"".$projected->budgetItem." Item\"");  
+                }
                 $receivablemodel->receivedamount=$budge;
-                $receivablemodel->authority=yii::$app->user->identity->member->memberID;
+                $receivablemodel->authority=yii::$app->user->id;
                 $receivablemodel->datereceived=date("Y-m-d H:i:s");
                 if(!$receivablemodel->save())
                 {
-                    throw new \Exception("Could not save budget allocations, try again later !");
+                    throw new \Exception("Could not save budget allocations, try again later !".Html::errorSummary($receivablemodel));
+                }
+
+            }
+            $transaction->commit();
+            return true;
+        }
+        catch(\Exception $e)
+        {
+            $transaction->rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateProjections($budget)
+    {
+        try
+        {
+            date_default_timezone_set('Africa/Dar_es_Salaam');
+            $transaction=yii::$app->db->beginTransaction();
+            foreach($budget as $index=>$budge)
+            {
+                if($index=="_csrf-frontend")
+                {
+                    continue;
+                }
+                if($budge==null){continue;}
+                $projected=$this->find()->where(['projID'=>$index])->one();
+                if(($projected->allocated())>$projected->projected_amount+$budge)
+                {
+                    throw new \Exception("Resulting projection less than total allocations on \"".$projected->budgetItem." item\" You may opt to decrease allocation first");  
+                }
+                if($projected->projected()>$projected->projected_amount+$budge)
+                {
+                    throw new \Exception("Resulting projection less than total item Structure on \"".$projected->budgetItem." item\" You may opt to review the Item structure first"); 
+                }
+                $projected->projected_amount+=$budge;
+                if(!$projected->save())
+                {
+                    throw new \Exception("Could not save updated budget projections!".Html::errorSummary($projected));
                 }
 
             }

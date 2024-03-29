@@ -15,6 +15,7 @@ use Yii;
  *
  * @property BranchMonthlyRevenue[] $branchMonthlyRevenues
  * @property Annualbudget $budget
+ * @property Monthlyspecialcontributions $spcontribution
  */
 class Monthlyincome extends \yii\db\ActiveRecord
 {
@@ -70,8 +71,8 @@ class Monthlyincome extends \yii\db\ActiveRecord
     {
         if($insert==true)
         {
-            $branchbudgets=(new Annualbudget)->getCurrentBudget()->branchAnnualBudgets;
-            if($branchbudgets==null){throw new \Exception('Income acquired but not distributed, No branch budgets found !');}
+            $branchbudgets=yii::$app->session->get("financialYear")->annualbudget->branchAnnualBudgets;
+            if($branchbudgets==null){throw new \Exception('No branch budgets found !');}
             foreach($branchbudgets as $branchbudget)
             {
                 if($branchbudget==null){continue;}
@@ -100,7 +101,10 @@ class Monthlyincome extends \yii\db\ActiveRecord
     {
         return $this->hasMany(BranchMonthlyRevenue::className(), ['incomeID' => 'incomeID']);
     }
-
+    public function getSpcontribution()
+    {
+        return $this->hasOne(Monthlyspecialcontributions::className(), ['income' => 'incomeID']);
+    }
     /**
      * Gets query for [[Budget]].
      *
@@ -118,6 +122,36 @@ class Monthlyincome extends \yii\db\ActiveRecord
        if($income==null){return 0;}
 
        return $income;
+    }
+    public function getSpcontribTotal()
+    {
+        $contrib=$this->spcontribution;
+        if($contrib==null){return 0.00;}
+    
+        $total=$contrib->IndividualAmount*$contrib->NoMembers;
+        
+
+        return $total;
+
+
+    }
+    public function branchReturnsTotal()
+    {
+      return ($this->receivedAmount/2)-$this->getSpcontribTotal();
+    }
+    public function getTotalReturns()
+    {
+        $branchrevenues=$this->branchMonthlyRevenues;
+        $totalrevenues=0;
+        if($branchrevenues==null){return 0;}
+
+        foreach($branchrevenues as  $branchrevenue)
+        {
+            if($branchrevenue->branchbudget0->branch0->isHQ()){continue;}
+            $totalrevenues+=$branchrevenue->received_amount;
+        }
+
+        return $totalrevenues;
     }
 
     

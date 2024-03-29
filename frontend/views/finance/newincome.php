@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use common\models\Monthlyincome;
+use frontend\models\MonthlyincomeForm;
 ?>
 <div class="modal fade" id="incomemodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -10,7 +10,7 @@ use common\models\Monthlyincome;
       <div class="modal-body pl-4 pr-4">
 
     <?= $this->render('_form', [
-        'model' => new Monthlyincome,
+        'model' => new MonthlyincomeForm,
     ]) ?>
 
 </div>

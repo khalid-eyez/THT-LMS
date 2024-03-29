@@ -85,9 +85,6 @@ class BranchMonthlyRevenue extends \yii\db\ActiveRecord
     public function acquireRevenue($income,$budget)
     {
         $total=$income->receivedAmount;
-        $branchmember=count($budget->branch0->members);
-        $allmembers=count(Member::find()->all());
-        $allmembers=($allmembers!=0)?$allmembers:1;
         $hqshare=$total/2; 
         if($budget->branch0->level=="HQ")
         {
@@ -95,7 +92,7 @@ class BranchMonthlyRevenue extends \yii\db\ActiveRecord
         }
         else
         {
-            $share=(($total-$hqshare)/$allmembers)*$branchmember;
+            $share=0;
         }
      
       

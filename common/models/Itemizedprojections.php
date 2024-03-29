@@ -57,10 +57,22 @@ class Itemizedprojections extends \yii\db\ActiveRecord
             'projID' => 'Proj ID',
         ];
     }
+
+    public function beforeDelete()
+    {
+        if($this->payabletransactions!=null)
+        {
+            throw new \Exception("Payments exist for this item ! Consider reviewing the budget item structure instead.");
+        }
+        return parent::beforeDelete();
+    }
     public function beforeSave($insert)
     {
+        if($insert==true)
+        {
         $unallocated=Budgetprojections::findOne($this->projID)->Unallocated();
         if($this->totalcost>$unallocated){throw new \Exception("Allocation greater than projected budget");}
+        }
 
         return parent::beforeSave($insert);
     }

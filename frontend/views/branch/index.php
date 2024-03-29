@@ -8,14 +8,18 @@ use yii\widgets\Pjax;
 
 $this->title = 'Branches';
 $this->params['breadcrumbs'][] = $this->title;
+$this->params['pageTitle']="Branches";
 ?>
-<div class="branch-index">
+<style>
+    .grid-view table thead a{
+        color:white!important;
+       
+    }
+    </style>
+<div class="branch-index text-sm">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Create Branch', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+        <?= Html::a('<i class="fa fa-plus-circle"></i> Create Branch', ['create'], ['class' => 'btn btn-success float-right mb-2']) ?>
+   
 
     <?php Pjax::begin(); ?>
 
@@ -24,21 +28,28 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'branchID',
             'branchName',
             'branch_short',
             'location',
             'email:email',
-            //'telphone',
+            'telphone',
             //'fax',
             //'website',
             //'pobox',
             //'level',
 
             ['class' => 'yii\grid\ActionColumn'],
+      
         ],
     ]); ?>
 
     <?php Pjax::end(); ?>
 
 </div>
+<?php
+$script = <<<JS
+    $('.branches').addClass('active');
+    $('.grid-view table thead').addClass('bg-success');
+JS;
+$this->registerJs($script);
+?>

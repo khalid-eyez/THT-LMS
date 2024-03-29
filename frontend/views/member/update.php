@@ -8,15 +8,16 @@ use common\models\AuthItem;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Member */
-$branches=ArrayHelper::map(Branch::find()->all(),'branchID','branchName','location');
-$roles=ArrayHelper::map(AuthItem::find()->all(),'name','name');
 
 $this->title = 'Update Member: ';
 $this->params['pageTitle']="Update Member";
-
+$roles=ArrayHelper::map(AuthItem::find()->where(['name'=>"MEMBER"])->all(),'name','name');
+$branches=ArrayHelper::map(Branch::find()->where(['level'=>'BR'])->all(),'branchID','branchName');
 ?>
-<div class="member-update">
-
+<div class="member-update pl-5 pr-5">
+<div class="card">
+    <div class="card-header bg-success p-2 pl-3"><i class="fa fa-edit"></i> Update Member</div>
+    <div class="card-body">
 <div class="container-fluid text-sm">
     
 
@@ -34,23 +35,24 @@ $this->params['pageTitle']="Update Member";
 </div><div class="col-sm-6">
     <?= $form->field($model, 'phone')->textInput(['placeholder'=>'Mobile Phone Number','class'=>'form-control form-control-sm'])->label(false)  ?>
 </div></div>
-<div class="row"><div class="col-sm-12">
+<div class="row">
+<div class="col-sm-4">
+    <?= $form->field($model, 'branch')->dropDownList($branches,['prompt'=>'--Branch--','class'=>'form-control form-control-sm']) ->label(false) ?>
+</div><div class="col-sm-4">
     <?= $form->field($model, 'gender')->dropDownList(['F'=>'Female','M'=>'Male'],['prompt'=>'--Gender--','class'=>'form-control form-control-sm']) ->label(false) ?>
-</div><div class="col-sm-12">
-    <?= $form->field($model, 'branch')->dropDownList($branches,['prompt'=>'--Branch--','class'=>'form-control form-control-sm'])->label(false)  ?>
 </div>
-<div class="col-sm-12">
+<div class="col-sm-4">
     <?= $form->field($model, 'role')->dropDownList($roles,['prompt'=>'--Membership--','class'=>'form-control form-control-sm'])->label(false)  ?>
 </div>
 </div>
     <div class="form-group">
-        <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-sm col-sm-4 btn-success float-right']) ?>
+        <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success float-right']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
 
 </div>
-
+    </div>
 </div>
 <?php
 $script = <<<JS

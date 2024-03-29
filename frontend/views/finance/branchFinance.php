@@ -4,6 +4,7 @@ use common\models\Meeting;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use common\models\Budgetyear;
 
 
 $this->params["pageTitle"]="Finance dashboard";
@@ -30,7 +31,25 @@ $this->params["pageTitle"]="Finance dashboard";
               
  </div>
     <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
-    <span class="text-lg text-success">Financial Year <?=$annualbudget->budget->year->title?> (<?=$annualbudget->branch0->branch_short?>)</span>
+    <form class="float-left" method="post" action="/finance/switch-financial-year">
+      <div class="form-group row">
+        <div class="col-sm-10">
+      <select class="form-control pl-1" name="year">
+        <?php
+          $financialyears=Budgetyear::find()->orderBy(['yearID'=>SORT_DESC])->all();
+          foreach($financialyears as $financialyear)
+          {
+        ?>
+        <option value=<?=$financialyear->yearID?> <?=($financialyear->yearID==yii::$app->session->get("financialYear")->yearID)?"selected":""?>>Financial Year <?=$financialyear->startingyear?></option>
+        <?php } ?>
+      </select>
+</div><div class="col-sm-2 p-0">
+<input type="hidden" name="<?= Yii::$app->request->csrfParam; ?>" value="<?= Yii::$app->request->csrfToken; ?>" />
+      <button type="submit" class="form-control p-2"><i class="fa fa-refresh"></i></button>
+      </div>
+      </div>
+    </form> 
+    <span class="text-lg text-success"><?=$annualbudget->budget->year->title?> [<?=$annualbudget->branch0->branch_short?>]</span>
     <?php if(!$annualbudget->budget->isOpen()){?>
       <span class="text-danger">Closed</span>
     <?php }else{ ?>
@@ -41,47 +60,54 @@ $this->params["pageTitle"]="Finance dashboard";
     <a href="<?=Url::to(['/finance/branch-accounts','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-arrow-right" data-toggle="tooltip" data-title="Go To Accounts"></i></a>
     <?php if($annualbudget->hasAuthority()){?>
     <a href="<?=Url::to(['/finance/branch-income-allocate','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>" class="btn btn-sm btn-success mr-1 float-right"><i class="fas fa-donate" data-toggle="tooltip" data-title="Allocate Budget"></i></a>
-    <?php if($annualbudget->budget->isOpen()){?>
+    <?php
+     if($annualbudget->budget->isOpen()){
+
+      if(!$annualbudget->branch0->isHQ())
+      {
+      ?>
+
+    <a href="#" class="btn btn-sm btn-success mr-1 float-right" data-toggle="modal" data-target="#branchotherincomemodal"><i class="fa fa-arrow-down" data-toggle="tooltip" data-title="Acquire other income"></i></a>
+    <?php } ?>
     <a href="#" class="btn btn-sm btn-success mr-1 float-right" data-toggle="modal" data-target="#budgetitemmodal"><i class="fa fa-plus-circle" data-toggle="tooltip" data-title="Add budget Item"></i></a>
     <?php } } ?>
 </div>
 </div>
 <div class="card shadow-lg">
-    <div class="card-header p-1 bg-success text-sm">
-         Financial Overview 
+    <div class="card-header p-1 bg-success text-sm pl-2">
+         <i class="fa fa-money"></i> Financial Overview 
     </div>
         
         <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
             
              <div class="row">
+           
               <div class="col">
-                <span class="text-bold">Expected Income</span><br>
-                <?=$annualbudget->expectedIncome()?>
-              </div>
-              <div class="col">
-                <span class="text-bold">Projected</span><br>
+                <span class="text-bold">Total Projection</span><br>
                 <?=$annualbudget->projected()?>
               </div>
               <div class="col">
                 <span class="text-bold ">Total Revenue</span><br>
-                <?=$annualbudget->totalIncome()?>
+                <?=$annualbudget->branchTotalRevenue()?>
               </div>
               <div class="col">
-                <span class="text-bold ">Deficit</span><br>
-                <?=$annualbudget->deficit()?>
+                <span class="text-bold">Other Income</span><br>
+                <?=$annualbudget->totalOtherIncomes()?>
               </div>
+        
               <div class="col">
                 <span class="text-bold ">Unallocated</span><br>
                 <?=$annualbudget->unallocated()?>
               </div>
               <div class="col">
+                <span class="text-bold ">Total Expenses</span><br>
+                <?=-$annualbudget->getTotalExpenses()?>
+              </div>
+              <div class="col">
                 <span class="text-bold ">Balance</span><br>
                 <?=$annualbudget->getBalance()?>
               </div>
-              <div class="col">
-                <span class="text-bold ">Total Expenses</span><br>
-                <?=$annualbudget->getTotalExpenses()?>
-              </div>
+           
 
              </div>
 
@@ -91,10 +117,10 @@ $this->params["pageTitle"]="Finance dashboard";
 </div>
 
  <div class="card shadow-lg">
-    <div class="card-header p-1 bg-success text-sm">
+    <div class="card-header p-1 bg-success text-sm pl-2">
  
-          
-               
+    <i class="fa fa-building"></i> Branch Budget
+           <a href="<?=Url::to(['/finance/budget-review','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>"><i class="fa fa-edit float-right btn btn-default mt-1 p-1" data-toggle="tooltip" data-title="Review Budget"></i></a>    
     </div>
         
         <div class="card-body " style="font-family:lucida sans serif;font-size:11.5px">
@@ -110,7 +136,8 @@ $this->params["pageTitle"]="Finance dashboard";
                         ?>
                           <div class="row"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$projection->budgetItem?></div><div class="col"><?=$projection->projected_amount?></div><div class="col"><?=$projection->allocated()?></div><div class="col"><?=$projection->deficit()?></div><div class="col"><?=$projection->balance()?></div><div class="col"><?=$projection->getTotalExpenses()?></div>
                           <div class="col">
-                          <a href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Budget Item"><i class="fa fa-arrow-circle-right text-success" style="font-size:20px"></i></a>
+                          <a href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Budget Item"><i class="fa fa-arrow-right fa-1x btn btn-success p-1 btn-sm m-1 text-sm" style="font-size:20px"></i></a>
+                          <a href="#" class="bdel" id=<?=$projection->projID?> data-toggle="tooltip" data-title="Delete Budget Item"><i class="fa fa-trash btn btn-danger btn-sm p-1 "></i></a>
                           </div></div>
                         <?php
                           }
@@ -120,6 +147,7 @@ $this->params["pageTitle"]="Finance dashboard";
         </div>
 </div>
 <?=$this->render('newBudgetItem')?>
+<?=$this->render('branchotherincome')?>
 </div>
 </div>
 
@@ -128,7 +156,55 @@ $script = <<<JS
     $('document').ready(function(){
     $('.finance').addClass("active");
     
-  
+    $(document).on('click', '.bdel', function(){
+  var id = $(this).attr('id');
+  Swal.fire({
+  title: 'Delete Item?',
+  text: "You won't be able to revert this!",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Delete'
+  }).then((result) => {
+  if (result.isConfirmed) {
+
+  $.ajax({
+  url:'/finance/delete-budget-item',
+  method:'post',
+  async:false,
+  dataType:'JSON',
+  data:{item:id},
+  success:function(data){
+  if(data.success){
+  Swal.fire(
+  'Done !',
+  data.success,
+  'success'
+  )
+  setTimeout(function(){
+  window.location.reload();
+  }, 100);
+
+
+  }
+  else
+  {
+  Swal.fire(
+  'Failed!',
+  data.failure,
+  'error'
+  )
+
+
+  }
+  }
+  })
+
+  }
+  })
+
+  }) 
 
    })
 JS;

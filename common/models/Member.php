@@ -82,6 +82,14 @@ public $role;
             'branch' => 'Branch',
         ];
     }
+    public function behaviors()
+    {
+        return [
+            'auditEntryBehaviors' => [
+                'class' => AuditEntryBehaviors::class
+             ],
+        ];
+    }
     public function beforeSave($insert)
     {
 
@@ -104,7 +112,6 @@ public $role;
         if(!$user->save())
         {
           throw new \Exception("could not save user data, try again !");
-          return false;
         }
         $this->userID=$user->id;
         
@@ -126,7 +133,6 @@ public $role;
       }
       else
       {
-        
       }
 
 
@@ -253,7 +259,10 @@ public $role;
     {
         return $this->branch0->branchName;
     }
-
+    public function totalMembers()
+    {
+        return $this->find()->count();
+    }
    
     
   

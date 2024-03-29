@@ -67,6 +67,7 @@ class BranchController extends Controller
         $model = new Branch();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            yii::$app->session->setFlash("success","Branch added successfully !");
             return $this->redirect(['view', 'id' => $model->branchID]);
         }
 

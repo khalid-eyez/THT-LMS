@@ -70,12 +70,22 @@ class AuthController extends \yii\web\Controller
     {
         $this->layout="login";
       if (!Yii::$app->user->isGuest) {
-
+             
+             if(Yii::$app->user->can("ADMIN"))
+             {
+                return $this->redirect(['/admin/dashboard']); 
+             }
              return $this->redirect(['/member/dashboard']);
        }
       $model = new LoginForm();
       if ($model->load(Yii::$app->request->post()) && $model->login()) {
-      
+
+        $financialyear=Budgetyear::find()->where(['operationstatus'=>'open'])->one();
+        yii::$app->session->set("financialYear",$financialyear);
+             if(Yii::$app->user->can("ADMIN"))
+             {
+                return $this->redirect(['/admin/dashboard']); 
+             }
            return $this->redirect(['/home/dashboard']);
      }
 
