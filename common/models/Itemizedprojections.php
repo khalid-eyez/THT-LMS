@@ -113,6 +113,13 @@ class Itemizedprojections extends \yii\db\ActiveRecord
         return $this->totalcost-$this->getTotalExpenses();
     }
 
+    public function available()
+    {
+        $allocated=$this->proj->allocated();
+
+        return $allocated-$this->getTotalExpenses();
+    }
+
     public function payedunits()
     {
         $total=0;

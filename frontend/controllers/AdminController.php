@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 use common\models\Annualbudget;
+use common\models\Takeover;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
@@ -116,6 +117,9 @@ public $defaultAction = 'dashboard';
             //constructing the new budget year details
             $starting=$budget->startingyear;
             $ending=$budget->endingyear;
+            //holding the current branch budgets
+            $branchbudgets=$budget->annualbudget->branchAnnualBudgets;
+            //incrementing the current budget year to the next one
             ++$starting;
             ++$ending;
 
@@ -145,6 +149,24 @@ public $defaultAction = 'dashboard';
             {
                 throw new \Exception("Could not migrate to the next budget year! ".Html::errorSummary($newbudget));
             }
+
+             //creating the annual budget for the new budget year
+             $annualbudget=new Annualbudget;
+             $annualbudget->projected_amount=0; // no projection for annual budget
+             $annualbudget->yearID=$newbudget->yearID;
+             $annualbudget->status="open";
+
+             if(!$annualbudget->save())
+             {
+                 throw new \Exception("Could not create annual budget for this budget year! ".Html::errorSummary($annualbudget));  
+             }
+
+             //creating branch budget years
+
+            (new Branch)->createAnnualBudgets($annualbudget->budgetID);
+            // does the previous year have any takeovers (remainder  of the budget)
+         
+              
             }
             //closing the current budget year
             $budget->operationstatus="closed";
@@ -154,20 +176,10 @@ public $defaultAction = 'dashboard';
                 throw new \Exception("Could not close the current budget year! ".Html::errorSummary($budget));
             }
 
-            //creating the annual budget for the new budget year
-            $annualbudget=new Annualbudget;
-            $annualbudget->projected_amount=0; // no projection for annual budget
-            $annualbudget->yearID=$newbudget->yearID;
-            $annualbudget->status="open";
+           
 
-            if(!$annualbudget->save())
-            {
-                throw new \Exception("Could not create annual budget for this budget year! ".Html::errorSummary($annualbudget));  
-            }
 
-            //creating branch budget years
-
-            (new Branch)->createAnnualBudgets($annualbudget->budgetID);
+            
 
             $transaction->commit();
 

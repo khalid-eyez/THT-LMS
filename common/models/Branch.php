@@ -125,6 +125,18 @@ class Branch extends \yii\db\ActiveRecord
             {
                 throw new \Exception("Could not create annual budget for ".$branch->branch_short);
             }
+
+            //does the branch have takeovers
+
+               $takeover=new Takeover;
+               $takeover->budget=$budget->bbID;
+               $takeover->amount=$branch->branchBudget->branchTakeover();
+
+               if(!$takeover->save())
+               {
+                throw new \Exception("Could not transfer takeover amount for ".$branch->branch_short);
+               }
+            
         }
         $transaction->commit();
         }
@@ -134,4 +146,9 @@ class Branch extends \yii\db\ActiveRecord
            throw $s; 
         }
     }
+
+    // public function monthlyPayables()
+    // {
+    //     $payables=Payabletransactions::find()
+    // }
 }

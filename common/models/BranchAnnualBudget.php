@@ -19,6 +19,7 @@ use Yii;
  * @property BranchMonthlyRevenue[] $branchMonthlyRevenues
  * @property Budgetprojections[] $budgetprojections
  * @property Branchotherincomes[] $otherincomes
+ * @property Takeover $takeover
  */
 class BranchAnnualBudget extends \yii\db\ActiveRecord
 {
@@ -66,6 +67,11 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     public function getBudget()
     {
         return $this->hasOne(Annualbudget::className(), ['budgetID' => 'budgetID']);
+    }
+
+    public function getTakeover()
+    {
+        return $this->hasOne(Takeover::className(), ['budget' => 'bbID']);
     }
 
     /**
@@ -129,11 +135,12 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     }
 
     public function branchTotalRevenue(){
+        $takeover=($this->takeover!=null)?$this->takeover->amount:0;
         if($this->branch0->isHQ())
         {
             return $this->budget->HQrevenue();
         }
-        return $this->totalIncome()+$this->totalOtherIncomes();
+        return $this->totalIncome()+$this->totalOtherIncomes()+$takeover;
     }
     public function getTotalExpenses()
     {
@@ -167,6 +174,11 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     public function getBalance()
     {
         return $this->allocated()-$this->getTotalExpenses();
+    }
+
+    public function branchTakeover()
+    {
+      return $this->branchTotalRevenue()-$this->getTotalExpenses(); 
     }
     public function acquireRevenue($income)
     {

@@ -548,6 +548,7 @@ class FinanceController extends Controller
 
     public function actionDownloadAnnualReport()
     {
+        (new Reporter)->downloadPDFReport((new Reporter)->incomesReportBuilder());
         (new Reporter)->downloadExcelReport();
     }
 

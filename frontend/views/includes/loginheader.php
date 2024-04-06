@@ -1,15 +1,11 @@
-<div class="container-fluid">
+<div class="container-fluid mb-4 ">
 
-<div class="row">
-  <div class="col-sm-12 d-flex justify-content-center">
-    <img src="/img/logo.jpg" class="img-circle " style="height:90%;width:10%"/>
+<div class="row shadow-sm bg-white">
+  <div class="col-sm-12 ">
+    <img src="/img/logo.png" class="" style="height:45%;width:5%"/>
 </div>
 </div>
-<div class="row mt-0">
-  <div class="col-sm-12 border-bottom p-2 text-lg text-success text-center d-flex justify-content-center ">
-    THTU Management System - TMS
-</div>
-</div>
+
 
 
 </div>

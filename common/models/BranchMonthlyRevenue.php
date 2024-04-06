@@ -33,9 +33,8 @@ class BranchMonthlyRevenue extends \yii\db\ActiveRecord
     {
         return [
             [['received_amount', 'incomeID', 'month', 'branchbudget'], 'required'],
-            [['incomeID', 'branchbudget'], 'integer'],
+            [['incomeID', 'branchbudget','month'], 'integer'],
             [['received_amount'], 'number'],
-            [['month'], 'string', 'max' => 10],
             [['incomeID'], 'exist', 'skipOnError' => true, 'targetClass' => Monthlyincome::className(), 'targetAttribute' => ['incomeID' => 'incomeID']],
             [['branchbudget'], 'exist', 'skipOnError' => true, 'targetClass' => BranchAnnualBudget::className(), 'targetAttribute' => ['branchbudget' => 'bbID']],
         ];
@@ -125,9 +124,20 @@ class BranchMonthlyRevenue extends \yii\db\ActiveRecord
             if($rev==null){continue;}
             $rev->received_amount=$revenue;
 
-            if(!$rev->save()){continue;}
+            if(!$rev->save()){
+
+                //throw new \Exception(\yii\helpers\Html::errorSummary($rev));
+                continue;
+            }
         }
 
         return true;
+    }
+
+    public function totalRevenueFor($month, $budget)
+    {
+        $income=$this->find()->where(['branchbudget'=>$budget,'month'=>$month])->sum("received_amount");
+
+        return $income;
     }
 }

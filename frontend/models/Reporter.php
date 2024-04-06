@@ -1,10 +1,16 @@
 <?php
 namespace frontend\models;
+use common\models\BranchAnnualBudget;
+use common\models\BranchMonthlyRevenue;
+use common\models\Monthlyincome;
+use common\models\Otherincomes;
 use yii\base\Model;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use common\models\Budgetyear;
+use yii\helpers\ArrayHelper;
+use Mpdf\Mpdf;
 use yii;
 
 
@@ -12,40 +18,207 @@ use yii;
 class Reporter extends Model
 {
     public $financialyear;
+    public $months=[
+      '1'=>'January',
+      '2'=>'February',
+      '3'=>'March',
+      '4'=>'April',
+      '5'=>'May',
+      '6'=>'June',
+      '7'=>'July',
+      '8'=>'August',
+      '9'=>'September',
+      '10'=>'October',
+      '11'=>'November',
+      '12'=>'December'
+    ];
 
     public function __construct($config=[])
     {
         $this->financialyear=Budgetyear::findOne(yii::$app->session->get('financialYear')->yearID);
+
+
         parent::init($config);
     }
+    public function incomesBufferBuilder()
+    {
+       $incomesbuffer=[];
+       $monthlycollectionsbuffer=[];
+       $budget=$this->financialyear->annualbudget->budgetID;
 
+       //building monthyly incomes
+
+       foreach($this->months as $index=>$month)
+       {
+          $monthlycollectionsbuffer[$index]=(new Monthlyincome)->getIncomeFor($budget,$index);
+          
+       }
+       $incomesbuffer['Monthly Collections']=$monthlycollectionsbuffer;
+       foreach($this->months as $index=>$month)
+       {
+        $otherincome=(new Otherincomes)->getIncomeFor($budget,$index);
+        if($otherincome!=null)
+        {
+          $incomesbuffer[$otherincome->incomeType][$index]=$otherincome->amount;
+        }
+        else
+        {
+
+        }
+        
+          
+       }
+
+       //adding the total row
+       foreach($this->months as $index=>$month)
+       {
+          $income=(new Monthlyincome)->getIncomeFor($budget,$index);
+
+          $otherincome=(new Otherincomes)->getIncomeFor($budget,$index);
+          $otherincome=$otherincome!=null?$otherincome->amount:0;
+
+          $incomesbuffer["total"][$index]=$otherincome+$income;
+
+       }
+
+       return $incomesbuffer;
+
+    }
+
+    public function expensesBufferBuilder()
+    {
+      $branchbudgets=$this->financialyear->annualbudget->branchAnnualBudgets;
+      $expensesBuffer=[];
+
+      foreach($branchbudgets as $branchbudget)
+      {
+      
+      if($branchbudget->branch0->isHQ()){ continue; }
+      foreach($this->months as $index=>$month)
+      {
+        if(isset($expensesBuffer['Branch Returns'][$branchbudget->bbID][$index]) && $expensesBuffer['Branch Returns'][$branchbudget->bbID][$index]!=null)
+        {
+          $expensesBuffer['Branch Returns'][$branchbudget->bbID][$index]+=(new BranchMonthlyRevenue)->totalRevenueFor($index, $branchbudget->bbID);
+        }
+        else{
+          $expensesBuffer['Branch Returns'][$branchbudget->bbID][$index]=(new BranchMonthlyRevenue)->totalRevenueFor($index, $branchbudget->bbID);
+        }
+        
+        }
+
+      }
+
+      // adding the total row
+      foreach($this->months as $index=>$month)
+      {
+      foreach($branchbudgets as $branchbudget)
+      {
+      
+      if($branchbudget->branch0->isHQ()){ continue; }
+   
+        if(isset($expensesBuffer['Branch Returns']['Total'][$index]) && $expensesBuffer['Branch Returns']['Total'][$index]!=null)
+        {
+          $expensesBuffer['Branch Returns']['Total'][$index]+=(new BranchMonthlyRevenue)->totalRevenueFor($index, $branchbudget->bbID);
+        }
+        else{
+          $expensesBuffer['Branch Returns']['Total'][$index]=(new BranchMonthlyRevenue)->totalRevenueFor($index, $branchbudget->bbID);
+        }
+        
+        }
+
+      }
+
+      //Adding other expenses
+
+      $HQbudget=$this->financialyear->annualbudget->HQbudget();
+
+      $projections=ArrayHelper::map($HQbudget->budgetprojections,'budgetItem','totalExpenses');
+      $expensesBuffer['Other Expenses']['expenses']=$projections;
+      $expensesBuffer['Other Expenses']['Total_expenses']=$HQbudget->getTotalExpenses();
+
+      return $expensesBuffer;
+    }
+
+    public function summaryBuilder()
+    {
+      $summary=[];
+      $HQbudget=$this->financialyear->annualbudget->HQbudget();
+      $total_revenue=$this->financialyear->annualbudget->totalRevenue();
+      $branchreturns_total=$this->financialyear->annualbudget->totalReturns();
+      $total_expenses=$HQbudget->getTotalExpenses();
+
+      $balance_or_deficit=$total_revenue-($branchreturns_total+$total_expenses);
+
+      $summary['TOTAL REVENUE']=$total_revenue;
+      $summary['TOTAL BRANCH RETURNS']=$branchreturns_total;
+      $summary['TOTAL EXPENSES']=$total_expenses;
+      $summary['BALANCE/DEFICIT']=$balance_or_deficit;
+
+      return $summary;
+
+
+    }
     public function incomesReportBuilder()
     {
-        $mothlyincomes=$this->financialyear->annualbudget->monthlyincomes;
-        $otherincomes=$this->financialyear->annualbudget->otherincomes;
+        $expenses=$this->expensesBufferBuilder();
+
+        //print_r($expenses); return null;
+        $incomesbuffer=$this->incomesBufferBuilder();
         $table="<table><tr><th></th>";
 
         //building heading
-        foreach($mothlyincomes as $mothlyincome)
+        foreach($this->months as $index=>$month)
         {
-            $table.="<th>".$mothlyincome->month."</th>";
+            $table.="<th>".$month."</th>";
         }
-        $table.="</tr><tr><td>Monthly Collections</td>";
-
-        foreach($mothlyincomes as $mothlyincome)
-        {
-            $table.="<td>".$mothlyincome->receivedAmount."</td>";
-        }
-
-        //other income row
         $table.="</tr>";
+        
 
-        foreach($otherincomes as $otherincome)
+        foreach($incomesbuffer as $type=>$amounts)
         {
-            $table.="<tr><td>".$otherincome->incomeType."</td><td>".$otherincome->amount."</td></tr>";
+          $table.="<tr><td>".$type."</td>";
+
+          foreach($amounts as $index=>$amount)
+          {
+            $table.="<td>".$amount."</td>";
+          }
+          $table.="</tr>";
+        }
+         
+        $table.="</table><table><tr><th>Branch Returns</th></tr>";
+
+        //adding branch returns table
+
+        foreach($expenses['Branch Returns'] as $index=>$returns)
+        {
+          $column_name=($index!='Total')?(BranchAnnualBudget::findOne($index))->branch0->branch_short:$index;
+          $table.="<tr><td>".$column_name."</td>";
+
+          foreach($returns as $month=>$amount)
+          {
+            $table.="<td>".$amount."</td>";
+          }
+          $table.="</tr>";
+        }
+        //adding other expenses
+       
+        $table.="</table><table><tr><th>Other Expenses</th></tr>";
+        foreach($expenses['Other Expenses']['expenses'] as $index=>$expense)
+        {
+         
+          $table.="<tr><td>".$index."</td><td>".$expense."</td></tr>";
+        }
+        $table.="<tr><td>Total</td><td>".$expenses['Other Expenses']['Total_expenses']."</td></tr>";
+
+        //adding the summary table
+        $table.="</table><table><tr><th>SUMMARY</th></tr>";
+        $summary=$this->summaryBuilder();
+
+        foreach($summary as $index=>$sum)
+        {
+          $table.="<tr><td>".$index."</td><td>".$sum."</td></tr>";
         }
         $table.="</table>";
-
         return $table;
     }
 
@@ -60,32 +233,27 @@ class Reporter extends Model
     }
 //sample
     public function downloadPDFReport($ca)
-    {
+    { 
+       
         $content=$ca;
         if($ca!=null)
         {
-        $instructor=Yii::$app->user->identity->instructor;
-        $name=$instructor->full_name;
-        $college=$instructor->department->college->college_name;
-        $year=yii::$app->session->get('currentAcademicYear')->title;
         $mpdf = new Mpdf(['orientation' => 'L']);
         $mpdf->setFooter('{PAGENO}');
-        $course=yii::$app->session->get('ccode');
-        $courseTitle=Course::findOne($course)->course_name;
         $stylesheet = file_get_contents('css/capdf.css');
         $mpdf->WriteHTML($stylesheet,1);
         $mpdf->SetWatermarkText('civeclassroom.udom.ac.tz',0.09);
         $mpdf->showWatermarkText = true;
         $mpdf->WriteHTML('<div align="center"><img src="img/logo.png" width="125px" height="125px"/></div>',2);
         $mpdf->WriteHTML('<p align="center"><font size=7>The University of Dodoma</font></p>',3);
-        $mpdf->WriteHTML('<p align="center"><font size=5>'.$college.'</font></p>',3);
-        $mpdf->WriteHTML('<p align="center"><font size=5>'.$course.' '.$courseTitle.'</font></p>',3);
-        $mpdf->WriteHTML('<p align="center"><font size=5>Final course assessment results ('.$year.')</font></p>',3);
-        $mpdf->WriteHTML('<p align="center"><font size=3>By '.$name.'</font></p>',3);
+        $mpdf->WriteHTML('<p align="center"><font size=5></font></p>',3);
+        $mpdf->WriteHTML('<p align="center"><font size=5></font></p>',3);
+        $mpdf->WriteHTML('<p align="center"><font size=5>Final course assessment results </font></p>',3);
+        $mpdf->WriteHTML('<p align="center"><font size=3></font></p>',3);
         $mpdf->WriteHTML('<hr width="80%" align="center" color="#000000">',2);
         $mpdf->WriteHTML($content,3);
           
-        $filename=yii::$app->session->get('ccode')."_CA.pdf";
+        $filename="_CA.pdf";
         $filename = str_replace(' ', '', $filename);
         $mpdf->Output($filename,"D");
 
@@ -99,6 +267,7 @@ class Reporter extends Model
 //sample
     public function downloadExcelReport()
     {
+        //print_r($this->incomesBufferBuilder()); return null;
         $content=$this->incomesReportBuilder();
         if($content!=null)
         {
@@ -142,7 +311,7 @@ class Reporter extends Model
        //the styles
      
 
-          $sheet->getStyle('A1:' . $sheet->getHighestColumn().'2')->applyFromArray($styleArray);
+          $sheet->getStyle('A1:' . $sheet->getHighestColumn().'1')->applyFromArray($styleArray);
           $sheet->getStyle('A1:' . $sheet->getHighestColumn().$sheet->getHighestRow())->applyFromArray($borderstyleArray);
          
 
@@ -163,9 +332,6 @@ class Reporter extends Model
           }
 
         }
-   
-       
-     
         ob_clean();
         $writer=IOFactory::createWriter($spreadsheet, 'Xlsx');
         
@@ -178,7 +344,6 @@ class Reporter extends Model
         $writer->save('php://output'); 
 
         exit();
-        return true;
       }
       else
       {

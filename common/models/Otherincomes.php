@@ -63,4 +63,10 @@ class Otherincomes extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Annualbudget::className(), ['budgetID' => 'budget']);
     }
+
+    public function getIncomeFor($budget, $month)
+    {
+        $income=$this->find()->select(['incomeType','sum(amount) as amount'])->where(['budget'=>$budget,'month'=>$month])->groupBy(['incomeType'])->one();
+        return $income;
+    }
 }

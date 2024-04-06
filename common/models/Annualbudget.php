@@ -114,6 +114,7 @@ class Annualbudget extends \yii\db\ActiveRecord
     }
     public function HQrevenue()
     {
+        
         $branchbudgets=$this->branchAnnualBudgets;
 
         if($branchbudgets==null){return 0;}
@@ -122,7 +123,8 @@ class Annualbudget extends \yii\db\ActiveRecord
         {
             if($branchbudget->branch0->isHQ())
             {
-                return $branchbudget->totalIncome()+$this->otherIncomeTotal()+$this->totalspcontributions();
+                $takeover=($branchbudget->takeover!=null)?$branchbudget->takeover->amount:0;
+                return $branchbudget->totalIncome()+$this->otherIncomeTotal()+$this->totalspcontributions()+$takeover;
             }
         }
     }
@@ -208,5 +210,18 @@ class Annualbudget extends \yii\db\ActiveRecord
         }
 
         return $total;
+    }
+
+    public function HQbudget()
+    {
+        $budgets=$this->branchAnnualBudgets;
+
+        foreach($budgets as $budget)
+        {
+            if($budget->branch0->isHQ())
+            {
+                return $budget;
+            }
+        }
     }
 }

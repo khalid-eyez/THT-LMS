@@ -13,7 +13,7 @@ use Yii;
  * @property int $Amount
  * @property string|null $dateapplied
  * @property int|null $authority
- * @property string reference
+ * @property string $reference
  *
  * @property Itemizedprojections $item0
  * @property Member $authority0
@@ -67,7 +67,8 @@ class Payabletransactions extends \yii\db\ActiveRecord
       date_default_timezone_set('Africa/Dar_es_Salaam');
       $this->dateapplied=date("Y-m-d H:i:s");
       $item=Itemizedprojections::findOne($this->item);
-      if($item->balance()<$this->Amount)
+      $this->Amount=$this->quantity*$item->unitcost;
+      if($item->available()<$this->Amount)
       {
         throw new \Exception("Budget not sufficient for this payment");
       }
@@ -75,7 +76,7 @@ class Payabletransactions extends \yii\db\ActiveRecord
       {
         throw new \Exception("Quantity greater than available number of units");
       }
-      $this->Amount=$this->quantity*$item->unitcost;
+      
       $suffix=rand(1,999).$this->transID;
       $suffix=str_pad($suffix, 4, "0", STR_PAD_LEFT);
       $this->reference="THTU".$suffix;

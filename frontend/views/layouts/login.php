@@ -28,8 +28,8 @@ AppAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="hold-transition  bg-white p-0">
-  <?=$this->render('/includes/loginheader')?>
+<body class="hold-transition  bg-success p-0">
+  <?=$this->render('/includes/loginheader2')?>
 <div class="container d-flex justify-content-center">
      <div class="row mt-2 show-sm">
       <?php if(Yii::$app->session->hasFlash('success')): ?>
@@ -57,9 +57,15 @@ AppAsset::register($this);
       <?php endif ?>
        </div>
        </div>
-<div class="container p-5 d-flex justify-content-center text-center" >
-  <!-- /.login-logo -->
+<div class="container-fluid   p-0 d-flex justify-content-center text-center mt-4" style="border-radius:7px 7px 7px 7px!important">
+  <div class="row shadow-lg bg-white" style="width:60%; border-radius:6px 6px 6px 6px !important">
+  <div class="col-sm-6  bg-white p-0 m-0 mt-2 d-none d-md-block">
+    <img src="/img/flag.gif" class="img-responsive m-0 shadow-sm" style="width:100%;height:400px;border:none;"/>
+  </div>
+  <div class="col-sm-6 " style="border:none">
 <?= $content ?>
+       </div>
+</div>
 </div>
 <?= $this->render('/includes/loginfooter') ?>
 <!-- /.login-box -->
