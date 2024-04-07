@@ -30,7 +30,7 @@ $this->params["pageTitle"]="Finance dashboard";
 <div class="card-header p-1 bg-success text-sm">
               
  </div>
-    <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
+    <div class="card-body text-center" style="font-size:12px">
     <form class="float-left" method="post" action="/finance/switch-financial-year">
       <div class="form-group row">
         <div class="col-sm-10">
@@ -73,39 +73,39 @@ $this->params["pageTitle"]="Finance dashboard";
     <?php } } ?>
 </div>
 </div>
-<div class="card shadow-lg">
+<div class="card shadow">
     <div class="card-header p-1 bg-success text-sm pl-2">
          <i class="fa fa-money"></i> Financial Overview 
     </div>
         
-        <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
+        <div class="card-body text-center" style="font-size:12px">
             
              <div class="row">
            
               <div class="col">
-                <span class="text-bold">Total Projection</span><br>
-                <?=$annualbudget->projected()?>
+                <span class="heading">Total Projection</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->projected())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Total Revenue</span><br>
-                <?=$annualbudget->branchTotalRevenue()?>
+                <span class="heading">Total Revenue</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->branchTotalRevenue())?></span>
               </div>
               <div class="col">
-                <span class="text-bold">Other Income</span><br>
-                <?=$annualbudget->totalOtherIncomes()?>
+                <span class="heading">Other Income</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->totalOtherIncomes())?></span>
               </div>
         
               <div class="col">
-                <span class="text-bold ">Unallocated</span><br>
-                <?=$annualbudget->unallocated()?>
+                <span class="heading">Unallocated</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->unallocated())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Total Expenses</span><br>
-                <?=-$annualbudget->getTotalExpenses()?>
+                <span class="heading">Total Expenses</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->getTotalExpenses())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Balance</span><br>
-                <?=$annualbudget->getBalance()?>
+                <span class="heading">Balance</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->getBalance())?></span>
               </div>
            
 
@@ -116,16 +116,16 @@ $this->params["pageTitle"]="Finance dashboard";
   
 </div>
 
- <div class="card shadow-lg">
+ <div class="card shadow">
     <div class="card-header p-1 bg-success text-sm pl-2">
  
     <i class="fa fa-building"></i> Branch Budget
            <a href="<?=Url::to(['/finance/budget-review','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>"><i class="fa fa-edit float-right btn btn-default mt-1 p-1" data-toggle="tooltip" data-title="Review Budget"></i></a>    
     </div>
         
-        <div class="card-body " style="font-family:lucida sans serif;font-size:11.5px">
+        <div class="card-body " style="font-size:12px">
             
-                    <div class="row text-bold mb-2"><div class="col-sm-1">#</div><div class="col">Budget Item</div><div class="col">projection</div><div class="col">Current Budget</div><div class="col">Deficit</div><div class="col">Balance</div><div class="col">Total Expenses</div><div class="col"></div></div>
+                    <div class="row heading mb-2"><div class="col-sm-1">#</div><div class="col">Budget Item</div><div class="col">projection</div><div class="col">Current Budget</div><div class="col">Deficit</div><div class="col">Balance</div><div class="col">Total Expenses</div><div class="col"></div></div>
                     
                         <?php
                         $count=0;
@@ -134,7 +134,7 @@ $this->params["pageTitle"]="Finance dashboard";
                           foreach($projections as $projection)
                           {
                         ?>
-                          <div class="row"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$projection->budgetItem?></div><div class="col"><?=$projection->projected_amount?></div><div class="col"><?=$projection->allocated()?></div><div class="col"><?=$projection->deficit()?></div><div class="col"><?=$projection->balance()?></div><div class="col"><?=$projection->getTotalExpenses()?></div>
+                          <div class="row money"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$projection->budgetItem?></div><div class="col"><?=$projection->projected_amount?></div><div class="col"><?=$projection->allocated()?></div><div class="col"><?=$projection->deficit()?></div><div class="col"><?=$projection->balance()?></div><div class="col"><?=$projection->getTotalExpenses()?></div>
                           <div class="col">
                           <a href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Budget Item"><i class="fa fa-arrow-right fa-1x btn btn-success p-1 btn-sm m-1 text-sm" style="font-size:20px"></i></a>
                           <a href="#" class="bdel" id=<?=$projection->projID?> data-toggle="tooltip" data-title="Delete Budget Item"><i class="fa fa-trash btn btn-danger btn-sm p-1 "></i></a>

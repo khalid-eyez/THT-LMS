@@ -59,6 +59,9 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'MoneyFormatter'=>[
+            'class'=>'common\components\NumberFormatter'
+        ]
     
     ],
     'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',

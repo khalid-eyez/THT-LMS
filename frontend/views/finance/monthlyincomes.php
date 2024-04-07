@@ -5,16 +5,27 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-
+$months=[
+  '1'=>'January',
+  '2'=>'February',
+  '3'=>'March',
+  '4'=>'April',
+  '5'=>'May',
+  '6'=>'June',
+  '7'=>'July',
+  '8'=>'August',
+  '9'=>'September',
+  '10'=>'October',
+  '11'=>'November',
+  '12'=>'December'
+];
 $this->params["pageTitle"]="Monthly Incomes";
 ?>
 <div class="container-fluid mt-3 meet">
         
 <div class="card shadow-lg">
-<div class="card-header p-1 bg-success text-sm">
-              
- </div>
-    <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
+
+    <div class="card-body text-center" style="font-size:12px">
     <span class="text-lg text-success">Financial Year <?=$annualbudget->year->title?></span>
     </div>
 </div>
@@ -24,24 +35,24 @@ $incomes=$annualbudget->monthlyincomes;
 foreach($incomes as $income)
 {
 ?>
-<div class="card shadow-lg" data-toggle="collapse" data-target="#collapse<?=$income->incomeID?>" aria-expanded="true" aria-controls="collapse<?=$income->incomeID?>">
+<div class="card shadow" data-toggle="collapse" data-target="#collapse<?=$income->incomeID?>" aria-expanded="true" aria-controls="collapse<?=$income->incomeID?>">
     <div class="card-header p-1 bg-success text-sm">
          <i class="float-right fa fa-trash m-1 del" id=<?=$income->incomeID ?> data-toggle="tooltip" data-title="Delete Income"></i> 
     </div>
         
-        <div class="card-body text-center text-sm" style="font-family:lucida sans serif">
+        <div class="card-body text-center text-sm" >
             
              <div class="row">
               <div class="col">
-                <span class="text-bold">Month</span><br>
-                <?=$income->month?>
+                <span class="heading">Month</span><br>
+                <?=$months[$income->month]?>
               </div>
               <div class="col">
-                <span class="text-bold ">Amount Received</span><br>
-                <?=$income->receivedAmount?> TZS
+                <span class="heading">Amount Received</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($income->receivedAmount)?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Date & Time</span><br>
+                <span class="heading">Date & Time</span><br>
                 <?=date_format(date_create($income->datereceived),"d-m-Y H:i:s")?>
               </div>
             
@@ -51,8 +62,8 @@ foreach($incomes as $income)
         </div>
         <div id="collapse<?=$income->incomeID?>" class="collapse" aria-labelledby="heading<?=$income->incomeID?>" data-parent="#incomeaccordion">
 
-        <div class="card-footer text-sm pl-4 border-top" style="background-color:#eef;font-family:lucida sans serif">
-        <div class="row text-bold text-success mb-3"><div class="col text-center">Branch Allocations</div></div>
+        <div class="card-footer text-sm pl-4 border-top" style="background-color:#eef;">
+        <div class="row heading text-success mb-3"><div class="col text-center">Branch Allocations</div></div>
         <div class="row text-bold border-bottom">
             <div class="col-sm-1">#</div>
             <div class="col">Branch</div>
@@ -70,8 +81,8 @@ foreach($incomes as $income)
 
          <div class="row text-sm border-bottom">
             <div class="col-sm-1"><?=++$count?></div>
-            <div class="col"><?=$branchrev->branchbudget0->branch0->branch_short?></div>
-            <div class="col"><?=$branchrev->received_amount?> TZS</div>
+            <div class="col normalText"><?=$branchrev->branchbudget0->branch0->branch_short?></div>
+            <div class="col money"><?=yii::$app->MoneyFormatter->format($branchrev->received_amount)?></div>
             <div class="col"><?=date_format(date_create($income->datereceived),"d-m-Y H:i:s")?></div>
          </div>
          <?php

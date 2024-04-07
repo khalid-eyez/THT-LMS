@@ -118,3 +118,48 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+@media (min-width: 992px) {
+    .head{
+      font-size: 18px;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .head{
+      font-size: 18px;
+    }
+  }
+  @media (max-width: 576px) { 
+    .login{
+         height:400px!important;
+    }
+  }
+  @media (max-width: 992px) { 
+      .login{
+        width:96%!important;
+      
+      }
+   }
+@font-face {
+    font-family: number;
+    src: url(../fonts/duru-sans/DuruSans-Regular.otf);
+  }
+  @font-face {
+    font-family: regulartext;
+    src: url(../fonts/raleway/Raleway-Regular.ttf);
+  }
+  @font-face {
+    font-family: heading-bold;
+    src: url(../fonts/raleway/Raleway-ExtraBold.ttf);
+  }
+  .money{
+
+    font-family: number; font-size: 12px; font-style: normal; font-variant: normal; font-weight:lighter;
+
+  }
+  .heading{
+    font-family:heading-bold
+  }
+  .normalText{
+    font-family: regulartext;
+  }

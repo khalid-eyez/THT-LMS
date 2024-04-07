@@ -84,8 +84,9 @@ AppAsset::register($this);
 
 /* Page content. The value of the margin-left property should match the value of the sidebar's width property */
 div.sidecontent {
-  margin-left: 200px;
-  padding: 1px 16px;
+  margin-left: 192px;
+  padding-left: 15px;
+  padding-right: 2px;
   height: 600px;
  
   overflow:auto;
@@ -110,23 +111,28 @@ div.sidecontent {
     float: none;
   }
 }
+
+body{
+  overflow: hidden;
+  background-color: rgba(6, 92, 27)!important;
+}
       
       </style>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="hold-transition  layout-fixed ">
+<body class="hold-transition  layout-fixed bg-suc">
 <?php $this->beginBody() ?>
 <?= $this->render("/includes/header.php") ?>
 <?=$this->render("/includes/sidebar")?>
 
 <!-- Page content -->
-<div class="sidecontent">
-<div class="wrapper">
+<div class="sidecontent mt-0 pt-0" style="font-family:regulartext">
+<div class="wrapper p-0 m-0">
 
      <!-- Preloader -->
   <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__shake" src="<?php echo Yii::getAlias('@web/img/logo.png'); ?>" alt="LOGO" height="60" width="60">
+    <img class="animation__shake rounded" src="<?php echo Yii::getAlias('@web/img/logo.png'); ?>" alt="LOGO" height="60" width="60">
   </div> 
      <!-- Navbar 
       //$this->render('/includes/header') -->
@@ -152,12 +158,12 @@ div.sidecontent {
 
 
     <!-- Content Wrapper. Contains page content -->
-  <div class="container-fluid bg-white">
+  <div class="container-fluid bg-white mt-0 p-0">
     <!-- Content Header (Page header) -->
     <div class="content-header p-1 show-sm">
       <div class="container-fluid">
         <div class="row mb-2" style="font-size:17px; background-color:#f1f1f1">
-          <div class="col-sm-12 text-secondary font-weight-bold " style="font-family:'Times New Roman'; font-size:17px; background-color:#f0f0f3">
+          <div class="col-sm-12 text-secondary font-weight-bold " style="font-size:17px; background-color:#f0f0f3">
           <i class="fa fa-bars mt-2 tog" data-widget="pushmenu" href="#" role="button"></i>
            <?= Page::widget([
              'pageTitle'=>isset($this->params['pageTitle'])? $this->params['pageTitle']: ''
@@ -167,23 +173,7 @@ div.sidecontent {
           <div class="navbar float-right navbar-expand p-0 ">
             [ <?=array_keys(Yii::$app->authManager->getAssignments(yii::$app->user->id))[0];?> ]
 <ul class="navbar-nav ml-auto">
-<li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell text-success"></i>
-          <span class="badge badge-warning navbar-badge">15</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header">15 Notifications</span>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-envelope mr-2"></i> 4 new messages
-            <span class="float-right text-muted text-sm">3 mins</span>
-          </a>
-       
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-        </div>
-      </li>
+
       <li class="nav-item dropdown">
         <a class="nav-link responsivetext" data-toggle="dropdown" href="#" id="username"><span class="fas fa-user text-success"></span>
         </a>
@@ -256,7 +246,7 @@ div.sidecontent {
       </div>
 
     <!-- Main content -->
-    <section class="content mt-3 mycont">
+    <section class="content mt-0 mycont" style="font-family:regulartext!important">
       <?= $content ?>
       </section>
     

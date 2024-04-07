@@ -7,15 +7,12 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 
-$this->params["pageTitle"]="Finance dashboard";
+$this->params["pageTitle"]="Finance";
 ?>
 <div class="container-fluid mt-3 meet">
         
 <div class="card shadow-lg">
-<div class="card-header p-1 bg-success text-sm">
-     
- </div>
-    <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
+    <div class="card-body text-center" style="font-size:12px">
     <form class="float-left" method="post" action="/finance/switch-financial-year">
       <div class="form-group row">
         <div class="col-sm-10">
@@ -54,42 +51,42 @@ $this->params["pageTitle"]="Finance dashboard";
          <i class="fa fa-money"></i> Financial Overview 
     </div>
         
-        <div class="card-body text-center" style="font-family:lucida sans serif;font-size:12px">
+        <div class="card-body text-center " style="font-size:13px">
             
              <div class="row">
             
               <div class="col">
-                <span class="text-bold ">Total Revenue</span><br>
-                <?=$annualbudget->totalRevenue()?>
+                <span class="heading">Tot. Revenue</span><br>
+                <span class="money" ><?=yii::$app->MoneyFormatter->format($annualbudget->totalRevenue())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Member Contributions</span><br>
-                <?=$annualbudget->totalIncome()?>
+                <span class="heading">Tot. Contributions</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->totalIncome())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Other Incomes</span><br>
-                <?=$annualbudget->otherIncomeTotal()?>
+                <span class="heading">Other Incomes</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->otherIncomeTotal())?></span>
               </div>
               <div class="col">
-                <span class="text-bold">Branch Returns</span><br>
-                <?=-$annualbudget->totalReturns()?>
+                <span class="heading">Branch Returns</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format(($annualbudget->totalReturns()))?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">HQ Revenue</span><br>
-                <?=$annualbudget->HQrevenue()?>
+                <span class="heading">HQ Revenue</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->HQrevenue())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Unallocated</span><br>
-                <?=$annualbudget->unallocated()?>
+                <span class="heading">Unallocated</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->unallocated())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Total Expenses</span><br>
-                <?=-$annualbudget->getTotalExpenses()?>
+                <span class="heading">Tot. Expenses</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format((-$annualbudget->getTotalExpenses()))?></span>
               </div>
            
               <div class="col">
-                <span class="text-bold ">Balance</span><br>
-                <?=$annualbudget->getBalance()?>
+                <span class="heading">Balance</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->getBalance())?></span>
               </div>
            
              </div>
@@ -106,9 +103,9 @@ $this->params["pageTitle"]="Finance dashboard";
                
     </div>
         
-        <div class="card-body " style="font-family:lucida sans serif;font-size:11.5px">
+        <div class="card-body " style="font-size:13px">
             
-                    <div class="row text-bold mb-2"><div class="col-sm-1">#</div><div class="col">Branch</div><div class="col">Projection</div><div class="col">Total Revenue</div><div class="col">Deficit</div><div class="col">Total Expenses</div><div class="col">Balance</div><div class="col"></div></div>
+                    <div class="row mb-2 heading"><div class="col-sm-1">#</div><div class="col">Branch</div><div class="col">Projection</div><div class="col">Total Revenue</div><div class="col">Deficit</div><div class="col">Total Expenses</div><div class="col">Balance</div><div class="col"></div></div>
                     
                         <?php
                         $count=0;
@@ -117,13 +114,13 @@ $this->params["pageTitle"]="Finance dashboard";
                           foreach($branchbudgets as $bbudget)
                           {
                         ?>
-                          <div class="row"><div class="col-sm-1"><?=++$count?></div>
+                          <div class="row money"><div class="col-sm-1"><?=++$count?></div>
                           <div class="col"><?=$bbudget->branch0->branch_short?></div>
-                          <div class="col"><?=$bbudget->projected()?></div>
-                          <div class="col"><?=$bbudget->branchTotalRevenue()?></div>
-                          <div class="col"><?=$bbudget->deficit()?></div>
-                          <div class="col"><?=$bbudget->getTotalExpenses()?></div>
-                          <div class="col"><?=$bbudget->getBalance()?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->projected())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->branchTotalRevenue())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->deficit())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->getTotalExpenses())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->getBalance())?></div>
                           <div class="col">
                           <a href="<?=Url::to(['/finance/branch-finance','budget'=>urlencode(base64_encode($bbudget->bbID))])?>" data-toggle="tooltip" data-title="Go To Branch Budget"><i class="fa fa-arrow-circle-right text-success" style="font-size:20px"></i></a>
                           </div></div>

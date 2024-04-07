@@ -2,8 +2,7 @@
 use yii\helpers\Url;
 $user=yii::$app->user;
 ?>
-<div class="sidebar1 mt-2 d-none d-md-block">
-  <div class="bg-success row bk" style="height:0.5%"></div>
+<div class="sidebar1 d-none d-md-block text-lg" style="font-family:regulartext">
   <a href="<?=$user->can('ADMIN')?Url::to('/admin/dashboard'):Url::to('/member/dashboard')?>" class="menuitem dashboard"><i class=" nav-icon fas fa-th"></i> <span class="mn">Dashboard</span></a>
   <?php if($user->can("TREASURER HQ") || $user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("TREASURER BR") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")){?>
   <a href="<?=Url::to('/finance/finance')?>" class="finance"> <i class="nav-icon fas fa-coins"></i> <span class="mn">Finance</span></a>
