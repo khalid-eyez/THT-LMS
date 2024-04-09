@@ -49,7 +49,7 @@ $this->params["pageTitle"]="Finance dashboard";
       </div>
       </div>
     </form> 
-    <span class="text-lg text-success"><?=$annualbudget->budget->year->title?> [<?=$annualbudget->branch0->branch_short?>]</span>
+    <span class="text-lg text-success">[ <?=$annualbudget->branch0->branch_short?> ]</span>
     <?php if(!$annualbudget->budget->isOpen()){?>
       <span class="text-danger">Closed</span>
     <?php }else{ ?>
@@ -134,7 +134,7 @@ $this->params["pageTitle"]="Finance dashboard";
                           foreach($projections as $projection)
                           {
                         ?>
-                          <div class="row money"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$projection->budgetItem?></div><div class="col"><?=$projection->projected_amount?></div><div class="col"><?=$projection->allocated()?></div><div class="col"><?=$projection->deficit()?></div><div class="col"><?=$projection->balance()?></div><div class="col"><?=$projection->getTotalExpenses()?></div>
+                          <div class="row money"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$projection->budgetItem?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->projected_amount)?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->allocated())?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->deficit())?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->balance())?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->getTotalExpenses())?></div>
                           <div class="col">
                           <a href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Budget Item"><i class="fa fa-arrow-right fa-1x btn btn-success p-1 btn-sm m-1 text-sm" style="font-size:20px"></i></a>
                           <a href="#" class="bdel" id=<?=$projection->projID?> data-toggle="tooltip" data-title="Delete Budget Item"><i class="fa fa-trash btn btn-danger btn-sm p-1 "></i></a>

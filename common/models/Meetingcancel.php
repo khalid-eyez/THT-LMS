@@ -17,7 +17,7 @@ use Yii;
  * @property string $status
  *
  * @property Meeting $meeting
- * @property Member $member
+ * @property User $user
  * @property Files $file
  */
 class Meetingcancel extends \yii\db\ActiveRecord
@@ -42,7 +42,7 @@ class Meetingcancel extends \yii\db\ActiveRecord
             [['type', 'status'], 'string', 'max' => 25],
             [['reason'], 'string', 'max' => 255],
             [['meetingID'], 'exist', 'skipOnError' => true, 'targetClass' => Meeting::className(), 'targetAttribute' => ['meetingID' => 'meetingID']],
-            [['memberID'], 'exist', 'skipOnError' => true, 'targetClass' => Member::className(), 'targetAttribute' => ['memberID' => 'memberID']],
+            [['memberID'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['memberID' => 'id']],
             [['fileID'], 'exist', 'skipOnError' => true, 'targetClass' => Files::className(), 'targetAttribute' => ['fileID' => 'fileID']],
         ];
     }
@@ -120,9 +120,9 @@ class Meetingcancel extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getMember()
+    public function getUser()
     {
-        return $this->hasOne(Member::className(), ['memberID' => 'memberID']);
+        return $this->hasOne(User::className(), ['id' => 'memberID']);
     }
 
     /**
@@ -157,7 +157,7 @@ class Meetingcancel extends \yii\db\ActiveRecord
     }
     public function uncancelParticipation($meeting,$member)
     {
-        $member=yii::$app->user->identity->member->memberID;
+        $member=yii::$app->user->identity->id;
         $cancel=$this->find()->where(['meetingID'=>$meeting,'memberID'=>$member,'type'=>'participationCancel'])->one();
 
         if($cancel->delete())

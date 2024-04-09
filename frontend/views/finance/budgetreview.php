@@ -11,19 +11,21 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
 <div class="container-fluid mt-3 meet">
         
 <div class="card shadow">
-<div class="card-header p-1  text-md  bg-success text-center pl-3">
+<div class="card-header p-1 bg-success text-center pl-3">
    <div class="row">
-      <div class="col-sm-6"><span class="float-left"><i class="fa fa-edit"></i> Projections Review</span></div>
-      <div class="col-sm-6">
+      <div class="col-sm-3"><span class="float-left"><i class="fa fa-edit"></i> Projections Review</span></div>
+      <div class="col-sm-9">
          <div class="row">
-         <div class="col-sm-6">
+         <div class="col-sm-5">
          <strong>Current Projection: </strong>
           <span class="cproj"> <?=$budget->projected()?></span> TZS
          </div>
          <div class="col-sm-6">
          <strong>Resulting Projection:</strong>
           <span class="rproj">0</span> TZS
-          <a href="#" data-toggle="modal" data-target="#budgetitemmodal"><i class="fa fa-plus-circle btn btn-default p-1 float-right mr-2" data-toggle="tooltip" data-title="Add New Budget Item"></i></a>
+         </div>
+         <div class="col-sm-1">
+         <a href="#" data-toggle="modal" data-target="#budgetitemmodal"><i class="fa fa-plus-circle btn btn-default p-1 float-right mr-2" data-toggle="tooltip" data-title="Add New Budget Item"></i></a>
          </div>
          </div>
 
@@ -31,15 +33,15 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
 
    </div>
 </div>
-<div class="card-body">
-<div class="row mb-1 text-sm p-0">
+<div class="card-body money">
+<div class="row mb-1  p-0">
       <div class="col-sm-6 p-1 pl-3 p-0" style="background-color:#eef">
-     <div class="row text-bold text-muted p-0">
+     <div class="row text-bold p-0">
      <span class="col-sm-4 border-right border-white">Item</span>
-      <span class="col border-right border-white">projected</span>
-      <span class="col border-right border-white">allocated</span>
-      <span class="col border-right border-white">deficit</span>
-      <span class="col border-right border-white">balance</span>
+      <span class="col border-right border-white">Projected</span>
+      <span class="col border-right border-white">Allocated</span>
+      <span class="col border-right border-white">Deficit</span>
+      <span class="col border-right border-white">Balance</span>
    </div>
     </div>
     <div class="col-sm-6 pl-3">
@@ -54,10 +56,10 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
     foreach($projections as $projection)
     {
    ?>
-   <div class="row mb-1 text-sm">
+   <div class="row mb-1 ">
       <div class="col-sm-6 p-1 pl-3 " style="background-color:#dde">
       <div class="row">
-   <a class="col-sm-4 text-bold " href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Item Structure"><?=$projection->budgetItem?></a>
+   <a class="col-sm-4 heading  text-dark" href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Item Structure"><i class="fa fa-link"></i> <?=$projection->budgetItem?></a>
       <span class="col"><?=$projection->projected_amount?></span>
       <span class="col"><?=$projection->allocated()?></span>
       <span class="col"><?=$projection->deficit()?></span>
@@ -73,7 +75,7 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
     }
 
    ?>
-   <button type="submit" class="btn btn-success btn-sm float-right mt-3"><i class="fa fa-save"> Save</i></button>
+   <button type="submit" class="btn btn-success btn-sm float-right mt-3"><i class="fa fa-save"></i> Save</button>
    <?php $projform=Activeform::end() ?>
 </div>
 </div>
@@ -97,10 +99,10 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
 
    </div>
 </div>
-<div class="card-body">
-<div class="row mb-1 text-sm p-0">
+<div class="card-body money">
+<div class="row mb-1  p-0">
       <div class="col-sm-6 p-1 pl-3 p-0" style="background-color:#eef">
-     <div class="row text-bold text-muted p-0">
+     <div class="row text-bold  p-0">
      <span class="col-sm-4 border-right border-white">Item</span>
       <span class="col border-right border-white">projected</span>
       <span class="col border-right border-white">allocated</span>
@@ -120,10 +122,10 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
     foreach($projections as $projection)
     {
    ?>
-   <div class="row mb-1 text-sm">
+   <div class="row mb-1 ">
       <div class="col-sm-6 p-1 pl-3 " style="background-color:#dde">
       <div class="row">
-      <a class="col-sm-4 text-bold " href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Item Structure"><?=$projection->budgetItem?></a>
+      <a class="col-sm-4 text-bold text-dark" href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Item Structure"><i class="fa fa-link"></i> <?=$projection->budgetItem?></a>
       <span class="col"><?=$projection->projected_amount?></span>
       <span class="col"><?=$projection->allocated()?></span>
       <span class="col"><?=$projection->deficit()?></span>
@@ -131,7 +133,7 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
    </div>
     </div>
     <div class="col-sm-6">
-    <input type="text" name=<?=$projection->projID?> class="form-control incput" value=<?=abs($projection->deficit())?> style="border:none; background-color:#eef" placeholder="Amount"></input>
+    <input type="text" name=<?=$projection->projID?> class="form-control incput " value=<?=abs($projection->deficit())?> style="border:none; background-color:#eef" placeholder="Amount"></input>
     </div>
     </div>
 
@@ -139,7 +141,7 @@ $this->params["pageTitle"]="Branch Budget Review [ ".$budget->budget->year->star
     }
 
    ?>
-   <button type="submit" class="btn btn-success btn-sm float-right mt-3"><i class="fa fa-save"> Save</i></button>
+   <button type="submit" class="btn btn-success btn-sm float-right mt-3"><i class="fa fa-save"></i> Save</button>
    <?php $form=Activeform::end() ?>
 </div>
 </div>

@@ -87,7 +87,7 @@ div.sidecontent {
   margin-left: 192px;
   padding-left: 15px;
   padding-right: 2px;
-  height: 600px;
+  height: 587px;
  
   overflow:auto;
 }

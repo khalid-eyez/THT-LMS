@@ -313,4 +313,69 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->member!=null;
     }
 
+    public function hasConfirmed($meeting)
+    {
+        return (new MeetingConfirmations)->isConfirmed($this->id,$meeting);
+    }
+    public function hasCancelledParticipation($meeting)
+    {
+        return (new Meetingcancel)->isParticipationCancelled($meeting,$this->id);
+    }
+    public function hasAttended($meeting)
+    {
+        return (new Meetingattendance)->isAttended($this->id,$meeting); 
+    }
+    public function getParticipantStatus($meeting)
+    {
+   
+      if($this->hasAttended($meeting) && $this->hasConfirmed($meeting))
+      {
+         return "Attended";
+      }
+      else if($this->hasConfirmed($meeting))
+      {
+           return "Confirmed";
+      }
+      else if($this->hasAttended($meeting))
+      {
+        return "Attended";
+      }
+      else if($this->hasCancelledParticipation($meeting))
+      {
+        return "Cancelled";
+      }
+      else
+      {
+        
+      
+        if($this->canView($meeting))
+        {
+            return "Invited";
+        }
+        else
+        {
+            return "Not invited";
+        }
+       
+      }
+    }
+    public function canView($meeting)
+    {
+        $meeting=Meeting::findOne($meeting);
+        $userid=$this->id;
+        $user=User::findIdentity($userid);
+        $role=array_keys(Yii::$app->authManager->getAssignments($userid))[0];
+        if(($meeting->isParticipant($role) && $meeting->canParticipate($userid)) || $meeting->isInvited($this->id))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isMemberOf($branch)
+    {
+        return $this->getBranch()->branchID==$branch;
+    }
+
 }

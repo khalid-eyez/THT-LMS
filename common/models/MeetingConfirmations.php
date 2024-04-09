@@ -13,7 +13,7 @@ use Yii;
  * @property string|null $dateConfirmed
  *
  * @property Meeting $meeting
- * @property Member $member
+ * @property User $user
  */
 class MeetingConfirmations extends \yii\db\ActiveRecord
 {
@@ -34,7 +34,7 @@ class MeetingConfirmations extends \yii\db\ActiveRecord
             [['meetingID', 'memberID'], 'integer'],
             [['dateConfirmed'], 'safe'],
             [['meetingID'], 'exist', 'skipOnError' => true, 'targetClass' => Meeting::className(), 'targetAttribute' => ['meetingID' => 'meetingID']],
-            [['memberID'], 'exist', 'skipOnError' => true, 'targetClass' => Member::className(), 'targetAttribute' => ['memberID' => 'memberID']],
+            [['memberID'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['memberID' => 'id']],
         ];
     }
 
@@ -73,9 +73,9 @@ class MeetingConfirmations extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getMember()
+    public function getUser()
     {
-        return $this->hasOne(Member::className(), ['memberID' => 'memberID']);
+        return $this->hasOne(User::className(), ['id' => 'memberID']);
     }
     public function isConfirmed($memberID,$meeting)
     {
@@ -88,7 +88,7 @@ class MeetingConfirmations extends \yii\db\ActiveRecord
         {
           throw new \Exception("Could not confirm participation of expired meeting !");
         }
-        $member=yii::$app->user->identity->member->memberID;
+        $member=yii::$app->user->identity->id;
          if(!$this->isConfirmed($member,$meeting))
          {
             $this->memberID=$member;

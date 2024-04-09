@@ -45,15 +45,15 @@ $this->params["pageTitle"]="Label Documents";
             return false;
           }
           ?>
-<div class="card shadow-lg">
-    <div class="card-header p-1 bg-success text-sm">
+<div class="card shadow m-2 ml-3">
+    <div class="card-header p-1 bg-success">
  
-          <span class="ml-2"><?=$label->prefix?> - <?=$label->getTitle()?></span>       
+          <span class="ml-2"><i class="fa fa-folder"></i> <?=$label->prefix?> - <?=$label->getTitle()?></span>       
     </div>
         
-        <div class="card-body filefolder" style="font-family:lucida sans serif;font-size:12px">
+        <div class="card-body filefolder money" style="">
             
-                    <div class="row text-bold text-md "><div class="col-sm-1">#</div><div class="col">Reference</div><div class="col">Title</div><div class="col">Size</div><div class="col">Upload Date</div><div class="col-sm-1"></div></div>
+                    <div class="row heading"><div class="col-sm-1">#</div><div class="col">Reference</div><div class="col">Title</div><div class="col">Size</div><div class="col">Upload Date</div><div class="col-sm-1"></div></div>
                     
                         <?php
                         $count=0;
@@ -66,7 +66,7 @@ $this->params["pageTitle"]="Label Documents";
                           <div class="col-sm-1 text-muted" style="font-family:lucida sans serif;font-size:11px">
                           <a href="<?=Url::to(['/filecabinet/download','file'=>urlencode(base64_encode($doc->fileID))])?>" data-toggle="tooltip" data-title="Download Document"><i class="fa fa-download text-muted"></i></a>
                           <a href="<?=Url::to(['/filecabinet/update-doc','doc'=>urlencode(base64_encode($doc->docID))])?>" data-toggle="tooltip" data-title="Update Document"><i class="fa fa-edit m-1 text-muted"></i></a>
-                           <a href="#" id=<?=$doc->docID?> data-toggle="tooltip" data-title="Delete Document" class="docdel"><i class="fa fa-trash text-muted"></i></a>
+                           <a href="#" id=<?=$doc->docID?> data-toggle="tooltip" data-title="Delete Document" class="docdel"><i class="fa fa-trash text-danger"></i></a>
                           </div>
                         </div>
                         <?php
@@ -104,8 +104,6 @@ $script = <<<JS
   text: "You won't be able to revert to this !",
   icon: 'question',
   showCancelButton: true,
-  confirmButtonColor: "green",
-
   confirmButtonText: 'Delete'
 }).then((result) => {
   if (result.isConfirmed) {

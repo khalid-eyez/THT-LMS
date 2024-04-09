@@ -2,7 +2,7 @@
 
 namespace common\models;
 use yii\helpers\ArrayHelper;
-
+use yii\helpers\Html;
 use Yii;
 
 /**
@@ -20,7 +20,7 @@ use Yii;
  * @property int|null $duration
  * @property string|null $status
  *
- * @property Member $announcedBy0
+ * @property User $announcedBy0
  * @property Meetingnames $type0
  * @property Branch $announcedFrom0
  * @property MeetingConfirmations[] $meetingConfirmations
@@ -58,7 +58,7 @@ class Meeting extends \yii\db\ActiveRecord
             [['status'], 'string', 'max' => 20],
             [['description'], 'string', 'max' => 255],
             [['venue'], 'string', 'max' => 100],
-            [['announcedBy'], 'exist', 'skipOnError' => true, 'targetClass' => Member::className(), 'targetAttribute' => ['announcedBy' => 'memberID']],
+            [['announcedBy'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['announcedBy' => 'id']],
             [['type'], 'exist', 'skipOnError' => true, 'targetClass' => Meetingnames::className(), 'targetAttribute' => ['type' => 'typeID']],
             [['announcedFrom'], 'exist', 'skipOnError' => true, 'targetClass' => Branch::className(), 'targetAttribute' => ['announcedFrom' => 'branchID']],
         ];
@@ -86,8 +86,8 @@ class Meeting extends \yii\db\ActiveRecord
         if($insert==true)
         {
         $this->meetingTime=$this->date." ".$this->time;
-        $this->announcedBy=yii::$app->user->identity->member->memberID;
-        $this->announcedFrom=yii::$app->user->identity->member->branch;
+        $this->announcedBy=yii::$app->user->identity->id;
+        $this->announcedFrom=yii::$app->user->identity->getBranch()->branchID;
         date_default_timezone_set('Africa/Dar_es_Salaam');
         $this->dateAnnounced=date('Y-m-d H:i:s');
         $this->status="Upcoming"; 
@@ -167,7 +167,7 @@ class Meeting extends \yii\db\ActiveRecord
      */
     public function getAnnouncedBy0()
     {
-        return $this->hasOne(Member::className(), ['memberID' => 'announcedBy']);
+        return $this->hasOne(User::className(), ['id' => 'announcedBy']);
     }
 
     /**
@@ -255,7 +255,7 @@ class Meeting extends \yii\db\ActiveRecord
         $name=$this->type0->name;
         if($name=="MEMBERS' GENERAL MEETING -BR" || $name=="BRANCH GENERAL COUNCIL MEETING -BR" || $name=="BRANCH WOMEN'S COMMITTEE MEETING -BR")
         {
-            return (User::findIdentity($user))->member->isMemberOf($this->announcedFrom0->branchID);
+            return (User::findIdentity($user))->isMemberOf($this->announcedFrom0->branchID);
         }
         return true;
     }
@@ -309,13 +309,18 @@ class Meeting extends \yii\db\ActiveRecord
             foreach($assignedpart as $part)
             {
                 if($part==null){continue;}
-                array_push($participants,(User::findIdentity($part->user_id))->member);
+                if(User::findIdentity($part->user_id)==null)
+                {
+                   continue;
+                }
+              
+                array_push($participants,(User::findIdentity($part->user_id)));
             }
             
         }
         foreach($invited as $index2=>$invitee)
         {
-            array_push($participants,$invitee->member);
+            array_push($participants,$invitee->user);
         }
 
       return $participants;
@@ -323,7 +328,7 @@ class Meeting extends \yii\db\ActiveRecord
 
     public function getParticipantStatus($member)
     {
-      $member=Member::findOne($member);
+      $member=User::findOne($member);
       $meeting=$this->meetingID;
       if($member->hasAttended($meeting) && $member->hasConfirmed($meeting))
       {
@@ -359,7 +364,7 @@ class Meeting extends \yii\db\ActiveRecord
 
         foreach($members as $index=>$member)
         {
-          if($member->memberID==yii::$app->user->identity->member->memberID)
+          if($member->userID==yii::$app->user->identity->id)
           {
             unset($members[$index]);
           }
@@ -369,7 +374,7 @@ class Meeting extends \yii\db\ActiveRecord
     }
     public function getCaller()
     {
-        return array_keys(Yii::$app->authManager->getAssignments($this->announcedBy0->userID))[0];
+        return array_keys(Yii::$app->authManager->getAssignments($this->announcedBy0->id))[0];
     }
     public function updateAttendance()
     {
@@ -422,7 +427,7 @@ class Meeting extends \yii\db\ActiveRecord
             throw new \Exception("Could not sign attendance! Attendance is not accessible before the meeting date !");
         }
         $attendancesheet=new Meetingattendance;
-        $attendancesheet->memberID=yii::$app->user->identity->member->memberID;
+        $attendancesheet->memberID=yii::$app->user->identity->id;
         $attendancesheet->meetingID=$this->meetingID;
 
         if($attendancesheet->save())
@@ -494,22 +499,22 @@ class Meeting extends \yii\db\ActiveRecord
 
     public function isAttended()
     {
-        $memberID=yii::$app->user->identity->member->memberID;
+        $memberID=yii::$app->user->identity->id;
         return (new Meetingattendance)->isAttended($memberID,$this->meetingID);
     }
     public function isUserCancelled()
     {
-        $memberID=yii::$app->user->identity->member->memberID;
+        $memberID=yii::$app->user->identity->id;
         return (new Meetingcancel)->isParticipationCancelled($this->meetingID,$memberID);
     }
     public function unConfirmParticipation()
     {
-        $member=yii::$app->user->identity->member->memberID;
+        $member=yii::$app->user->identity->id;
         return (new MeetingConfirmations)->unConfirmParticipation($member,$this->meetingID);
     }
     public function isConfirmed()
     {
-        $member=yii::$app->user->identity->member->memberID;
+        $member=yii::$app->user->identity->id;
         return (new MeetingConfirmations)->isConfirmed($member,$this->meetingID);
     }
     public function getParticipationCancel($member)

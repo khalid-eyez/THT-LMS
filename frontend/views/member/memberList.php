@@ -49,22 +49,9 @@ $user=yii::$app->user;
             <td><?= $member->branch()?></td>
             <td>
             <a href="<?=Url::to(['/member/update','id'=>urlencode(base64_encode($member->memberID))])?>" data-toggle="tooltip" data-title="Update User" class="mr-1"><i class="fas fa-edit"></i></a>  
-            <?php
-            if($member->user!=null && $member->user->isLocked())
-            {
-            ?>
-            <a href="<?=Url::to(['/member/unlock','id'=>urlencode(base64_encode($member->userID))])?>"  data-toggle="tooltip" data-title="Reactivate/Unlock User" class="mr-1"><i class="fa fa-unlock"></i></a>  
-            <?php
-            }
-            else
-            {
-            ?>
-            <a href="<?=Url::to(['/member/lock','id'=> urlencode(base64_encode($member->userID))])?>"  data-toggle="tooltip" data-title="Lock User" class="mr-1"><i class="fas fa-user-lock"></i></a>
-            <?php
-            }
-            ?>
-             <?php if($member->userID!=yii::$app->user->identity->id){?>
-            <a href="#"  id=<?=$member->memberID?> data-toggle="tooltip" data-title="Delete User" class="mr-1  userdel"><i class="fa fa-trash"></i></a> 
+       
+             <?php if($member->userID!=yii::$app->user->identity->id && !yii::$app->user->identity->getBranch()->isHQ() ){?>
+            <a href="#"  id=<?=$member->memberID?> data-toggle="tooltip" data-title="Delete User" class="mr-1  userdel"><i class="fa fa-trash text-danger"></i></a> 
           <?php } ?>
             </td>
             </tr>

@@ -12,23 +12,22 @@ use yii\widgets\Pjax;
 AppAsset::register($this);
 $this->params['pageTitle']="Upload Documents";
 ?>
-
-
-    <div class="modal-content">
-     <div class="modal-header bg-success pl-4 p-1"><div class="modal-title ml-1"><i class='fa fa-upload'></i> Upload Document</div></div>
-      <div class="modal-body pl-4 pr-4">
-    
+  <div class="modal-dialog modal-lg mt-0 p-0" role="document">
+    <div class="modal-content m-0 p-0">
+     <div class="modal-header bg-success pl-4 p-1"><div class="ml-1"><i class='fa fa-upload'></i> Upload Document</div></div>
+      <div class="modal-body">
+    <div class="container p-0 m-0" style="">
       <?php 
        Pjax::begin(['id'=>'docform','timeout'=>'3000']);
       $form = ActiveForm::begin(['method'=>'post','options' => ['data-pjax' => true,'enctype'=>'multipart/form-data']]);
       ?>
-        <div class="row">
-        <div class="col-md-12">
-        <?= $form->field($model, 'title')->textInput(['class'=>'form-control form-control-sm', 'placeholder'=>'Document Title'])->label(false)?>
+        <div class="row mb-0 p-0">
+        <div class="col-sm-12 m-0">
+        <?= $form->field($model, 'title')->textInput(['class'=>'form-control', 'placeholder'=>'Document Title'])->label(false)?>
         </div> 
         </div>
-      <div class="row">
-      <div class="col-md-12 p-0">
+      <div class="row p-0 m-0">
+      <div class="col-sm-12 p-0 m-0">
       <?php
    Pjax::begin(['id'=>'docloader1']);
    ?>
@@ -69,11 +68,10 @@ $form->field($model, 'file')->widget(FileInput::classname(),[
         ?>
         
 
-</div>
+</div></div></div></div>
         </div>
     </div>
     </div>
-  </div>
 <?php
 $script = <<<JS
     $('document').ready(function(){

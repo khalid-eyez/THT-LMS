@@ -12,25 +12,25 @@ $this->params["pageTitle"]="Budget Item Allocations";
         
 <div class="card shadow-lg">
     <div class="card-header p-1 bg-success text-sm text-center">
-         <span class="ml-2 text-bold"><?=ucfirst($item->budgetItem)?> (Allocations)</span>
+         <span class="ml-2 text-bold"><i class="fas fa-wallet"></i> <?=ucfirst($item->budgetItem)?> (Allocations)</span>
     </div>
         
-        <div class="card-body text-center text-sm" style="font-family:lucida sans serif;">
+        <div class="card-body text-center money" style="font-size:13px">
             
              <div class="row">
               <div class="col">
                 <span class="text-bold ">Allocated</span><br>
-                <?=$item->allocated()?>
+                <?=yii::$app->MoneyFormatter->format($item->allocated())?>
               </div>
               <div class="col">
                 <span class="text-bold ">Deficit</span><br>
-                <?=$item->deficit()?>
+                <?=yii::$app->MoneyFormatter->format($item->deficit())?>
               </div>
 
              </div>
 
         </div>
-        <div class="card-footer text-sm pl-4 border-top" style="background-color:#eef">
+        <div class="card-footer  pl-4 border-top money" style="background-color:#eef;font-size:13px">
         <div class="row text-bold border-bottom">
             <div class="col-sm-1">#</div>
             <div class="col">Amount</div>
@@ -42,9 +42,9 @@ $this->params["pageTitle"]="Budget Item Allocations";
            foreach($receivables as $receivable)
            {
          ?>
-              <div class="row border-bottom ">
+              <div class="row border-bottom money" >
             <div class="col-sm-1"><?=++$count?></div>
-            <div class="col"><?=$receivable->receivedamount?></div>
+            <div class="col"><?=yii::$app->MoneyFormatter->format($receivable->receivedamount)?></div>
             <div class="col"><?=date_format(date_create($receivable->datereceived),"d-m-Y H:i:s")?></div>
           
             

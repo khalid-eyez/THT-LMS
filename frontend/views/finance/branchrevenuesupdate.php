@@ -15,7 +15,7 @@ $this->params["pageTitle"]="Branch Monthly Revenues Update";
    <div class="row">
       <div class="col-sm-6 text-bold pl-3"><i class="fa fa-building"></i> Branch Returns</div>
       <div class="col-sm-6 text-center">
-         <div class="row">
+         <div class="row ">
          <div class="col-sm-6">
          <strong>Total: </strong>
           <span class="inc"> <?=$income->branchReturnsTotal()?></span> TZS

@@ -13,7 +13,7 @@ use Yii;
  * @property string|null $dateInvited
  *
  * @property Meeting $meeting
- * @property Member $member
+ * @property User $user
  */
 class Meetinginvitees extends \yii\db\ActiveRecord
 {
@@ -34,7 +34,7 @@ class Meetinginvitees extends \yii\db\ActiveRecord
             [['meetingID', 'memberID'], 'integer'],
             [['dateInvited'], 'safe'],
             [['meetingID'], 'exist', 'skipOnError' => true, 'targetClass' => Meeting::className(), 'targetAttribute' => ['meetingID' => 'meetingID']],
-            [['memberID'], 'exist', 'skipOnError' => true, 'targetClass' => Member::className(), 'targetAttribute' => ['memberID' => 'memberID']],
+            [['memberID'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['memberID' => 'id']],
         ];
     }
 
@@ -66,17 +66,18 @@ class Meetinginvitees extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getMember()
+    public function getUser()
     {
-        return $this->hasOne(Member::className(), ['memberID' => 'memberID']);
+        return $this->hasOne(User::className(), ['id' => 'memberID']);
     }
     public function getMemberDetails()
     {
-        return $this->member->fullName()." -".$this->member->getRank();
+        $member=$this->user->member!=null?$this->user->member:null;
+        return ($member!=null)?$member->fullName()." -".$member->getRank():$member->getRank();
     }
     public function getBranchName()
     {
-        return $this->member->branch0->branchName;
+        return $this->user->member->branch0->branchName;
     }
     public function inviteeExists()
     {

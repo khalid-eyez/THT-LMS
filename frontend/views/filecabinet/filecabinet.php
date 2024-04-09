@@ -55,7 +55,8 @@ $this->params["pageTitle"]="File Cabinet";
            {
 
           ?>
-<div  class="card shadow-lg col-sm-4">
+          <div class="col-sm-4">
+<div  class="card shadow-lg ">
     <div class="card-header p-1 bg-success text-sm"> 
       <i class="fa fa-folder-open"></i> <?=strtoupper($label->prefix)?> 
       <span class="float-right" style="font-size:11px">
@@ -76,7 +77,7 @@ $this->params["pageTitle"]="File Cabinet";
   </span>
   
    </div>
-           </div>
+           </div></div>
 <?php } ?>
            </div>
               <?=$this->render('create',['model'=>$model])?>     
@@ -103,7 +104,7 @@ $script = <<<JS
   text: "You won't be able to revert to this ! And deleted documents are unrecoverable !",
   icon: 'question',
   showCancelButton: true,
-  confirmButtonColor: "green",
+
 
   confirmButtonText: 'Delete'
 }).then((result) => {

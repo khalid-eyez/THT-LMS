@@ -53,7 +53,7 @@ class FilecabinetController extends Controller
       try
       {
       $model=new Referenceprefixes();
-      $model->branch=yii::$app->user->identity->member->branch;
+      $model->branch=yii::$app->user->identity->getBranch()->branchID;
       $model->type="custom";
       if($model->load(yii::$app->request->post()) && $model->save())
       {

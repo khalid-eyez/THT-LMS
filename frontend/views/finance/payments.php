@@ -27,7 +27,7 @@ $this->params["pageTitle"]="Payments";
             <span  class="col">Expenses</span >
             <span  class="col">Available budget</span >
          </div>
-            <div class="row text-center text-sm money">
+            <div class="row text-center money">
             <span  class="col"><?=yii::$app->MoneyFormatter->format($item->unitcost)?></span>
             <span  class="col"><?=$item->availableunits()?> (<?=$item->unit?>)</span>
             <span  class="col"><?=yii::$app->MoneyFormatter->format($item->totalcost)?> </span>
@@ -41,7 +41,7 @@ $this->params["pageTitle"]="Payments";
         <div class="row text-bold text-sm text-center">
             <span  class="col text-success mb-3">Payment Transactions</span>
          </div>
-        <div class="row heading text-sm border-bottom">
+        <div class="row money text-bold border-bottom" style="font-size:11px">
             <span  class="col">Reference</span >
             <span  class="col">Date & Time</span >
             <span  class="col">Quantity</span >
@@ -55,7 +55,7 @@ $this->params["pageTitle"]="Payments";
             
             
            ?>
-            <div class="row money text-sm border-bottom">
+            <div class="row money border-bottom">
             <span  class="col"><?=$payable->reference()?></span >
             <span  class="col"><?=date_format(date_create($payable->dateapplied),"d-m-Y H:i:s")?></span >
             <span  class="col"><?=$payable->quantity?></span >

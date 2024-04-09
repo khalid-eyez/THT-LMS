@@ -22,3 +22,10 @@ $this->params['pageTitle']="Update Branch";
 </div>
     </div>
     </div>
+    <?php
+$script = <<<JS
+    $('.branches').addClass('active');
+   
+JS;
+$this->registerJs($script);
+?>

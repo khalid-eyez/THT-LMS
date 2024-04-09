@@ -151,7 +151,7 @@ class Referenceprefixes extends \yii\db\ActiveRecord
 
     public function getBranchLabels()
     {
-        $branch=yii::$app->user->identity->member->branch;
+        $branch=yii::$app->user->identity->getBranch()->branchID;
         $labels=$this->find()->where(['branch'=>$branch])->all();
 
         return $labels;

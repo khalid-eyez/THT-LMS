@@ -11,7 +11,7 @@ $this->params["pageTitle"]="Branch Budget Allocations";
 <div class="container-fluid mt-3 meet">
         
 <div class="card shadow-lg">
-<div class="card-header p-1  text-md  bg-success text-center">
+<div class="card-header p-1 text-md  bg-success text-center money">
    <div class="row">
       <div class="col-sm-6"></div>
       <div class="col-sm-6">
@@ -31,9 +31,9 @@ $this->params["pageTitle"]="Branch Budget Allocations";
    </div>
 </div>
 <div class="card-body">
-<div class="row mb-1 text-sm p-0">
+<div class="row mb-1 p-0">
       <div class="col-sm-6 p-1 pl-3 p-0" style="background-color:#eef">
-     <div class="row text-bold text-muted p-0">
+     <div class="row text-bold text-muted p-0 money">
      <span class="col-sm-4 border-right border-white">Item</span>
       <span class="col border-right border-white">projected</span>
       <span class="col border-right border-white">allocated</span>
@@ -53,7 +53,7 @@ $this->params["pageTitle"]="Branch Budget Allocations";
     foreach($projections as $projection)
     {
    ?>
-   <div class="row mb-1 text-sm">
+   <div class="row mb-1 text-sm money">
       <div class="col-sm-6 p-1 pl-3 " style="background-color:#dde">
       <div class="row">
      <span class="col-sm-4 text-bold text-muted"><?=$projection->budgetItem?></span>

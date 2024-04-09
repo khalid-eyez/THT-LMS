@@ -73,7 +73,7 @@ $this->params["pageTitle"]="Accounts";
         </div>
         <div id="collapse<?=$budgetItem->projID?>" class="collapse" aria-labelledby="heading<?=$budgetItem->projID?>" data-parent="#itemsaccordion">
         <div class="card-footer text-sm pl-4 border-top" style="background-color:#eef">
-        <div class="row text-bold border-bottom">
+        <div class="row text-bold money border-bottom">
             <div class="col-sm-1">#</div>
             <div class="col">Item</div>
             <div class="col">Unit</div>

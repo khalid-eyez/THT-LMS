@@ -9,7 +9,7 @@ $this->params["pageTitle"]="Meetings";
 ?>
 <div class="container-fluid mt-3 meet">
 <div class="row">
-<div class="col-xs-10 col-sm-10 p-1 mb-2">
+<div class="col-10 col-sm-10 p-1 mb-2">
 <div class="form-inline col float-right " >
                 <div class="input-group " style="width:100%!important" >
                   <input class="form-control  form-control-sm sh" type="search" placeholder="Search" aria-label="Search">
@@ -67,9 +67,9 @@ $this->params["pageTitle"]="Meetings";
                 <div class="row bg-success text-sm">
                
                     <div class="col  p-1 ml-3">
-                   <i class="fas fa-comments"></i> <?=$meeting->meetingTitle?>
+                   <i class="fas fa-comment-alt"></i> <?=$meeting->meetingTitle?>
                    <?php
-                     if($meeting->isCaller(yii::$app->user->identity->member->memberID))
+                     if($meeting->isCaller(yii::$app->user->identity->id))
                      {
                    ?>
                    <span class="float-right pr-3" style="font-size:11px">
@@ -138,15 +138,15 @@ $this->params["pageTitle"]="Meetings";
                      <span class="col"><i class="fa fa-file-alt"></i> Meeting Documents</span>
                   </div>
                   <div class="row">
-         <div class="col p-3  text-muted" style="font-family:lucida sans serif;font-size:11.5px">
-         <div class="row text-bold "><div class="col-sm-1">#</div><div class="col-sm-2">title</div><div class="col-sm-2">Size</div><div class="col-sm-2">Uploaded On</div><div class="col-sm-3">Uploaded By</div><div class="col-sm-2">Toolbar</div></div>
+         <div class="col p-3  money" style="font-size:11px">
+         <div class="row text-bold "><div class="col-sm-1">#</div><div class="col-sm-2">Title</div><div class="col-sm-2">Size</div><div class="col-sm-2">Uploaded On</div><div class="col-sm-3">Uploaded By</div><div class="col-sm-2">Toolbar</div></div>
                    <?php
                     $documents=$meeting->meetingdocuments;
                     $count=0;
                     foreach($documents as $document)
                     {
                    ?>
-                     <div class="row">
+                     <div class="row text-muted ">
                       <div class="col-sm-1"><?=++$count?></div>
                       <div class="col-sm-2"><?=$document->title?></div>
                       <div class="col-sm-2"><?=$document->fileSize()?></div>
@@ -156,7 +156,7 @@ $this->params["pageTitle"]="Meetings";
                      <div class="col-sm-2">
                      <a href="<?=Url::to(['/meeting/download','file'=>urlencode(base64_encode($document->fileID))])?>"  data-toggle="tooltip" data-title="Download Document"><i class="fa fa-download text-muted"></i></a>
                       <?php
-                     if($meeting->isCaller(yii::$app->user->identity->member->memberID))
+                     if($meeting->isCaller(yii::$app->user->identity->id))
                      {
                    ?>
                       <a href="#" class="docdel" id=<?=$document->docID?> ><i class="fa fa-trash-alt ml-1 text-muted"  data-toggle="tooltip" data-title="Delete Document" style="font-size:11px"></i></a>
@@ -187,19 +187,19 @@ $this->params["pageTitle"]="Meetings";
                   </div>
                   <div class="row">
 
-                    <div class="col p-3  text-muted" style="font-family:lucida sans serif;font-size:11.5px">
-                    <div class="row text-bold "><div class="col-sm-1">#</div><div class="col-sm-2">Full Name</div><div class="col-sm-2">Branch</div><div class="col-sm-2">E-mail</div><div class="col-sm-3">Rank</div><div class="col-sm-2">Status</div></div>
+                    <div class="col p-3   money" style="font-size:11px">
+                    <div class="row text-bold "><div class="col-sm-1">#</div><div class="col-sm-2">Name | Post</div><div class="col-sm-2">Branch</div><div class="col-sm-2">E-mail</div><div class="col-sm-3">Rank</div><div class="col-sm-2">Status</div></div>
                         <?php
                         $count=0;
                           foreach($meeting->getPartcipants() as $participant)
                           {
                         ?>
-                          <div class="row"><div class="col-sm-1"><?=++$count?></div><div class="col-sm-2"><?=$participant->fullName()?></div><div class="col-sm-2"><?=$participant->branch()?></div><div class="col-sm-2"><?=$participant->email?></div><div class="col-sm-3"><?=$participant->getRank()?></div><div class="col-sm-2">
+                          <div class="row text-muted"><div class="col-sm-1"><?=++$count?></div><div class="col-sm-2"><?=($participant->member!=null)?$participant->member->fullName():$participant->getRank()?></div><div class="col-sm-2"><?=$participant->getBranch()->branch_short?></div><div class="col-sm-2"><?=$participant->username?></div><div class="col-sm-3"><?=$participant->getRank()?></div><div class="col-sm-2">
                             <?php
                             $status=$participant->getParticipantStatus($meeting->meetingID);
                             if($status=="Cancelled")
                             {
-                              if($meeting->isCaller(yii::$app->user->identity->member->memberID))
+                              if($meeting->isCaller(yii::$app->user->identity->id))
                               {
                             ?>
                               <a href="<?=Url::to(['/meeting/participation-cancel-reason','meeting'=>urlencode(base64_encode($meeting->meetingID)),'member'=>urlencode(base64_encode($participant->memberID))])?>" class="text-muted" data-toggle="tooltip" data-title="View cancel reason"><?=$status?>  <i class="fa fa-eye"></i></a>
@@ -255,14 +255,14 @@ $this->params["pageTitle"]="Meetings";
                     <?php if(!$meeting->isConfirmed()){?>
                     <a href="<?=Url::to(['/meeting/confirm-participation','meeting'=>urlencode(base64_encode($meeting->meetingID))])?>" class="btn btn-sm btn-success float-right ml-2" data-toggle="tooltip" data-title="Confirm participation"><span><i class="fa fa-check text-white"></i></span></a>
                     <?php } ?>
-                    <?php if(!$meeting->isCaller(yii::$app->user->identity->member->memberID)){?>
+                    <?php if(!$meeting->isCaller(yii::$app->user->identity->id)){?>
                     <a href="<?=Url::to(['/meeting/invitation-downloader','meeting'=>urlencode(base64_encode($meeting->meetingID))])?>" class="btn btn-sm btn-success float-right ml-2" data-toggle="tooltip" data-title="Download official Invitation" ><span><i class="fa fa-download"></i></span></a>
                     <?php } ?>
                     <?php } ?>
                 </div>
             </div>
             <div class="row mt-2">
-                  <div class="col text-center pb-0" style="font-size:10px"><span class="text-muted">By <?=array_keys(Yii::$app->authManager->getAssignments($meeting->announcedBy0->userID))[0]?> | <?=$meeting->announcedBy0->branch0->branch_short?></span></div>
+                  <div class="col text-center pb-0" style="font-size:10px"><span class="text-muted">By <?=array_keys(Yii::$app->authManager->getAssignments($meeting->announcedBy0->id))[0]?> | <?=$meeting->announcedBy0->getBranch()->branch_short?></span></div>
                   </div>
         </div>
     </div>

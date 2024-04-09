@@ -11,47 +11,47 @@ $this->params["pageTitle"]="Budget Item";
 <div class="container-fluid mt-3 meet">
         
 <div class="card shadow-lg">
-    <div class="card-header p-1 bg-success text-sm">
-         <span class="ml-2"><?=$budgetItem->budgetItem?> - Allocations</span>
+    <div class="card-header p-1 bg-success">
+         <span class="ml-2"><i class="fas fa-wallet"></i> <?=$budgetItem->budgetItem?> - Allocations</span>
          <a href="<?=Url::to(['/finance/item-allocations','item'=>urlencode(base64_encode($budgetItem->projID))])?>" class="mr-2 float-right" data-toggle="tooltip" data-title="All Allocations"><i class="fa fa-donate btn btn-default btn-sm p-1"></i></a>
          <a href="<?=Url::to(['/finance/budget-projection-itemizer','projection'=>urlencode(base64_encode($budgetItem->projID))])?>" class="mr-2 float-right" data-toggle="tooltip" data-title="Update Budget Item Structure"><i class="fa fa-arrow-right btn btn-default btn-sm p-1"></i></a>
     </div>
         
-        <div class="card-body text-center text-sm" style="font-family:lucida sans serif;">
+        <div class="card-body text-center " style="font-size:13px">
             
              <div class="row">
               <div class="col">
-                <span class="text-bold">Projected</span><br>
-                <?=$budgetItem->projected()?>
+                <span class="heading">Projected</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($budgetItem->projected_amount)?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Current Budget</span><br>
-                <?=$budgetItem->allocated()?>
+                <span class="heading">Current Budget</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($budgetItem->allocated())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Deficit</span><br>
-                <?=$budgetItem->deficit()?>
+                <span class="heading">Deficit</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($budgetItem->deficit())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Balance</span><br>
-                <?=$budgetItem->balance()?>
+                <span class="heading">Balance</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($budgetItem->balance())?></span>
               </div>
               <div class="col">
-                <span class="text-bold ">Total Expenses</span><br>
-                <?=$budgetItem->getTotalExpenses()?>
+                <span class="heading">Total Expenses</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($budgetItem->getTotalExpenses())?></span>
               </div>
 
              </div>
 
         </div>
-        <div class="card-footer text-sm pl-4 border-top" style="background-color:#eef">
+        <div class="card-footer  pl-4 border-top" style="background-color:#eef;font-size:13px">
         <div class="row text-bold border-bottom">
             <div class="col-sm-1">#</div>
             <div class="col">Item</div>
             <div class="col">Unit</div>
             <div class="col">Unit cost</div>
             <div class="col">No. units</div>
-            <div class="col">Total allocated</div>
+            <div class="col">Tot. allocated</div>
             <div class="col">Expenses</div>
             <div class="col">Available</div>
             
@@ -63,18 +63,18 @@ $this->params["pageTitle"]="Budget Item";
            foreach($itemizedprojs as $itemizedproj)
            {
          ?>
-              <div class="row border-bottom ">
+              <div class="row money border-bottom ">
             <div class="col-sm-1"><?=++$count?></div>
             <div class="col"><?=$itemizedproj->itemName?></div>
             <div class="col"><?=$itemizedproj->unit?></div>
-            <div class="col"><?=$itemizedproj->unitcost?></div>
+            <div class="col"><?=yii::$app->MoneyFormatter->format($itemizedproj->unitcost)?></div>
             <div class="col"><?=$itemizedproj->numUnits?></div>
-            <div class="col"><?=$itemizedproj->totalcost?></div>
-            <div class="col"><?=$itemizedproj->getTotalExpenses()?></div>
-            <div class="col"><?=$itemizedproj->balance()?></div>
+            <div class="col"><?=yii::$app->MoneyFormatter->format($itemizedproj->totalcost)?></div>
+            <div class="col"><?=yii::$app->MoneyFormatter->format($itemizedproj->getTotalExpenses())?></div>
+            <div class="col"><?=yii::$app->MoneyFormatter->format($itemizedproj->balance())?></div>
             
             <div class="col">
-               <a href="<?=Url::to(['/finance/payments','item'=>urlencode(base64_encode($itemizedproj->ipID))])?>"><i class="fa fa-arrow-right btn btn-success p-1"></i></a>
+               <a href="<?=Url::to(['/finance/payments','item'=>urlencode(base64_encode($itemizedproj->ipID))])?>" data-toggle="tooltip" data-title="Payments"><i class="fa fa-arrow-right btn btn-success p-1"></i></a>
                <a href="#" id=<?=$itemizedproj->ipID?> data-toggle="tooltip" data-title="Delete item" class="idel"><i class="fa fa-trash btn btn-danger p-1"></i> </a>
             </div>
          </div>

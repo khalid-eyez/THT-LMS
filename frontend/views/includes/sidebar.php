@@ -23,7 +23,7 @@ $user=yii::$app->user;
   <a href="<?=Url::to('/branch')?>" class="branches"><i class="nav-icon fa fa-building"></i><span class="mn"> Branches</span></a>
   <?php } ?>
   <?php if(!$user->can("ADMIN")){ ?>
-  <a href="<?=Url::to('/meeting/meetings')?>" class="menuitem meetings"><i class="nav-icon fas fa-comments" aria-hidden="true"></i> <span class="mn">Meetings</span></a>
+  <a href="<?=Url::to('/meeting/meetings')?>" class="menuitem meetings"><i class="nav-icon fas fa-comment-alt" aria-hidden="true"></i> <span class="mn">Meetings</span></a>
   <a href="<?=Url::to('/repos/docs')?>" class="menuitem repository"><i class="nav-icon fa fa-file" aria-hidden="true"></i> <span class="mn">Repository</span></a>
   <?php } ?>
 

@@ -181,69 +181,8 @@ public $role;
     {
         return $this->branch0->branch_short;
     }
-    public function isMemberOf($branch)
-    {
-        return $this->branch==$branch;
-    }
-    public function hasConfirmed($meeting)
-    {
-        return (new MeetingConfirmations)->isConfirmed($this->memberID,$meeting);
-    }
-    public function hasCancelledParticipation($meeting)
-    {
-        return (new Meetingcancel)->isParticipationCancelled($meeting,$this->memberID);
-    }
-    public function hasAttended($meeting)
-    {
-        return (new Meetingattendance)->isAttended($this->memberID,$meeting); 
-    }
-    public function getParticipantStatus($meeting)
-    {
-   
-      if($this->hasAttended($meeting) && $this->hasConfirmed($meeting))
-      {
-         return "Attended";
-      }
-      else if($this->hasConfirmed($meeting))
-      {
-           return "Confirmed";
-      }
-      else if($this->hasAttended($meeting))
-      {
-        return "Attended";
-      }
-      else if($this->hasCancelledParticipation($meeting))
-      {
-        return "Cancelled";
-      }
-      else
-      {
-        
-      
-        if($this->canView($meeting))
-        {
-            return "Invited";
-        }
-        else
-        {
-            return "Not invited";
-        }
-       
-      }
-    }
-    public function canView($meeting)
-    {
-        $meeting=Meeting::findOne($meeting);
-        $userid=$this->userID;
-        $user=User::findIdentity($userid);
-        $role=array_keys(Yii::$app->authManager->getAssignments($userid))[0];
-        if(($meeting->isParticipant($role) && $meeting->canParticipate($userid)) || $meeting->isInvited($this->memberID))
-        {
-            return true;
-        }
-
-        return false;
-    }
+  
+    
     public function getRank()
     {
         $userid=$this->userID;

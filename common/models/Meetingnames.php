@@ -11,8 +11,7 @@ use Yii;
  * @property int $typeID
  * @property string $name
  * @property string|null $description
- *
- * @property Meetingreferences referencepref
+ * @property Meetingreferences $referencepref
  * @property Meeting[] $meetings
  * @property Meetingparticipants[] $meetingparticipants
  * @property AuthItem[] $participants

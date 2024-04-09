@@ -14,7 +14,7 @@ $budgetstructures=$projection->itemizedprojections;
 <div class="card-header p-1  text-md  bg-success text-center">
    <div class="row">
       <div class="col-sm-6">
-        <?=$projection->budgetItem?>
+        <span class="float-left pl-3"><i class="fas fa-wallet"></i> <?=$projection->budgetItem?></span>
       </div>
       <div class="col-sm-6">
          <div class="row">
@@ -32,7 +32,7 @@ $budgetstructures=$projection->itemizedprojections;
 
    </div>
 </div>
-<div class="card-body">
+<div class="card-body money">
 <?php $form=Activeform::begin(['method'=>'post']) ?>
     <?php foreach($budgetstructures as $budgetstructure){ ?>
     <div class="row mb-1 ">

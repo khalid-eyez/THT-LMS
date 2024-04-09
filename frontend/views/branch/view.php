@@ -38,3 +38,10 @@ $this->params['pageTitle']="Branch Details";
     ]) ?>
 
 </div>
+<?php
+$script = <<<JS
+    $('.branches').addClass('active');
+   
+JS;
+$this->registerJs($script);
+?>
