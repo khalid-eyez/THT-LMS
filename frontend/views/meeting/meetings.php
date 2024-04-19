@@ -105,15 +105,15 @@ $this->params["pageTitle"]="Meetings";
                         <img class="brand-image" style="position:absolute;right:0;width:50px;height:50px;top:0" src="/img/new2.jpg" />
                         <?php }else if($meeting->meetingStatus()=="Cancelled"){ ?>
 
-                          <img class="brand-image" style="position:absolute;right:0;width:65px;height:50px;top:0" src="/img/canc3.png" />
+                          <img class="brand-image" style="position:absolute;right:0;width:65px;height:50px;top:0" src="/img/canc3.PNG" />
                            <?php if($meeting->getCancelReason()!=null){ ?>
                               <a href="<?=Url::to(['/meeting/cancel-reason','meeting'=>urlencode(base64_encode($meeting->meetingID))])?>" data-toggle="tooltip" data-title="View Cancel Reason" class="border border-success text-success nocoll p-1 float-right text-sm" style="position:absolute;bottom:0;right:20%"><i class="fa fa-eye"></i> Reason</a>
       
                             <?php } ?>
                         <?php }else if($meeting->meetingStatus()=="Expired"){ ?>
-                          <img class="brand-image" style="position:absolute;right:0;width:70px;height:40px;top:0;opacity:.6;" src="/img/expired.png" />
+                          <img class="brand-image" style="position:absolute;right:0;width:70px;height:40px;top:0;opacity:.6;" src="/img/expired.PNG" />
                           <?php }else{ ?>
-                            <img class="brand-image" style="position:absolute;right:0;width:65px;height:50px;top:0" src="/img/updated.png" />
+                            <img class="brand-image" style="position:absolute;right:0;width:65px;height:50px;top:0" src="/img/updated.PNG" />
                             <?php } ?>
                     </span>
                    </div>
