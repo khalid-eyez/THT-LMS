@@ -1,6 +1,6 @@
 {
-    "name": "yiisoft/yii2-app-advanced",
-    "description": "Yii 2 Advanced Project Template",
+    "name": "thtu/thtu-mis",
+    "description": "thtu management information system",
     "keywords": ["yii2", "framework", "advanced", "project template"],
     "homepage": "http://www.yiiframework.com/",
     "type": "project",
@@ -26,12 +26,10 @@
         "phpoffice/phpspreadsheet": "^1.18",
         "mpdf/mpdf": "^8.0",
         "kartik-v/yii2-widget-select2": "@dev",
-        "bigbluebutton/bigbluebutton-api-php": "~2.0.0",
         "ruturajmaniyar/yii2-audit-log": "dev-master",
         "ext-gd": "*",
         "kartik-v/yii2-widget-fileinput": "*",
         "kartik-v/bootstrap-fileinput": "dev-master",
-        "mervick/emojionearea": "^3.4",
         "kartik-v/yii2-validators": "@dev"
     
       
