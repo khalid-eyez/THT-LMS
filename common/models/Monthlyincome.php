@@ -156,7 +156,7 @@ class Monthlyincome extends \yii\db\ActiveRecord
     public function getIncomeFor($budget, $month)
     {
         $income=$this->find()->where(['budgetID'=>$budget,'month'=>$month])->one();
-        $amount=$income!=null?$income->receivedAmount:1;
+        $amount=$income!=null?$income->receivedAmount:0;
 
         return $amount;
     }

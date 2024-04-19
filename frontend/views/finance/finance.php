@@ -105,7 +105,7 @@ $this->params["pageTitle"]="Finance";
         
         <div class="card-body " style="font-size:13px">
             
-                    <div class="row mb-2 heading"><div class="col-sm-1">#</div><div class="col">Branch</div><div class="col">Projection</div><div class="col">Total Revenue</div><div class="col">Deficit</div><div class="col">Total Expenses</div><div class="col">Balance</div><div class="col"></div></div>
+                    <div class="row mb-2 heading"><div class="col-sm-1">#</div><div class="col">Branch</div><div class="col">Projection</div><div class="col">Total Revenue</div><div class="col">Allocated</div><div class="col">Deficit</div><div class="col">Total Expenses</div><div class="col">Balance</div><div class="col"></div></div>
                     
                         <?php
                         $count=0;
@@ -118,6 +118,7 @@ $this->params["pageTitle"]="Finance";
                           <div class="col"><?=$bbudget->branch0->branch_short?></div>
                           <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->projected())?></div>
                           <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->branchTotalRevenue())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->allocated())?></div>
                           <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->deficit())?></div>
                           <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->getTotalExpenses())?></div>
                           <div class="col"><?=yii::$app->MoneyFormatter->format($bbudget->getBalance())?></div>

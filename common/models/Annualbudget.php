@@ -128,6 +128,26 @@ class Annualbudget extends \yii\db\ActiveRecord
             }
         }
     }
+    public function overallTakeOver()
+    {
+       return $this->totalRevenue()-($this->totalReturns()+$this->HQbudget()->getTotalExpenses());
+    }
+    public function HQTakeOver()
+    {
+        
+        $branchbudgets=$this->branchAnnualBudgets;
+
+        if($branchbudgets==null){return 0;}
+
+        foreach($branchbudgets as $branchbudget)
+        {
+            if($branchbudget->branch0->isHQ())
+            {
+                $takeover=($branchbudget->takeover!=null)?$branchbudget->takeover->amount:0;
+                return $takeover;
+            }
+        }
+    }
     public function otherIncomeTotal()
     {
        $otherincomes=$this->otherincomes;

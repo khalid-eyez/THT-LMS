@@ -3,14 +3,16 @@ table
     border:solid 0.2px rgb(120, 120, 140); 
     border-collapse: collapse;
     margin-top:30px;
-    margin-right: auto;
-    margin-left: auto;
     font-family:Arial, Helvetica, sans-serif;
+    float:left;
+    table-layout: fixed;
+    width:100%;
+    font-size:12px
   
 }
 tr
 {
-    border:solid 0.2px rgb(120, 120, 140); 
+ border:solid 0.2px rgb(120, 120, 140); 
    
  
 }
@@ -21,7 +23,27 @@ td
     padding-left: 4px; 
     padding-top: 4px; 
     padding-bottom: 4px; 
+    width: 7.7%;
    
+}
+th{
+     
+    padding-right: 13px;
+    padding-left: 4px; 
+    padding-top: 4px; 
+    padding-bottom: 4px; 
+    width: 7.7%;
+    background-color: #178417; 
+    color:white
+  
+}
+.hd{
+    text-align: left;
+    padding-left:8px;
+}
+.bold{
+    font-weight: bold;
+    font-size: 11px;
 }
 .text-success
 {

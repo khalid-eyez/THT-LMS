@@ -53,7 +53,7 @@ class Reporter extends Model
           $monthlycollectionsbuffer[$index]=(new Monthlyincome)->getIncomeFor($budget,$index);
           
        }
-       $incomesbuffer['Monthly Collections']=$monthlycollectionsbuffer;
+       $incomesbuffer['Collections']=$monthlycollectionsbuffer;
        foreach($this->months as $index=>$month)
        {
         $otherincome=(new Otherincomes)->getIncomeFor($budget,$index);
@@ -61,10 +61,7 @@ class Reporter extends Model
         {
           $incomesbuffer[$otherincome->incomeType][$index]=$otherincome->amount;
         }
-        else
-        {
-
-        }
+      
         
           
        }
@@ -77,7 +74,7 @@ class Reporter extends Model
           $otherincome=(new Otherincomes)->getIncomeFor($budget,$index);
           $otherincome=$otherincome!=null?$otherincome->amount:0;
 
-          $incomesbuffer["total"][$index]=$otherincome+$income;
+          $incomesbuffer["Total"][$index]=$otherincome+$income;
 
        }
 
@@ -143,13 +140,17 @@ class Reporter extends Model
     {
       $summary=[];
       $HQbudget=$this->financialyear->annualbudget->HQbudget();
-      $total_revenue=$this->financialyear->annualbudget->totalRevenue();
+      $branchtakeover=$this->financialyear->annualbudget->HQTakeOver();
+      $total_revenue=$this->financialyear->annualbudget->totalRevenue()+$branchtakeover;
       $branchreturns_total=$this->financialyear->annualbudget->totalReturns();
+      
       $total_expenses=$HQbudget->getTotalExpenses();
 
       $balance_or_deficit=$total_revenue-($branchreturns_total+$total_expenses);
-
+      $summary['TOTAL INCOMES']=$this->financialyear->annualbudget->totalRevenue();
+      $summary['TAKE OVER']=$branchtakeover;
       $summary['TOTAL REVENUE']=$total_revenue;
+      
       $summary['TOTAL BRANCH RETURNS']=$branchreturns_total;
       $summary['TOTAL EXPENSES']=$total_expenses;
       $summary['BALANCE/DEFICIT']=$balance_or_deficit;
@@ -164,12 +165,14 @@ class Reporter extends Model
 
         //print_r($expenses); return null;
         $incomesbuffer=$this->incomesBufferBuilder();
-        $table="<table><tr><th></th>";
+        $table="<table><tr ><th colspan=2 class='hd'>TAKE OVER</th></tr>";
+        $table.="<tr><td class='bold'>AMOUNT</td><td class='bold'>".yii::$app->MoneyFormatter->format($this->financialyear->annualbudget->HQTakeOver())."</td></tr></table>";
+        $table.="<table width='100%'><tr><th colspan=13 class='hd'>INCOMES</th></tr><tr ><td class='bold'>TYPE</td>";
 
         //building heading
         foreach($this->months as $index=>$month)
         {
-            $table.="<th>".$month."</th>";
+            $table.="<td class='bold'>".$month."</td>";
         }
         $table.="</tr>";
         
@@ -180,15 +183,20 @@ class Reporter extends Model
 
           foreach($amounts as $index=>$amount)
           {
-            $table.="<td>".$amount."</td>";
+            $table.="<td>".yii::$app->MoneyFormatter->format($amount)."</td>";
           }
           $table.="</tr>";
         }
          
-        $table.="</table><table><tr><th>Branch Returns</th></tr>";
+        $table.="</table><table width='100%'><tr><th colspan=13 class='hd'>BRANCH RETURNS</th></tr><tr ><td class='bold'>BRANCH</td>";
 
         //adding branch returns table
-
+        foreach($this->months as $index=>$month)
+        {
+            $table.="<td class='bold'>".$month."</td>";
+        }
+       
+        $table.="</tr>";
         foreach($expenses['Branch Returns'] as $index=>$returns)
         {
           $column_name=($index!='Total')?(BranchAnnualBudget::findOne($index))->branch0->branch_short:$index;
@@ -196,41 +204,59 @@ class Reporter extends Model
 
           foreach($returns as $month=>$amount)
           {
-            $table.="<td>".$amount."</td>";
+            $table.="<td>".yii::$app->MoneyFormatter->format($amount)."</td>";
           }
           $table.="</tr>";
         }
         //adding other expenses
        
-        $table.="</table><table><tr><th>Other Expenses</th></tr>";
+        $table.="</table><table><tr><th colspan=2 class='hd'>OTHER EXPENSES</th></tr>";
         foreach($expenses['Other Expenses']['expenses'] as $index=>$expense)
         {
          
-          $table.="<tr><td>".$index."</td><td>".$expense."</td></tr>";
+          $table.="<tr><td>".$index."</td><td>".yii::$app->MoneyFormatter->format($expense)."</td></tr>";
         }
-        $table.="<tr><td>Total</td><td>".$expenses['Other Expenses']['Total_expenses']."</td></tr>";
+        $table.="<tr><td>Total</td><td>".yii::$app->MoneyFormatter->format($expenses['Other Expenses']['Total_expenses'])."</td></tr>";
 
         //adding the summary table
-        $table.="</table><table><tr><th>SUMMARY</th></tr>";
+        $table.="</table><table><tr ><th colspan=2 class='hd'>SUMMARY</th></tr>";
         $summary=$this->summaryBuilder();
 
         foreach($summary as $index=>$sum)
         {
-          $table.="<tr><td>".$index."</td><td>".$sum."</td></tr>";
+          $table.="<tr><td>".$index."</td><td>".yii::$app->MoneyFormatter->format($sum)."</td></tr>";
         }
         $table.="</table>";
+        //adding the branches budget summaries
+
+        $table.=$this->branchBudgetReporter();
         return $table;
     }
+public function branchBudgetReporter()
+{
+    $table="<table><tr ><th colspan=7 class='hd'>BRANCHES BUDGET SUMMARY</th></tr>";
+    $table.="<tr><td class='bold'>BRANCH</td><td class='bold'>TOT. REVENUE</td>";
+    $table.="<td class='bold'>MONTHLY INCOME</td><td class='bold'>OTHER INCOME</td><td class='bold'>TAKE OVER</td><td class='bold'>TOT. EXPENSES</td><td class='bold'>BALANCE/DEFICIT</td>";
+                      $branchbudgets=$this->financialyear->annualbudget->branchAnnualBudgets;
 
-    public function expensesBuilder()
-    {
+                        foreach($branchbudgets as $bbudget)
+                        {
+                        if($bbudget->branch0->isHQ()){continue;}
+                        $table.="<tr>";
+                        $table.="<td>".$bbudget->branch0->branch_short."</td>";
+                        $table.="<td>".yii::$app->MoneyFormatter->format($bbudget->branchTotalRevenue())."</td>";
+                        $table.="<td>".yii::$app->MoneyFormatter->format($bbudget->totalIncome())."</td>";
+                        $table.="<td>".yii::$app->MoneyFormatter->format($bbudget->totalOtherIncomes())."</td>";
+                        $table.="<td>".yii::$app->MoneyFormatter->format(($bbudget->takeover!=null)?$bbudget->takeover->amount:0)."</td>";
+                        $table.="<td>".yii::$app->MoneyFormatter->format($bbudget->getTotalExpenses())."</td>";
+                        $table.="<td>".yii::$app->MoneyFormatter->format($bbudget->getBalance())."</td>";
+                        $table.="</tr>";
+                    }
 
-    }
-
-    public function balanceBuilder()
-    {
-
-    }
+                    $table.="</table>";
+                    return $table;
+       
+}
 //sample
     public function downloadPDFReport($ca)
     { 
@@ -242,18 +268,18 @@ class Reporter extends Model
         $mpdf->setFooter('{PAGENO}');
         $stylesheet = file_get_contents('css/capdf.css');
         $mpdf->WriteHTML($stylesheet,1);
-        $mpdf->SetWatermarkText('civeclassroom.udom.ac.tz',0.09);
+        $mpdf->SetWatermarkText('THTU MIS',0.09);
         $mpdf->showWatermarkText = true;
         $mpdf->WriteHTML('<div align="center"><img src="img/logo.png" width="125px" height="125px"/></div>',2);
-        $mpdf->WriteHTML('<p align="center"><font size=7>The University of Dodoma</font></p>',3);
+        $mpdf->WriteHTML('<p align="center"><font size=7>Tanzania Higher Learning Institutions Trade Union</font></p>',3);
         $mpdf->WriteHTML('<p align="center"><font size=5></font></p>',3);
         $mpdf->WriteHTML('<p align="center"><font size=5></font></p>',3);
-        $mpdf->WriteHTML('<p align="center"><font size=5>Final course assessment results </font></p>',3);
+        $mpdf->WriteHTML('<p align="center"><font size=5>Financial Report - '.$this->financialyear->startingyear.' </font></p>',3);
         $mpdf->WriteHTML('<p align="center"><font size=3></font></p>',3);
         $mpdf->WriteHTML('<hr width="80%" align="center" color="#000000">',2);
         $mpdf->WriteHTML($content,3);
           
-        $filename="_CA.pdf";
+        $filename="THTU_FINANCE_ANNUAL_REPORT_".$this->financialyear->startingyear.".pdf";
         $filename = str_replace(' ', '', $filename);
         $mpdf->Output($filename,"D");
 

@@ -165,6 +165,11 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     {
         return (new BranchMonthlyRevenue)->getTotalIncome($this->bbID);
     }
+
+    public function overallMonthlyIncome()
+    {
+        return $this->budget->totalIncome();
+    }
     public function deficit()
     {
         $deficit=$this->projected()-$this->allocated();
@@ -179,6 +184,16 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     public function branchTakeover()
     {
       return $this->branchTotalRevenue()-$this->getTotalExpenses(); 
+    }
+
+    public function takeover()
+    {
+        if($this->branch0->isHQ())
+        {
+            return $this->budget->overallTakeOver();
+        }
+
+        return $this->branchTakeover();
     }
     public function acquireRevenue($income)
     {

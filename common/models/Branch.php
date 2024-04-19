@@ -130,7 +130,7 @@ class Branch extends \yii\db\ActiveRecord
 
                $takeover=new Takeover;
                $takeover->budget=$budget->bbID;
-               $takeover->amount=$branch->branchBudget->branchTakeover();
+               $takeover->amount=$branch->branchBudget->takeover();
 
                if(!$takeover->save())
                {
