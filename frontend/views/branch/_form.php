@@ -12,21 +12,21 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(['method'=>'POST','action'=>'/branch/create']); ?>
 
-    <?= $form->field($model, 'branchName')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'branchName')->textInput(['maxlength' => true,'placeholder'=>'Branch Name'])->label(false) ?>
 
-    <?= $form->field($model, 'branch_short')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'branch_short')->textInput(['maxlength' => true,'placeholder'=>'Branch Short'])->label(false) ?>
 
-    <?= $form->field($model, 'location')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'location')->textInput(['maxlength' => true,'placeholder'=>'Location'])->label(false) ?>
 
-    <?= $form->field($model, 'email')->input('email',['maxlength' => true]) ?>
+    <?= $form->field($model, 'email')->input('email',['maxlength' => true,'placeholder'=>'E-mail'])->label(false) ?>
 
-    <?= $form->field($model, 'telphone')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'telphone')->textInput(['maxlength' => true,'placeholder'=>'Tel Phone'])->label(false) ?>
 
-    <?= $form->field($model, 'fax')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'fax')->textInput(['maxlength' => true,'placeholder'=>'Fax'])->label(false) ?>
 
-    <?= $form->field($model, 'website')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'website')->textInput(['maxlength' => true,'placeholder'=>'Website'])->label(false) ?>
 
-    <?= $form->field($model, 'pobox')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'pobox')->textInput(['maxlength' => true,'placeholder'=>'P.O.BOX'])->label(false) ?>
 
     <div class="form-group">
         <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success float-right']) ?>
