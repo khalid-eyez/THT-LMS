@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 <div class="branch-form container">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['method'=>'POST','action'=>'/branch/create']); ?>
 
     <?= $form->field($model, 'branchName')->textInput(['maxlength' => true]) ?>
 

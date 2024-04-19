@@ -9,6 +9,7 @@ use yii\widgets\Pjax;
 $this->title = 'Branches';
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['pageTitle']="Branches";
+use common\models\Branch;
 ?>
 <style>
     .grid-view table thead a{
@@ -18,7 +19,7 @@ $this->params['pageTitle']="Branches";
     </style>
 <div class="branch-index text-sm">
 
-        <?= Html::a('<i class="fa fa-plus-circle"></i> Create Branch', ['create'], ['class' => 'btn btn-success float-right mb-2']) ?>
+        <?= Html::a('<i class="fa fa-plus-circle"></i> Create Branch', ['create'], ['class' => 'btn btn-success float-right mb-2','data-toggle'=>'modal','data-target'=>'#branchmodal']) ?>
    
 
     <?php Pjax::begin(); ?>
@@ -44,6 +45,7 @@ $this->params['pageTitle']="Branches";
     ]); ?>
 
     <?php Pjax::end(); ?>
+    <?=$this->render('create.php',['model'=>new Branch])?>
 
 </div>
 <?php
