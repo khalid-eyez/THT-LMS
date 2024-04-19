@@ -28,7 +28,7 @@ AppAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="hold-transition login-page bg-white">
+<body class="hold-transition login-page" style="background-color: rgba(6, 92, 27)!important;">
 
   <!-- /.login-logo -->
 
@@ -59,7 +59,7 @@ AppAsset::register($this);
       <?php endif ?>
        </div>
        </div>
-       <?=$this->render("/includes/loginheader")?>
+       <?=$this->render("/includes/loginheader2")?>
        <div class="container-fluid" style="position:fixed;top:40%">
           <?= $content ?>
        </div>

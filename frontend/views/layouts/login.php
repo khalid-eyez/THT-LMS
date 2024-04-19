@@ -28,7 +28,7 @@ AppAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="hold-transition   p-0" style="background-color:rgba(6, 92, 27,.9)">
+<body class="hold-transition   p-0 normalText" style="background-color:rgba(6, 92, 27,.9)">
   <?=$this->render('/includes/loginheader2')?>
 <div class="container d-flex justify-content-center">
      <div class="row mt-2 show-sm">

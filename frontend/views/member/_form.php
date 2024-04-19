@@ -10,8 +10,10 @@ use common\models\AuthItem;
 /* @var $model common\models\Member */
 /* @var $form yii\widgets\ActiveForm */
 
-$branches=ArrayHelper::map(Branch::find()->where(['branchID'=>yii::$app->user->identity->getBranch()->branchID])->all(),'branchID','branchName','location');
-$roles=ArrayHelper::map(AuthItem::find()->where(['name'=>"MEMBER"])->all(),'name','name');
+//$branches=ArrayHelper::map(Branch::find()->where(['branchID'=>yii::$app->user->identity->getBranch()->branchID])->all(),'branchID','branchName','location');
+$branches=ArrayHelper::map(Branch::find()->all(),'branchID','branchName','location');
+//$roles=ArrayHelper::map(AuthItem::find()->where(['name'=>"MEMBER"])->all(),'name','name');
+$roles=ArrayHelper::map(AuthItem::find()->all(),'name','name');
 ?>
 
 <div class="container-fluid text-sm">
