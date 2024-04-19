@@ -26,7 +26,11 @@ $user=yii::$app->user;
       <div class="row">
                <!-- Left col -->
                <section class="col-sm-12 table-responsive">
-                <?php if($user->can("GENERAL SECRETARY HQ")){?>
+                <?php 
+                //if($user->can("CHAIRPERSON BR")){
+
+                  if($user->can("GENERAL SECRETARY HQ")){
+                  ?>
                <div class="col-sm-12"><?= Html::a('<i class="fa fa-plus-circle"></i> Add Member', ['create'], ['class' => 'btn btn-success btn-sm float-right ml-1','data-toggle'=>'modal','data-target'=>'#membermodal']) ?></div>
                <?php } ?>
     <table class="table table-bordered table-striped table-hover " id="memberTable" style="width:100%;">

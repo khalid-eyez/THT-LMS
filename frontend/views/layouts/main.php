@@ -178,11 +178,15 @@ body{
         <a class="nav-link responsivetext" data-toggle="dropdown" href="#" id="username"><span class="fas fa-user text-success"></span>
         </a>
 <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-       
+                <?php
+                if(yii::$app->user->identity->isMember()){
+                  ?>
                 <a href="<?=Url::to('/member/profile')?>" class="dropdown-item">
                     <i class="fa fa-user-circle mr-2"></i> <span class="small">My Profile</span>
                 </a>
-      
+                <?php
+                }
+               ?>
 
             <div class="dropdown-divider"></div>
 
