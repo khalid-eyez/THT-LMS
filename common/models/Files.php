@@ -66,7 +66,7 @@ class Files extends \yii\db\ActiveRecord
     public function getFileSize($location)
     {
         $file=$location.$this->fileName;
-
+       if(!file_exists($file)){return "0 KB";}
        if((filesize($file)/1000000)<1)
        {
         return round(((filesize($file)/1000000)*1000),2)." KB";
