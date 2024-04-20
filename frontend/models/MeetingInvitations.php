@@ -55,7 +55,8 @@ class MeetingInvitations extends Model{
       $document->year=date("Y");
       date_default_timezone_set('Africa/Dar_es_Salaam');
       $document->dateUploaded=date("Y-m-d H:i:s");
-      $document->referencePrefix=$this->meeting->type0->referencepref->ref->prefID;
+      //$document->referencePrefix=$this->meeting->type0->referencepref->ref->prefID;
+      $document->referencePrefix="XXX";
       $file=new Files;
       $file->fileName=$filesaveName;
       $file->save();
@@ -111,8 +112,8 @@ class MeetingInvitations extends Model{
   private function loadRef($meeting)
   {
 
-    $this->ref=$meeting->type0->referencepref->ref->prefix;
-
+    //$this->ref=$meeting->type0->referencepref->ref->prefix;
+    $this->ref="XXXX";
   }
   public function downloadExisting($filename)
   {
