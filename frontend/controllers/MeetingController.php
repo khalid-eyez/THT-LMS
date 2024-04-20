@@ -346,7 +346,7 @@ class MeetingController extends Controller
           $meetingcancel->meetingID=$meeting;
           $meetingcancel->type="meetingCancel";
           $meetingcancel->status="Approved";
-          $meetingcancel->memberID=yii::$app->user->identity->member->memberID;
+          $meetingcancel->memberID=yii::$app->user->identity->id;
          
           if($meetingcancel->save())
           {
