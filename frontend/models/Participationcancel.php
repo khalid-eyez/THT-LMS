@@ -34,7 +34,7 @@ class Participationcancel extends Model
         $transaction=yii::$app->db->beginTransaction();
         $meetingcancel->meetingID = $meeting;
         $meetingcancel->type=$this->type;
-        $meetingcancel->memberID=yii::$app->user->identity->member->memberID;
+        $meetingcancel->memberID=yii::$app->user->identity->id;
         date_default_timezone_set('Africa/Dar_es_Salaam');
         $meetingcancel->canceltime=date("Y-m-d H:i:s");
         $meetingcancel->reason=$this->reason;
