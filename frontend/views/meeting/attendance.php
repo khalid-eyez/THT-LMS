@@ -33,7 +33,7 @@ $this->params["pageTitle"]="Meeting Attendance";
            
                    <i class="fas fa-comments pl-1"></i> <?=$meeting->meetingTitle?>
                    <?php
-                     if($meeting->isCaller(yii::$app->user->identity->member->memberID))
+                     if($meeting->isCaller(yii::$app->user->identity->id))
                      {
                    ?>
                    <span class="float-right pr-3" style="font-size:12px">
