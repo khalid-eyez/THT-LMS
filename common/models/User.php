@@ -312,7 +312,23 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->member!=null;
     }
+    public function fullName()
+    {
+        if($this->isMember())
+        {
+            return $this->member->fullName();
+        }
 
+        return $this->username." [".$this->getRank()."]";
+    }
+    public function branch(){
+        if($this->isMember())
+        {
+            return $this->member->branch();
+        }
+
+        return "THTU-HQ";
+    }
     public function hasConfirmed($meeting)
     {
         return (new MeetingConfirmations)->isConfirmed($this->id,$meeting);

@@ -61,9 +61,9 @@ $this->params["pageTitle"]="Meeting Attendance";
                           foreach($participants as $participant)
                           {
                         ?>
-                          <div class="row"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$participant->fullName()?></div><div class="col"><?=$participant->branch()?></div><div class="col"><?=$participant->email?></div><div class="col"><?=$participant->getRank()?></div><div class="col-sm-1">
-                            <?php if($meeting->attendances!=null && in_array($participant->memberID,$meeting->attendances)){ ?>
-                          <?= $form->field($meeting, 'attendances[]')->checkbox(['value' =>$participant->memberID,'uncheck'=>null,'checked'=>'checked'],false)->label(false) ?>
+                          <div class="row"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$participant->fullName()?></div><div class="col"><?=$participant->branch()?></div><div class="col"><?=$participant->username?></div><div class="col"><?=$participant->getRank()?></div><div class="col-sm-1">
+                            <?php if($meeting->attendances!=null && in_array($participant->id,$meeting->attendances)){ ?>
+                          <?= $form->field($meeting, 'attendances[]')->checkbox(['value' =>$participant->id,'uncheck'=>null,'checked'=>'checked'],false)->label(false) ?>
                             <?php 
                             }
                             else
@@ -71,7 +71,7 @@ $this->params["pageTitle"]="Meeting Attendance";
 
               
                             ?>
-                              <?= $form->field($meeting, 'attendances[]')->checkbox(['value' =>$participant->memberID,'uncheck'=>null],false)->label(false) ?>
+                              <?= $form->field($meeting, 'attendances[]')->checkbox(['value' =>$participant->id,'uncheck'=>null],false)->label(false) ?>
                             <?php 
                             }
                             ?>
