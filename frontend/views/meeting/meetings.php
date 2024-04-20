@@ -205,7 +205,7 @@ $this->params["pageTitle"]="Meetings";
                               <a href="<?=Url::to(['/meeting/participation-cancel-reason','meeting'=>urlencode(base64_encode($meeting->meetingID)),'member'=>urlencode(base64_encode($participant->memberID))])?>" class="text-muted" data-toggle="tooltip" data-title="View cancel reason"><?=$status?>  <i class="fa fa-eye"></i></a>
                               <?php }else{ ?>
 
-                                <?=$status?> <span class="<?=$meeting->getCancelStatus($participant->memberID)=="disapproved"?"text-danger":"text-success"?>">(<?=$meeting->getCancelStatus($participant->memberID)!=null?$meeting->getCancelStatus($participant->memberID):""?>)</span>
+                                <?=$status?> <span class="<?=$meeting->getCancelStatus($participant->id)=="disapproved"?"text-danger":"text-success"?>">(<?=$meeting->getCancelStatus($participant->id)!=null?$meeting->getCancelStatus($participant->id):""?>)</span>
 
                                 <?php } ?>
 
