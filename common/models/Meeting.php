@@ -271,7 +271,7 @@ class Meeting extends \yii\db\ActiveRecord
         $userid=yii::$app->user->id;
         $user=User::findIdentity($userid);
         $role=array_keys(Yii::$app->authManager->getAssignments($userid))[0];
-        if(($this->isParticipant($role) && $this->canParticipate($userid)) || $this->isInvited($user->member->memberID))
+        if(($this->isParticipant($role) && $this->canParticipate($userid)) || $this->isInvited($user->id))
         {
             return true;
         }
