@@ -29,7 +29,7 @@ $user=yii::$app->user;
                 <?php 
                 //if($user->can("CHAIRPERSON BR")){
 
-                  if($user->can("GENERAL SECRETARY HQ")){
+                  if($user->can("GENERAL SECRETARY HQ") || $user->can("GENERAL SECRETARY BR") || $user->can("CHAIRPERSON BR")){
                   ?>
                <div class="col-sm-12"><?= Html::a('<i class="fa fa-plus-circle"></i> Add Member', ['create'], ['class' => 'btn btn-success btn-sm float-right ml-1','data-toggle'=>'modal','data-target'=>'#membermodal']) ?></div>
                <?php } ?>
