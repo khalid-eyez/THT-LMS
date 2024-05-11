@@ -7,7 +7,7 @@ $user=yii::$app->user;
   <?php if($user->can("TREASURER HQ") || $user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("TREASURER BR") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")){?>
   <a href="<?=Url::to('/finance/finance')?>" class="finance"> <i class="nav-icon fas fa-coins"></i> <span class="mn">Finance</span></a>
   <?php } ?>
-  <?php if($user->can("SECRETARY HQ") || $user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("SECRETARY BR") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")  ){?>
+  <?php if($user->can("MGT SECRETARY") || $user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("SECRETARY BR") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")  ){?>
   <a href="<?=Url::to('/filecabinet/filecabinet')?>" class="cabinet"> <i class="nav-icon fa fa-folder-open"></i> <span class="mn">File cabinet</span></a>
   <?php } ?>
   <?php if($user->can("ADMIN")){ ?>
