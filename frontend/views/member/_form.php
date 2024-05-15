@@ -19,7 +19,9 @@ $roles=ArrayHelper::map(AuthItem::find()->all(),'name','name');
 <div class="container-fluid text-sm">
     
 
-    <?php $form = ActiveForm::begin(['method'=>'post','action'=>'/member/create']); ?>
+    <?php $form = ActiveForm::begin(['method'=>'post','action'=>'/member/create','enableClientValidation' => true,
+                                  'validateOnSubmit' => true,
+                                  'options' => ['data-pjax' => true ]]); ?>
     <div class="row"><div class="col-sm-4">
     <?= $form->field($model, 'fname')->textInput(['placeholder'=>'First Name','class'=>'form-control form-control-sm'])->label(false) ?>
     </div><div class="col-sm-4">

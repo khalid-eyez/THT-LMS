@@ -30,7 +30,10 @@
         "ext-gd": "*",
         "kartik-v/yii2-widget-fileinput": "*",
         "kartik-v/bootstrap-fileinput": "dev-master",
-        "kartik-v/yii2-validators": "@dev"
+        "kartik-v/yii2-validators": "@dev",
+        "kartik-v/yii2-password": "dev-master",
+        "zyx/zyx-phpmailer": "^0.9.4",
+        "bizley/migration": "^4.3.1"
     
       
     },
@@ -49,6 +52,9 @@
         "process-timeout": 1800,
         "fxp-asset": {
             "enabled": false
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
         }
     },
     "repositories": [

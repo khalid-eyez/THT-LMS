@@ -28,22 +28,22 @@ $this->params['breadcrumbs'] = [
                 <div class="col-sm-3">
                 </div>
                 <div class="col-sm-6">
-                    <div class="card shadow-lg" style="font-family:'Times New Roman', sans-serif">
+                    <div class="card shadow-lg" style="">
                         <div class="card-header text-center bg-success pt-1 pb-1 text-md">
                             <i class="fa fa-lock"></i> Change Password
                         </div>
                         <div class="card-body">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <?= $form->field($model, 'current_password')->passwordInput(['class'=>'form-control form-control-sm', 'placeholder'=>'Current Password'])->label(false) ?>
+                                        <?= $form->field($model, 'current_password')->passwordInput(['class'=>'form-control ', 'placeholder'=>'Current Password'])->label(false) ?>
                                     </div>
 
                                     <div class="col-sm-12">
-                                        <?= $form->field($model, 'new_password')->passwordInput(['class'=>'form-control form-control-sm', 'placeholder'=>'New Password'])->label(false) ?>
+                                        <?= $form->field($model, 'new_password')->passwordInput(['class'=>'form-control ', 'placeholder'=>'New Password'])->label(false) ?>
                                     </div>
 
                                     <div class="col-sm-12">
-                                        <?= $form->field($model, 'confirm_new_password')->passwordInput(['class'=>'form-control form-control-sm', 'placeholder'=>'Confirm Password'])->label(false) ?>
+                                        <?= $form->field($model, 'confirm_new_password')->passwordInput(['class'=>'form-control ', 'placeholder'=>'Confirm Password'])->label(false) ?>
                                     </div>
                                     
                                     <div class="col-sm-12">

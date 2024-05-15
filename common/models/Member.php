@@ -54,11 +54,13 @@ public $role;
             [['IndividualNumber'], 'string', 'max' => 100],
             [['fname', 'mname', 'lname', 'email'], 'string', 'max' => 50],
             [['phone'], 'string', 'max' => 15],
+            //['phone', 'k-phone','countryValue' => 'TZ'],
             [['gender'], 'string', 'max' => 10],
             [['IndividualNumber'], 'unique'],
             [['email'], 'unique'],
             [['email'], 'email','message'=>'This E-mail seems invalid, try another one'],
             [['phone'], 'unique'],
+            [['phone'], 'trim'],
             [['branch'], 'exist', 'skipOnError' => true, 'targetClass' => Branch::className(), 'targetAttribute' => ['branch' => 'branchID']],
             [['userID'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['userID' => 'id']],
         ];
