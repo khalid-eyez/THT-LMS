@@ -7,7 +7,7 @@ use yii\data\ActiveDataProvider;
 use common\models\TblAuditEntry;
 
 /**
- * TblAuditEntrySearch represents the model behind the search form of `common\models\TblAuditEntry`.
+ * TblAuditEntrySearch represents the model behind the search form of `\common\models\TblAuditEntry`.
  */
 class TblAuditEntrySearch extends TblAuditEntry
 {
@@ -59,10 +59,10 @@ class TblAuditEntrySearch extends TblAuditEntry
         // grid filtering conditions
         $query->andFilterWhere([
             'audit_entry_id' => $this->audit_entry_id,
+            'audit_entry_timestamp' => $this->audit_entry_timestamp,
         ]);
 
-        $query->andFilterWhere(['like', 'audit_entry_timestamp', $this->audit_entry_timestamp])
-            ->andFilterWhere(['like', 'audit_entry_model_name', $this->audit_entry_model_name])
+        $query->andFilterWhere(['like', 'audit_entry_model_name', $this->audit_entry_model_name])
             ->andFilterWhere(['like', 'audit_entry_operation', $this->audit_entry_operation])
             ->andFilterWhere(['like', 'audit_entry_field_name', $this->audit_entry_field_name])
             ->andFilterWhere(['like', 'audit_entry_old_value', $this->audit_entry_old_value])

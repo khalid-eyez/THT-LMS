@@ -36,6 +36,7 @@ class TblAuditEntry extends \yii\db\ActiveRecord
     {
         return [
             [['audit_entry_timestamp', 'audit_entry_model_name', 'audit_entry_operation', 'audit_entry_field_name', 'audit_entry_new_value', 'audit_entry_user_id', 'audit_entry_ip', 'audit_entry_affected_record_reference', 'audit_entry_affected_record_reference_type'], 'required'],
+            ['audit_entry_timestamp','default','value'=>time()],
             [['audit_entry_old_value', 'audit_entry_new_value'], 'string'],
             [['audit_entry_timestamp', 'audit_entry_model_name', 'audit_entry_operation', 'audit_entry_field_name', 'audit_entry_user_id', 'audit_entry_ip'], 'string', 'max' => 100],
             [['audit_entry_affected_record_reference', 'audit_entry_affected_record_reference_type'], 'string', 'max' => 30],
@@ -60,5 +61,11 @@ class TblAuditEntry extends \yii\db\ActiveRecord
             'audit_entry_affected_record_reference' => Yii::t('app', 'Affected Record Reference'),
             'audit_entry_affected_record_reference_type' => Yii::t('app', 'Affected Record Reference type')
         ];
+    }
+    public function afterFind()  {
+
+    $this->audit_entry_user_id=User::findOne($this->audit_entry_user_id)->username;
+  
+        return parent::afterFind();
     }
 }

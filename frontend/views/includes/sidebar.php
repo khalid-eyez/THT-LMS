@@ -7,13 +7,13 @@ $user=yii::$app->user;
   <?php if($user->can("TREASURER HQ") || $user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("TREASURER BR") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")){?>
   <a href="<?=Url::to('/finance/finance')?>" class="finance"> <i class="nav-icon fas fa-coins"></i> <span class="mn">Finance</span></a>
   <?php } ?>
-  <?php if($user->can("MGT SECRETARY") || $user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("SECRETARY BR") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")  ){?>
+  <?php if($user->can("MGT SECRETARY")){?>
   <a href="<?=Url::to('/filecabinet/filecabinet')?>" class="cabinet"> <i class="nav-icon fa fa-folder-open"></i> <span class="mn">File cabinet</span></a>
   <?php } ?>
   <?php if($user->can("ADMIN")){ ?>
   <a href="<?=Url::to('/admin/users-list')?>" class="menuitem users"><i class="nav-icon fa fa-user" aria-hidden="true"></i> <span class="mn">All users</span></a>
   <a href="<?=Url::to('/admin/budget-year')?>" class="menuitem byear"><i class="nav-icon fa fa-calendar" aria-hidden="true"></i> <span class="mn">Financial Year</span></a>
-  <a href="<?=Url::to('/repos/docs')?>" class="menuitem repository"><i class="nav-icon fa fa-calendar" aria-hidden="true"></i> <span class="mn">Audit Entries</span></a>
+  <a href="<?=Url::to('/audit')?>" class="menuitem audit"><i class="nav-icon fa fa-calendar" aria-hidden="true"></i> <span class="mn">Audit Entries</span></a>
   <?php } ?>
   <?php if($user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")){ ?>
   <a href="<?=Url::to('/member/member-list')?>" class="members"><i class="nav-icon fa fa-group"></i><span class="mn"> Members</span></a>
