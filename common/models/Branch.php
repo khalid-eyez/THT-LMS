@@ -69,7 +69,23 @@ class Branch extends \yii\db\ActiveRecord
             'pobox' => 'Pobox',
         ];
     }
+  public function afterSave($insert, $changedAttributes)
+  {
+  
+            $budgetyear=(new Budgetyear())->getBudgetYear();
+            $budget=new BranchAnnualBudget;
+            $budget->budgetID=$budgetyear->annualbudget->budgetID;
+            $budget->projected_amount=0;
+            $budget->branch=$this->branchID;
 
+            if(!$budget->save())
+            {
+                $this->delete();
+                throw new \Exception("Could not create annual budget for ".$this->branch_short);
+            }
+    
+    return parent::afterSave($insert, $changedAttributes);
+  }
     /**
      * Gets query for [[Meetings]].
      *

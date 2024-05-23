@@ -102,6 +102,7 @@ class Annualbudget extends \yii\db\ActiveRecord
 
     public function getCurrentBudget()
     {
+       
         //return $this->find()->where(['yearID'=>(yii::$app->session->get("financialYear"))->yearID])->one();
     }
     public function totalIncome()

@@ -1,25 +1,23 @@
 <?php
-
+use common\models\Member;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use common\models\Branch;
 use common\models\AuthItem;
-
 /* @var $this yii\web\View */
 /* @var $model common\models\Member */
 /* @var $form yii\widgets\ActiveForm */
 
-$branches=ArrayHelper::map(Branch::find()->where(['branchID'=>yii::$app->user->identity->getBranch()->branchID])->all(),'branchID','branchName','location');
-//$branches=ArrayHelper::map(Branch::find()->all(),'branchID','branchName','location');
-$roles=ArrayHelper::map(AuthItem::find()->where(['name'=>"MEMBER"])->all(),'name','name');
-//$roles=ArrayHelper::map(AuthItem::find()->all(),'name','name');
+$branches=ArrayHelper::map($branch,'branchID','branchName','location');
+$roles=['CHAIRPERSON BR'=>'BRANCH CHAIRPERSON'];
 ?>
-
-<div class="container-fluid text-sm">
-    
-
-    <?php $form = ActiveForm::begin(['method'=>'post','action'=>'/member/create','enableClientValidation' => true,
+<div class="container">
+<div class="card shadow-sm">
+     <div class="card-header bg-success pl-4 p-1"><div class="card-title ml-1"><i class='fa fa-plus-circle'></i> Register Branch Chairperson</div></div>
+      <div class="card-body pl-4 pr-4">
+         <?php $model=new Member();?>
+         <?php $form = ActiveForm::begin(['method'=>'post','action'=>'/member/create','enableClientValidation' => true,
                                   'validateOnSubmit' => true,
                                   'options' => ['data-pjax' => true ]]); ?>
     <div class="row"><div class="col-sm-4">
@@ -50,4 +48,7 @@ $roles=ArrayHelper::map(AuthItem::find()->where(['name'=>"MEMBER"])->all(),'name
 
     <?php ActiveForm::end(); ?>
 
+
+</div>
+</div>
 </div>
