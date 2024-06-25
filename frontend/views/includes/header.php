@@ -1,4 +1,4 @@
-<div class="container-fluid bg-white mb-3">
+<div class="container-fluid mb-3 border-top border-success bg-white" >
     <div class="row">
         <div class="col-sm-12 col-12 col-lg-6 col-xl-6 pt-2 pl-3 pb-2">
             <div class="row">

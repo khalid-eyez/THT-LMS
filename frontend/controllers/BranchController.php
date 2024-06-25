@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * BranchController implements the CRUD actions for Branch model.
@@ -20,10 +21,21 @@ class BranchController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                  
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete'
+                        ],
+                        'allow' => true,
+                        'roles' => ['ADMIN','CHAIRPERSON HQ','GENERAL SECRETARY HQ'],
+                    ],
                 ],
             ],
         ];

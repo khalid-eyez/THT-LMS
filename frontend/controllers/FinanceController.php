@@ -3,6 +3,8 @@
 namespace frontend\controllers;
 
 use common\models\Budgetyear;
+use common\models\Costcenter;
+use common\models\Costcenterrevenue;
 use common\models\Otherincomes;
 use yii;
 use yii\web\Controller;
@@ -55,7 +57,10 @@ class FinanceController extends Controller
                         'review-itemizer',
                         'delete-budget-item',
                         'delete-projection-structure-item',
-                        'download-annual-report'
+                        'download-annual-report',
+                        'hq-finance',
+                        'center-budget-allocate',
+                        'costcenters-allocations-review'
                       
                     ],
                     'allow' => true,
@@ -78,7 +83,9 @@ class FinanceController extends Controller
                         'budget-review',
                         'review-itemizer',
                         'delete-budget-item',
-                        'delete-projection-structure-item'
+                        'delete-projection-structure-item',
+                        'center-budget-allocate',
+                        'costcenters-allocations-review'
                        
                     ],
                     'allow' => true,
@@ -380,6 +387,36 @@ class FinanceController extends Controller
 
       return $this->render('branchbudgetprojectionsupdate',['budget'=>$budget]);
     }
+
+    public function actionCenterBudgetAllocate($budget)
+    {
+      $budget=BranchAnnualBudget::findOne(base64_decode(urldecode($budget)));
+
+      if(yii::$app->request->isPost)
+      {
+        try
+        {
+       $model=new Costcenter();
+       if(($model)->acquireBudget(yii::$app->request->post(),$budget->bbID))
+       {
+        yii::$app->session->setFlash("success",'<i class="fa fa-info-circle"></i> Budget allocation successful !');
+        return $this->redirect(yii::$app->request->referrer); 
+       }
+       else
+       {
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget allocation failed ! '.Html::errorSummary($model));
+        return $this->redirect(yii::$app->request->referrer);  
+       }
+    }
+    catch(\Exception $r)
+    {
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget allocation failed !  '.$r->getMessage());
+        return $this->redirect(yii::$app->request->referrer);
+    }
+      }
+
+      return $this->render('centerbudgetdispatcher',['budget'=>$budget]);
+    }
     public function actionPayments($item)
     {
         $item=base64_decode(urldecode($item));
@@ -411,9 +448,46 @@ class FinanceController extends Controller
     }
     public function actionBranchFinance($budget)
     {
-        $budget=base64_decode(urldecode($budget));
-        $annualbudget=BranchAnnualBudget::findOne($budget);
-        return $this->render('branchFinance',['annualbudget'=>$annualbudget]);
+        $currentbudgetyear=yii::$app->session->get('financialYear');
+        $yearID=($currentbudgetyear!=null)?$currentbudgetyear->yearID:null;
+        $Bbudgetid=base64_decode(urldecode($budget));
+        $branchannualbudget=null;
+        if($yearID!=null)
+        {
+            $annualbudget=Annualbudget::find()->where(['yearID'=> $currentbudgetyear->yearID])->one();
+            $branch=BranchAnnualBudget::findOne($Bbudgetid)->branch0->branchID;
+            $branchannualbudget=BranchAnnualBudget::find()->where(['budgetID'=>$annualbudget->budgetID,'branch'=>$branch])->one();
+        }
+        else
+        {
+            $branchannualbudget=BranchAnnualBudget::findOne($Bbudgetid);
+        }
+       
+        //is this HQ
+
+        if($branchannualbudget->branch0->isHQ())
+        {
+            return $this->redirect(['hq-finance','budget'=>$budget]);
+        }
+        return $this->render('branchFinance',['annualbudget'=>$branchannualbudget]);
+    }
+    public function actionHqFinance($budget)
+    {
+        $currentbudgetyear=yii::$app->session->get('financialYear');
+        $yearID=($currentbudgetyear!=null)?$currentbudgetyear->yearID:null;
+        $Bbudgetid=base64_decode(urldecode($budget));
+        $branchannualbudget=null;
+        if($yearID!=null)
+        {
+            $annualbudget=Annualbudget::find()->where(['yearID'=> $currentbudgetyear->yearID])->one();
+            $branch=BranchAnnualBudget::findOne($Bbudgetid)->branch0->branchID;
+            $branchannualbudget=BranchAnnualBudget::find()->where(['budgetID'=>$annualbudget->budgetID,'branch'=>$branch])->one();
+        }
+        else
+        {
+            $branchannualbudget=BranchAnnualBudget::findOne($Bbudgetid);
+        }
+        return $this->render('hqFinance',['annualbudget'=>$branchannualbudget]);
     }
     public function actionBranchAccounts($budget)
     {
@@ -545,7 +619,33 @@ class FinanceController extends Controller
         }
         return $this->render('budgetreview',['budget'=>$budget]);
     }
-
+    public function actionCostcentersAllocationsReview($budget)
+    {
+        $budget=BranchAnnualBudget::findOne(base64_decode(urldecode($budget)));
+        if(yii::$app->request->isPost)
+        {
+          try
+          {
+          $model=new Costcenter();
+         if($model->acquireBudget(yii::$app->request->post(),$budget->bbID))
+         {
+          yii::$app->session->setFlash("success",'<i class="fa fa-info-circle"></i> Budget updated successfully !');
+          return $this->redirect(yii::$app->request->referrer); 
+         }
+         else
+         {
+          yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget updating failed ! '.Html::errorSummary($model));
+          return $this->redirect(yii::$app->request->referrer);  
+         }
+      }
+      catch(\Exception $r)
+      {
+          yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget updating failed !  '.$r->getMessage());
+          return $this->redirect(yii::$app->request->referrer);
+      }
+        }
+        return $this->render('costcenter_allocations_review',['budget'=>$budget]);
+    }
     public function actionDownloadAnnualReport()
     {
         (new Reporter)->downloadPDFReport((new Reporter)->incomesReportBuilder());

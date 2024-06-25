@@ -145,6 +145,10 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     public function getTotalExpenses()
     {
         $total=0;
+        if($this->branch0->isHQ())
+        {
+            return $this->branch0->centersTotalExpenses();
+        }
         if($this->budgetprojections==null){ return 0;}
         foreach($this->budgetprojections as $proj)
         {
@@ -233,6 +237,11 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     }
     public function allocated()
     {
+        //if the branch is HQ budget allocations is done by cost centers
+        if($this->branch0->isHQ())
+        {
+            return $this->branch0->centersTotalRevenue();
+        }
         $projections=$this->budgetprojections;
         $total=0;
         if($projections==null){return 0;}
@@ -254,6 +263,11 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
         $userbranch=$branch->branchID;
         return $this->branch==$userbranch;
     }
+
+   public function isCurrent()
+   {
+    return $this->budget->isCurrent();
+   }
     
  
 

@@ -45,7 +45,8 @@ public $defaultAction = 'dashboard';
                             'users-list',
                             'budget-year',
                             'migrate',
-                            'migrate-back'
+                            'migrate-back',
+                            'access-control'
                         ],
                         'allow' => true,
                         'roles' => ['ADMIN'],
@@ -103,6 +104,10 @@ public $defaultAction = 'dashboard';
     {
         $budgetyears=BudgetYear::find()->all();
         return $this->render('budgetyear',['budgetyears'=>$budgetyears]);
+    }
+    public function actionAccessControl()
+    {
+        return $this->render('accesscontrol');
     }
     public function actionMigrate()
     {

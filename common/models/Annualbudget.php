@@ -245,4 +245,8 @@ class Annualbudget extends \yii\db\ActiveRecord
             }
         }
     }
+    public function isCurrent()
+    {
+        return $this->year->operationstatus=='open';
+    }
 }

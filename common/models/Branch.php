@@ -21,6 +21,7 @@ use Yii;
  *
  * @property Meeting[] $meetings
  * @property Member[] $members
+ * @property Costcenter[] $costcenters
  * @property BranchAnnualBudget $branchBudget;
  */
 class Branch extends \yii\db\ActiveRecord
@@ -109,6 +110,10 @@ class Branch extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Member::className(), ['branch' => 'branchID']);
     }
+    public function getCostcenters()
+    {
+        return $this->hasMany(Costcenter::className(), ['branch' => 'branchID']);
+    }
     public function membersCount()
     {
         return count($this->members);
@@ -163,8 +168,36 @@ class Branch extends \yii\db\ActiveRecord
         }
     }
 
-    // public function monthlyPayables()
-    // {
-    //     $payables=Payabletransactions::find()
-    // }
+   public function centersTotalRevenue()
+   {
+    $centers=$this->costcenters;
+    $total=0;
+    if($centers==null){ return 0;}
+
+    foreach($centers as $center)
+    {
+        $total+=$center->currentBudget();
+    }
+
+    return $total;
+   }
+
+   //centers total expenses
+
+   public function centersTotalExpenses()
+   {
+      $centers=$this->costcenters;
+      $total=0;
+      if($centers==null)
+      {
+        return 0;
+      }
+
+      foreach($centers as $center)
+      {
+        $total+=$center->totalexpenses();
+      }
+
+      return $total;
+   }
 }
