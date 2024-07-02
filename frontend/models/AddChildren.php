@@ -1,5 +1,5 @@
 <?php
-namespace frontend\Models;
+namespace frontend\models;
 use yii\base\Model;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
