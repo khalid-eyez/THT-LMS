@@ -208,7 +208,7 @@ class FinanceController extends Controller
      {
         return $this->render('finance',['annualbudget'=>$annualbudget]);
      }
-     if(yii::$app->user->can('view_branch_finance'))
+     if(yii::$app->user->can('view_branch_finance') || yii::$app->user->can('view_hq_finance'))
      {
         return $this->redirect(['branch-finance','budget'=>urlencode(base64_encode($branchAnnualBudget->bbID))]);
      }
