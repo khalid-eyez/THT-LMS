@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\Models;
+namespace frontend\models;
 use yii\rbac\Item;
 
 
