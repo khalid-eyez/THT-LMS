@@ -124,6 +124,11 @@ class Costcenter extends \yii\db\ActiveRecord
             }
         }
     }
+
+    public function getAuthority()
+    {
+        return $this->authority0->username;
+    }
     public function getYearRevenues()
     {
         $revenues=$this->costcenterrevenues;
@@ -285,4 +290,12 @@ class Costcenter extends \yii\db\ActiveRecord
     {
         return $this->currentBudget()-$this->allocatedBudget();
     }
+
+    public function possibleAuthorities()
+    {
+        //returning all users temporary
+
+        return User::find()->all();
+    }
+    
 }
