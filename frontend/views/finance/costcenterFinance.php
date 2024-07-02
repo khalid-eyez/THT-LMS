@@ -10,22 +10,7 @@ use common\models\Budgetyear;
 $this->params["pageTitle"]="Cost Center Finance";
 ?>
 <div class="container-fluid mt-3 meet">
-        <?php
-          if($annualbudget==null)
-          {
-        ?>
-        <div class="card shadow-lg">
-        <div class="card-header p-1 bg-success text-sm">
-               
-          </div>
-          <div class="card-body text-center text-lg text-success">
-            No budget found
-          </div>
-        </div>
-          <?php
-          return false;
-           }
-          ?>
+       
 <div class="card shadow-lg">
 <div class="card-header p-1 bg-success text-sm">
               
@@ -49,28 +34,11 @@ $this->params["pageTitle"]="Cost Center Finance";
       </div>
       </div>
     </form> 
-    <span class="text-lg text-success">[ <?=$annualbudget->branch0->branch_short?> ]</span>
-    <?php if(!$annualbudget->budget->isOpen()){?>
-      <span class="text-danger">Closed</span>
-    <?php }else{ ?>
-    <span class="text-primary">Open</span>
-    <?php } ?>
-    <a href="#" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-download" data-toggle="tooltip" data-title="Download Balance sheet report"></i></a>
-    <a href="<?=Url::to(['/finance/branch-monthly-incomes','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-calendar" data-toggle="tooltip" data-title="Branch Monthly Revenues"></i></a>
-    <a href="<?=Url::to(['/finance/branch-accounts','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-arrow-right" data-toggle="tooltip" data-title="Go To Accounts"></i></a>
-    <?php if($annualbudget->hasAuthority()){?>
-    <a href="<?=Url::to(['/finance/branch-income-allocate','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>" class="btn btn-sm btn-success mr-1 float-right"><i class="fas fa-donate" data-toggle="tooltip" data-title="Allocate Budget"></i></a>
-    <?php
-     if($annualbudget->budget->isOpen()){
-
-      if(!$annualbudget->branch0->isHQ())
-      {
-      ?>
-
-    <a href="#" class="btn btn-sm btn-success mr-1 float-right" data-toggle="modal" data-target="#branchotherincomemodal"><i class="fa fa-arrow-down" data-toggle="tooltip" data-title="Acquire other income"></i></a>
-    <?php } ?>
+    <span class="text-lg text-success">[ <?=$center->branch0->branch_short?> ][ <?=$center->name?> ]</span>
+    <a href="#" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-download" data-toggle="tooltip" data-title="Download report"></i></a>
+    <a href="<?=Url::to(['/finance/center-trxs','center'=>urlencode(base64_encode($center->centerID))])?>" class="btn btn-sm btn-success mr-1 float-right" ><i class="fa fa-calendar" data-toggle="tooltip" data-title="Center Budget Transactions"></i></a>
+    <a href="<?=Url::to(['/finance/cc-income-allocate','center'=>urlencode(base64_encode($center->centerID))])?>" class="btn btn-sm btn-success mr-1 float-right"><i class="fas fa-donate" data-toggle="tooltip" data-title="Allocate Funds"></i></a>
     <a href="#" class="btn btn-sm btn-success mr-1 float-right" data-toggle="modal" data-target="#budgetitemmodal"><i class="fa fa-plus-circle" data-toggle="tooltip" data-title="Add budget Item"></i></a>
-    <?php } } ?>
 </div>
 </div>
 <div class="card shadow">
@@ -84,28 +52,27 @@ $this->params["pageTitle"]="Cost Center Finance";
            
               <div class="col">
                 <span class="heading">Total Projection</span><br>
-                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->projected())?></span>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($center->totalProjection())?></span>
               </div>
               <div class="col">
                 <span class="heading">Total Revenue</span><br>
-                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->branchTotalRevenue())?></span>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($center->currentBudget())?></span>
               </div>
               <div class="col">
-                <span class="heading">Other Income</span><br>
-                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->totalOtherIncomes())?></span>
+                <span class="heading">Allocated</span><br>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($center->allocatedBudget())?></span>
               </div>
-        
               <div class="col">
                 <span class="heading">Unallocated</span><br>
-                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->unallocated())?></span>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($center->unallocated())?></span>
               </div>
               <div class="col">
                 <span class="heading">Total Expenses</span><br>
-                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->getTotalExpenses())?></span>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($center->totalexpenses())?></span>
               </div>
               <div class="col">
                 <span class="heading">Balance</span><br>
-                <span class="money"><?=yii::$app->MoneyFormatter->format($annualbudget->getBalance())?></span>
+                <span class="money"><?=yii::$app->MoneyFormatter->format($center->balance())?></span>
               </div>
            
 
@@ -119,8 +86,8 @@ $this->params["pageTitle"]="Cost Center Finance";
  <div class="card shadow">
     <div class="card-header p-1 bg-success text-sm pl-2">
  
-    <i class="fa fa-building"></i> Branch Budget
-           <a href="<?=Url::to(['/finance/budget-review','budget'=>urlencode(base64_encode($annualbudget->bbID))])?>"><i class="fa fa-edit float-right btn btn-default mt-1 p-1" data-toggle="tooltip" data-title="Review Budget"></i></a>    
+    <i class="fa fa-building"></i> Center Budget
+           <a href="<?=Url::to(['/finance/cc-budget-review','center'=>$_GET['center']])?>"><i class="fa fa-edit float-right btn btn-default mt-1 p-1" data-toggle="tooltip" data-title="Review Budget"></i></a>    
     </div>
         
         <div class="card-body " style="font-size:12px">
@@ -129,15 +96,21 @@ $this->params["pageTitle"]="Cost Center Finance";
                     
                         <?php
                         $count=0;
-                        $projections=$annualbudget->budgetprojections;
+                        $projections=$center->getYearProjections();
   
                           foreach($projections as $projection)
                           {
                         ?>
-                          <div class="row money"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$projection->budgetItem?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->projected_amount)?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->allocated())?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->deficit())?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->balance())?></div><div class="col"><?=yii::$app->MoneyFormatter->format($projection->getTotalExpenses())?></div>
+                          <div class="row money"><div class="col-sm-1"><?=++$count?></div><div class="col"><?=$projection->projection0->budgetItem?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($projection->projection0->projected_amount)?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($projection->projection0->allocated())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($projection->projection0->deficit())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($projection->projection0->balance())?></div>
+                          <div class="col"><?=yii::$app->MoneyFormatter->format($projection->projection0->getTotalExpenses())?></div>
                           <div class="col">
-                          <a href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projID))])?>" data-toggle="tooltip" data-title="Go To Budget Item"><i class="fa fa-arrow-right fa-1x btn btn-success p-1 btn-sm m-1 text-sm" style="font-size:20px"></i></a>
-                          <a href="#" class="bdel" id=<?=$projection->projID?> data-toggle="tooltip" data-title="Delete Budget Item"><i class="fa fa-trash btn btn-danger btn-sm p-1 "></i></a>
+                          <a href="<?=Url::to(['/finance/budget-item','item'=>urlencode(base64_encode($projection->projection0->projID))])?>" data-toggle="tooltip" data-title="Go To Budget Item">
+                            <i class="fa fa-arrow-right fa-1x btn btn-success p-1 btn-sm m-1 text-sm" style="font-size:20px"></i></a>
+                          <a href="#" class="bdel" id=<?=$projection->projection0->projID?> data-toggle="tooltip" data-title="Delete Budget Item"><i class="fa fa-trash btn btn-danger btn-sm p-1 "></i></a>
                           </div></div>
                         <?php
                           }
@@ -146,8 +119,7 @@ $this->params["pageTitle"]="Cost Center Finance";
                         
         </div>
 </div>
-<?=$this->render('newBudgetItem')?>
-<?=$this->render('branchotherincome')?>
+<?=$this->render('newCBudgetItem')?>
 </div>
 </div>
 

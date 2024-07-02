@@ -160,9 +160,9 @@ class BranchAnnualBudget extends \yii\db\ActiveRecord
     public function getCurrentBudget()
     {
         $currentbudget=yii::$app->session->get("financialYear")->annualbudget->budgetID;
-        $member=yii::$app->user->identity->member;
+        $user=yii::$app->user;
         $HQ=(new Branch)->getHQ();
-        $branch=($member!=null)?$member->branch:$HQ->branchID;
+        $branch=(!$user->can('HQ'))?$user->identity->member->branch:$HQ->branchID;
         return $this->find()->where(['budgetID'=>$currentbudget,'branch'=>$branch])->one();
     }
     public function totalIncome()

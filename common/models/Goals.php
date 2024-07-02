@@ -5,26 +5,24 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "objectives".
+ * This is the model class for table "goals".
  *
- * @property int $objID
+ * @property int $goalID
  * @property string|null $code
  * @property string $description
- * @property int $target
  * @property string|null $createdAt
  * @property string|null $updatedAt
  *
- * @property Costcenterprojection[] $costcenterprojections
- * @property Targets $target0
+ * @property Strategies[] $strategies
  */
-class Objectives extends \yii\db\ActiveRecord
+class Goals extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'objectives';
+        return 'goals';
     }
 
     /**
@@ -46,7 +44,7 @@ class Objectives extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'objID' => 'Obj ID',
+            'goalID' => 'Goal ID',
             'code' => 'Code',
             'description' => 'Description',
             'createdAt' => 'Created At',
@@ -55,16 +53,12 @@ class Objectives extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Costcenterprojections]].
+     * Gets query for [[Strategies]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getCostcenterprojections()
+    public function getStrategies()
     {
-        return $this->hasMany(Costcenterprojection::className(), ['objective' => 'objID']);
-    }
-    public function getTarget()
-    {
-        return $this->hasOne(Targets::className(),['targetID'=>'target']);
+        return $this->hasMany(Strategies::className(), ['goal' => 'goalID']);
     }
 }

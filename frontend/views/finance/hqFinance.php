@@ -124,7 +124,7 @@ $this->params["pageTitle"]="Finance dashboard";
                           <div class="col-sm-1"><?=yii::$app->MoneyFormatter->format($center->totalexpenses())?></div>
                           <div class="col-sm-1"><?=yii::$app->MoneyFormatter->format($center->balance())?></div>
                           <div class="col-sm-1">
-                          <a href="#" data-toggle="tooltip" data-title="Go To Cost Center"><i class="fa fa-arrow-right fa-1x btn btn-success p-1 btn-sm m-1 text-sm" style="font-size:20px"></i></a>
+                          <a href="<?=Url::to(['/finance/center-budget','center'=>urlencode(base64_encode($center->centerID))])?>" data-toggle="tooltip" data-title="Go To Cost Center"><i class="fa fa-arrow-right fa-1x btn btn-success p-1 btn-sm m-1 text-sm" style="font-size:20px"></i></a>
                           </div></div>
                         <?php
                           }

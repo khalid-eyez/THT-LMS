@@ -27,6 +27,7 @@ use ruturajmaniyar\mod\audit\behaviors\AuditEntryBehaviors;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $last_login
+ * @property Costcenter $costcenter
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -76,7 +77,10 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
     }
-
+public function getCostcenter()
+{
+    return $this->hasOne(Costcenter::className(),['authority'=>'id']);
+}
     /**
      * {@inheritdoc}
      */

@@ -37,6 +37,7 @@ AppAsset::register($this);
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mediaelement-plugins/2.5.1/context-menu/context-menu.min.css" integrity="sha512-0tMNRS8a8sUxculnEHe+nBLWbSJPsiHI4YaaupqEpv7s7X6VaUxtqmqdG8WcuMvOpY1bSNSszdL8gZuJ7cGT9w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/emojionearea/emojionearea.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <?php 
     $this->registerCsrfMetaTags() ;

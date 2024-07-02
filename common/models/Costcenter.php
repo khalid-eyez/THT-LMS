@@ -111,6 +111,19 @@ class Costcenter extends \yii\db\ActiveRecord
             return $projection->projection0->branchbudget0->budget->yearID==$budgetyear;
         });
     }
+
+    public function getCenterBudget()
+    {
+        $budgetyear=yii::$app->session->get("financialYear");
+        $branchbudgets=$budgetyear->annualbudget->branchAnnualBudgets;
+        foreach($branchbudgets as $branchbudget)
+        {
+            if($branchbudget->branch==$this->branch)
+            {
+                return $branchbudget;
+            }
+        }
+    }
     public function getYearRevenues()
     {
         $revenues=$this->costcenterrevenues;
@@ -131,7 +144,7 @@ class Costcenter extends \yii\db\ActiveRecord
 
         foreach($centerprojections as $proj)
         {
-            $total+=$proj->projection0->projected();
+            $total+=$proj->projection0->projected_amount;
         }
 
         return $total;
@@ -266,5 +279,10 @@ class Costcenter extends \yii\db\ActiveRecord
             $transaction->rollBack();
             throw $e;
         }
+    }
+
+    public function unallocated()
+    {
+        return $this->currentBudget()-$this->allocatedBudget();
     }
 }

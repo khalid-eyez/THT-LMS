@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f354ee0be814bf76946c9aea94556b40",
+    "content-hash": "782afd7e35869cfdaf983f3d611e3242",
     "packages": [
         {
             "name": "aryelds/yii2-sweet-alert",
@@ -2037,6 +2037,55 @@
                 "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.0"
             },
             "time": "2023-06-14T22:48:31+00:00"
+        },
+        {
+            "name": "practically/yii2-chartjs",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Practically/yii2-chartjs.git",
+                "reference": "fa78820363a0f3a67499a2d82ccb546894b4aa56"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Practically/yii2-chartjs/zipball/fa78820363a0f3a67499a2d82ccb546894b4aa56",
+                "reference": "fa78820363a0f3a67499a2d82ccb546894b4aa56",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "^2.0"
+            },
+            "require-dev": {
+                "bower-asset/chart-js": "^2.7 || ^4.0",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symfony/phpunit-bridge": "^6.0",
+                "vimeo/psalm": "^4.10 || ^5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "practically\\chartjs\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Ade Attwood",
+                    "email": "ade@practically.io",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Neil Davies",
+                    "email": "neil@practically.io",
+                    "role": "Contributor"
+                }
+            ],
+            "description": "Chart js wrapper for yii2 to help with rendering data charts",
+            "support": {
+                "issues": "https://github.com/Practically/yii2-chartjs/issues",
+                "source": "https://github.com/Practically/yii2-chartjs/tree/v1.2.1"
+            },
+            "time": "2024-02-26T15:56:17+00:00"
         },
         {
             "name": "psr/http-client",

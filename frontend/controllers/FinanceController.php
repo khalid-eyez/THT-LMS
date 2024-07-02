@@ -6,9 +6,11 @@ use common\models\Budgetyear;
 use common\models\Costcenter;
 use common\models\Costcenterrevenue;
 use common\models\Otherincomes;
+use frontend\models\CBudgetItem;
 use yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
+use yii\web\ForbiddenHttpException;
 use yii\web\UploadedFile;
 use common\models\Files;
 use yii\helpers\Html;
@@ -32,72 +34,165 @@ class FinanceController extends Controller
         'access' => [
             'class' => AccessControl::className(),
             'rules' => [
-              
                 [
-                    'actions' => [
-                        'finance',
-                        'new-income',
-                        'update-revenues',
-                        'open-annual-budget',
-                        'close-annual-budget',
-                        'new-item',
-                        'budget-projection-itemizer',
-                        'branch-income-allocate',
-                        'payments',
-                        'branch-finance',
-                        'branch-accounts',
-                        'budget-item',
-                        'monthly-incomes',
-                        'branch-monthly-incomes',
-                        'item-allocations',
-                        'other-income',
-                        'delete-income',
-                        'switch-financial-year',
-                        'budget-review',
-                        'review-itemizer',
-                        'delete-budget-item',
-                        'delete-projection-structure-item',
-                        'download-annual-report',
-                        'hq-finance',
-                        'center-budget-allocate',
-                        'costcenters-allocations-review'
-                      
-                    ],
+                    'actions' => ['finance'],
                     'allow' => true,
-                    'roles' => ['GENERAL SECRETARY HQ','CHAIRPERSON HQ'],
+                    'roles' => ['view_top_finance','view_branch_finance','view_costCenter_budget','view_branch_accounts']
                 ],
                 [
-                    'actions' => [
-                        'finance',
-                        'new-item',
-                        'budget-projection-itemizer',
-                        'branch-income-allocate',
-                        'payments',
-                        'branch-finance',
-                        'branch-accounts',
-                        'budget-item',
-                        'branch-monthly-incomes',
-                        'item-allocations',
-                        'branch-other-income',
-                        'switch-financial-year',
-                        'budget-review',
-                        'review-itemizer',
-                        'delete-budget-item',
-                        'delete-projection-structure-item',
-                        'center-budget-allocate',
-                        'costcenters-allocations-review'
-                       
-                    ],
+                    'actions' => ['new-income'],
                     'allow' => true,
-                    'roles' => ['CHAIRPERSON BR','GENERAL SECRETARY BR'],
+                    'roles' => ['acquire_income']
                 ],
                 [
-                    'actions' => [
-                        'payments',
-                        'finance',
-                    ],
+                    'actions' => ['update-revenues'],
                     'allow' => true,
-                    'roles' => ['TREASURER HQ','TREASURER BR'],
+                    'roles' => ['update_revenues']
+                ],
+                [
+                    'actions' => ['open-annual-budget'],
+                    'allow' => true,
+                    'roles' => ['open_annual_budget']
+                ],
+                [
+                    'actions' => ['close-annual-budget'],
+                    'allow' => true,
+                    'roles' => ['close_annual_budget']
+                ],
+                [
+                    'actions' => ['new-item'],
+                    'allow' => true,
+                    'roles' => ['add_budget_item']
+                ],
+                [
+                    'actions' => ['budget-projection-itemizer'],
+                    'allow' => true,
+                    'roles' => ['structure_budget_item']
+                ],
+                [
+                    'actions' => ['branch-income-allocate'],
+                    'allow' => true,
+                    'roles' => ['allocate_branch_income']
+                ],
+                [
+                    'actions' => ['cc-income-allocate'],
+                    'allow' => true,
+                    'roles' => ['allocate_costcenter_income']
+                ],
+                [
+                    'actions' => ['payments'],
+                    'allow' => true,
+                    'roles' => ['record_payment']
+                ],
+                [
+                    'actions' => ['branch-finance'],
+                    'allow' => true,
+                    'roles' => ['view_branch_finance']
+                ],
+                [
+                    'actions' => ['branch-accounts'],
+                    'allow' => true,
+                    'roles' => ['view_branch_accounts']
+                ],
+                [
+                    'actions' => ['budget-item'],
+                    'allow' => true,
+                    'roles' => ['view_budget_item']
+                ],
+                [
+                    'actions' => ['monthly-incomes'],
+                    'allow' => true,
+                    'roles' => ['view_monthly_incomes']
+                ],
+                [
+                    'actions' => ['branch-monthly-incomes'],
+                    'allow' => true,
+                    'roles' => ['view_branch_monthly_incomes']
+                ],
+                [
+                    'actions' => ['item-allocations'],
+                    'allow' => true,
+                    'roles' => ['view_budgetItem_funds_allocations']
+                ],
+                [
+                    'actions' => ['other-income'],
+                    'allow' => true,
+                    'roles' => ['acquire_other_income']
+                ],
+                [
+                    'actions' => ['delete-income'],
+                    'allow' => true,
+                    'roles' => ['delete_income']
+                ],
+                [
+                    'actions' => ['switch-financial-year'],
+                    'allow' => true,
+                    'roles' => ['switch_financial_year']
+                ],
+                [
+                    'actions' => ['switch-financial-year'],
+                    'allow' => true,
+                    'roles' => ['switch_financial_year']
+                ],
+                [
+                    'actions' => ['budget-review'],
+                    'allow' => true,
+                    'roles' => ['budget_review']
+                ],
+                [
+                    'actions' => ['review-itemizer'],
+                    'allow' => true,
+                    'roles' => ['review_budget_item_structure']
+                ],
+                [
+                    'actions' => ['delete-budget-item'],
+                    'allow' => true,
+                    'roles' => ['delete_budget_item']
+                ],
+                [
+                    'actions' => ['delete-projection-structure-item'],
+                    'allow' => true,
+                    'roles' => ['delete_projectionStructure_item']
+                ],
+                [
+                    'actions' => ['download-annual-report'],
+                    'allow' => true,
+                    'roles' => ['download_annual_report']
+                ],
+                [
+                    'actions' => ['hq-finance'],
+                    'allow' => true,
+                    'roles' => ['view_hq_finance']
+                ],
+                [
+                    'actions' => ['center-budget-allocate'],
+                    'allow' => true,
+                    'roles' => ['allocate_costCenter_budget']
+                ],
+                [
+                    'actions' => ['costcenters-allocations-review'],
+                    'allow' => true,
+                    'roles' => ['review_costCenters_budget_allocations']
+                ],
+                [
+                    'actions' => ['center-budget'],
+                    'allow' => true,
+                    'roles' => ['view_costCenter_budget']
+                ],
+                [
+                    'actions' => ['new-center-item'],
+                    'allow' => true,
+                    'roles' => ['costcenter_add_budgetItem']
+                ],
+                [
+                    'actions' => ['center-trxs'],
+                    'allow' => true,
+                    'roles' => ['view_costCenter_allocations_transactions']
+                ],
+                [
+                    'actions' => ['cc-budget-review'],
+                    'allow' => true,
+                    'roles' => ['costCenter_budget_review']
                 ],
             ],
         ],
@@ -109,20 +204,29 @@ class FinanceController extends Controller
      $budgetyear=yii::$app->session->get("financialYear"); 
      $annualbudget=Annualbudget::find()->where(['yearID'=> $budgetyear->yearID])->one();
      $branchAnnualBudget=(new BranchAnnualBudget)->getCurrentBudget();
-     $branch=yii::$app->user->identity->getBranch();
-     if(yii::$app->user->can('TREASURER HQ') || yii::$app->user->can('TREASURER BR'))
-     {
-        return $this->render('accounts',['annualbudget'=>$branchAnnualBudget]);
-     }
-     if($branch->isHQ())
+     if(yii::$app->user->can('view_top_finance'))
      {
         return $this->render('finance',['annualbudget'=>$annualbudget]);
      }
+     if(yii::$app->user->can('view_branch_finance'))
+     {
+        return $this->redirect(['branch-finance','budget'=>urlencode(base64_encode($branchAnnualBudget->bbID))]);
+     }
+     if(yii::$app->user->can('view_costCenter_budget'))
+     {
+        if(yii::$app->user->identity->costcenter==null)
+        {
+            throw new ForbiddenHttpException("You are not allowed to perform this action");
+        }
+        $center=yii::$app->user->identity->costcenter->centerID;
+        $center=urlencode(base64_encode($center));
 
-    
-    
-        return $this->render('branchFinance',['annualbudget'=>$branchAnnualBudget]);
-     
+        return $this->redirect(['center-budget','center'=>$center]);
+     }
+     if(yii::$app->user->can('view_branch_accounts'))
+    {
+        return $this->redirect(['branch-accounts','budget'=>urlencode(base64_encode($branchAnnualBudget->bbID))]);
+    }
       
     }
     public function actionNewIncome()
@@ -281,6 +385,41 @@ class FinanceController extends Controller
         if($model->load(yii::$app->request->post()) && $model->save())
         {
             yii::$app->session->setFlash("success",'<i class="fa fa-info-circle"></i> Budget Item added Successfully ! Now you can proceed with planning');
+            if(strpos(yii::$app->request->referrer,"/finance/budget-review") || strpos(yii::$app->request->referrer,"/finance/cc-budget-review"))
+            {
+                return $this->redirect(['review-itemizer','projection'=>urlencode(base64_encode($model->projID))]);  
+            }
+            return $this->redirect(['budget-projection-itemizer','projection'=>urlencode(base64_encode($model->projID))]);
+        }
+        else
+        {
+            yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> An error occurred while adding Item ! '.Html::errorSummary($model));
+            return $this->redirect(yii::$app->request->referrer);  
+        }
+    }
+    catch(\Exception $i)
+    {
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> An error occurred while adding Item ! '.$i->getMessage());
+        return $this->redirect(yii::$app->request->referrer); 
+    }
+    }
+
+    public function actionCenterTrxs($center)
+    {
+        $center=base64_decode(urldecode($center));
+        $center=Costcenter::findOne($center);
+
+        return $this->render('centertrxs',['center'=>$center]);
+    }
+    public function actionNewCenterItem($center)
+    {
+        try
+        {
+        $model=new CBudgetItem();
+        $center=base64_decode(urldecode($center));
+        if($model->load(yii::$app->request->post()) && $model->saveItem($center))
+        {
+            yii::$app->session->setFlash("success",'<i class="fa fa-info-circle"></i> Budget Item added Successfully ! Now you can proceed with planning');
             if(strpos(yii::$app->request->referrer,"/finance/budget-review"))
             {
                 return $this->redirect(['review-itemizer','projection'=>urlencode(base64_encode($model->projID))]);  
@@ -386,6 +525,36 @@ class FinanceController extends Controller
       }
 
       return $this->render('branchbudgetprojectionsupdate',['budget'=>$budget]);
+    }
+
+    public function actionCcIncomeAllocate($center)
+    {
+      $center=Costcenter::findOne(base64_decode(urldecode($center)));
+
+      if(yii::$app->request->isPost)
+      {
+        try
+        {
+        $model=new Budgetprojections;
+       if(($model)->acquireBudget(yii::$app->request->post()))
+       {
+        yii::$app->session->setFlash("success",'<i class="fa fa-info-circle"></i> Budget allocation successful !');
+        return $this->redirect(yii::$app->request->referrer); 
+       }
+       else
+       {
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget allocation failed ! '.Html::errorSummary($model));
+        return $this->redirect(yii::$app->request->referrer);  
+       }
+    }
+    catch(\Exception $r)
+    {
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget allocation failed !  '.$r->getMessage());
+        return $this->redirect(yii::$app->request->referrer);
+    }
+      }
+
+      return $this->render('ccbudgetprojectionsupdate',['center'=>$center]);
     }
 
     public function actionCenterBudgetAllocate($budget)
@@ -619,6 +788,33 @@ class FinanceController extends Controller
         }
         return $this->render('budgetreview',['budget'=>$budget]);
     }
+    public function actionCcBudgetReview($center)
+    {
+        $center=Costcenter::findOne(base64_decode(urldecode($center)));
+        if(yii::$app->request->isPost)
+        {
+          try
+          {
+          $model=new Budgetprojections;
+         if($model->updateProjections(yii::$app->request->post()))
+         {
+          yii::$app->session->setFlash("success",'<i class="fa fa-info-circle"></i> Budget projections updated successfully !');
+          return $this->redirect(yii::$app->request->referrer); 
+         }
+         else
+         {
+          yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget projections updating failed ! '.Html::errorSummary($model));
+          return $this->redirect(yii::$app->request->referrer);  
+         }
+      }
+      catch(\Exception $r)
+      {
+          yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Budget projections updating failed !  '.$r->getMessage());
+          return $this->redirect(yii::$app->request->referrer);
+      }
+        }
+        return $this->render('ccbudgetreview',['center'=>$center]);
+    }
     public function actionCostcentersAllocationsReview($budget)
     {
         $budget=BranchAnnualBudget::findOne(base64_decode(urldecode($budget)));
@@ -645,6 +841,13 @@ class FinanceController extends Controller
       }
         }
         return $this->render('costcenter_allocations_review',['budget'=>$budget]);
+    }
+    public function actionCenterBudget($center)
+    {
+        $center=base64_decode(urldecode($center));
+        $center=Costcenter::findOne($center);
+
+        return $this->render('costcenterFinance',['center'=>$center]);
     }
     public function actionDownloadAnnualReport()
     {
