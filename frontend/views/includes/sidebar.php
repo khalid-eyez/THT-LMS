@@ -3,8 +3,14 @@ use yii\helpers\Url;
 $user=yii::$app->user;
 ?>
 <div class="sidebar1 d-none d-md-block text-lg" style="font-family:regulartext">
-  <a href="<?=$user->can('ADMIN')?Url::to('/admin/dashboard'):Url::to('/member/dashboard')?>" class="menuitem dashboard"><i class=" nav-icon fas fa-th"></i> <span class="mn">Dashboard</span></a>
-  <?php if($user->can("TREASURER HQ") || $user->can("CHAIRPERSON HQ") || $user->can("GENERAL SECRETARY HQ") || $user->can("TREASURER BR") || $user->can("CHAIRPERSON BR") || $user->can("GENERAL SECRETARY BR")){?>
+  <a href="<?=$user->can('ADMIN')?Url::to('/admin/dashboard'):Url::to('/home/dashboard')?>" class="menuitem dashboard"><i class=" nav-icon fas fa-th"></i> <span class="mn">Dashboard</span></a>
+  <?php if(
+    yii::$app->user->can('view_top_finance') || 
+    yii::$app->user->can('view_hq_finance') ||
+     yii::$app->user->can('view_costCenter_budget') ||
+     yii::$app->user->can('view_branch_finance') ||
+     yii::$app->user->can('view_branch_accounts')
+     ){?>
   <a href="<?=Url::to('/finance/finance')?>" class="finance"> <i class="nav-icon fas fa-coins"></i> <span class="mn">Finance</span></a>
   <?php } ?>
   <?php if($user->can("MGT SECRETARY")){?>
