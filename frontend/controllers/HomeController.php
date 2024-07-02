@@ -47,7 +47,7 @@ class HomeController extends \yii\web\Controller
             return $this->redirect(Url::to(['/home/change-password-restrict']));
           }
 
-          if(yii::$app->user->can('view_finance'))
+          if(yii::$app->user->can('view_top_finance') || yii::$app->user->can('view_hq_finance') || yii::$app->user->can('view_costCenter_budget'))
           {
             return $this->render('dashboard2');
           }
