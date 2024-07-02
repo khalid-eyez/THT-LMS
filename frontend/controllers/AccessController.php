@@ -2,9 +2,9 @@
 
 namespace frontend\controllers;
 
-use frontend\Models\AddPerm;
-use frontend\Models\AddRole;
-use frontend\Models\AddRule;
+use frontend\models\AddPerm;
+use frontend\models\AddRole;
+use frontend\models\AddRule;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
