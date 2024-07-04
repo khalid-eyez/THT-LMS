@@ -15,7 +15,7 @@ $this->params['pageTitle']="Organisation Monitor";
     <a class="nav-link active" data-toggle="tab" href="#monitor"><span>Monitor</span></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#goals"><span>Strategical objectives</span></a>
+    <a class="nav-link" data-toggle="tab" href="#goals"><span>Strategic Objectives</span></a>
   </li>
   <li class="nav-item">
     <a class="nav-link" data-toggle="tab" href="#strategies"><span>Strategies</span></a>

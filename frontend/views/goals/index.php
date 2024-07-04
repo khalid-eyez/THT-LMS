@@ -11,7 +11,7 @@ use yii\widgets\Pjax;
 
 ?>
 <div class="goals-index">
-        <?= Html::a('<i class="fa fa-plus-circle"></i> Add New Goal', ['create'], ['class' => 'btn btn-success float-right mb-2','data-toggle'=>'modal','data-target'=>'#glmodal']) ?>
+        <?= Html::a('<i class="fa fa-plus-circle"></i> Add New Objective', ['create'], ['class' => 'btn btn-success float-right mb-2','data-toggle'=>'modal','data-target'=>'#glmodal']) ?>
 
     <?php Pjax::begin(); ?>
     <?= GridView::widget([
