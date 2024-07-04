@@ -71,4 +71,21 @@ class Strategies extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Targets::className(), ['strategy' => 'strID']);
     }
+
+    public function getCompletionstatus()
+    {
+        $targets=$this->targets;
+        $total=0;
+
+        if($targets==null)
+        {
+            return 0;
+        }
+        foreach($targets as $target)
+        {
+            $total+=$target->getCompletionstatus();   
+        }
+
+        return $total/(($this->targets!=null)?count($this->targets):1);
+    }
 }

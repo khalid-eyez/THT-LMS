@@ -6,15 +6,19 @@ use yii\helpers\Html;
 /* @var $model common\models\Targets */
 
 $this->title = 'Create Targets';
-$this->params['breadcrumbs'][] = ['label' => 'Targets', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['pageTitle'] = "Add New Target";
 ?>
-<div class="targets-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="container p-5">
+<div class="container p-5 shadow">
 
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
-
 </div>
+</div>
+<?php
+$script = <<<JS
+    $('.monitor').addClass('active');
+JS;
+$this->registerJs($script);
+?>

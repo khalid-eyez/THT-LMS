@@ -85,7 +85,6 @@ class Payabletransactions extends \yii\db\ActiveRecord
       catch(\Exception $p)
       {
         throw $p;
-        return false;
       }
     }
 

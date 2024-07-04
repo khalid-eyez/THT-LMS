@@ -6,18 +6,14 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\Targets */
 
-$this->title = $model->targetID;
-$this->params['breadcrumbs'][] = ['label' => 'Targets', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['pageTitle']= "View Target";
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="targets-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->targetID], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->targetID], [
+        <?= Html::a('<i class="fa fa-edit"></i> Update', ['update', 'id' => $model->targetID], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-trash"></i> Delete', ['delete', 'id' => $model->targetID], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -29,13 +25,22 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'targetID',
             'code',
             'description:ntext',
-            'strategy',
-            'createdAt',
-            'updatedAt',
+            [
+                'attribute'=>'strategy',
+                'value'=>function($a)
+                {
+                    return $a->strategy0->description;
+                }
+            ],
         ],
     ]) ?>
 
 </div>
+<?php
+$script = <<<JS
+    $('.monitor').addClass('active');
+JS;
+$this->registerJs($script);
+?>

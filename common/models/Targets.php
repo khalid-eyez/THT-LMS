@@ -76,4 +76,22 @@ class Targets extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Strategies::className(), ['strID' => 'strategy']);
     }
+
+    public function getCompletionstatus()
+    {
+        $objectives=$this->objectives;
+        $total=0;
+
+        if($objectives==null)
+        {
+            return 0;
+        }
+
+        foreach($objectives as $objective)
+        {
+            $total+=$objective->getCompletionstatus();
+        }
+
+        return $total/($this->objectives!=null?count($this->objectives):1);
+    }
 }

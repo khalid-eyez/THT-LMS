@@ -17,3 +17,9 @@ use yii\helpers\Html;
 </div>
 </div>
 </div>
+<?php
+$script = <<<JS
+    $('.monitor').addClass('active');
+JS;
+$this->registerJs($script);
+?>

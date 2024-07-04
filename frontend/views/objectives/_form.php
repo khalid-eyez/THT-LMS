@@ -9,7 +9,7 @@ use common\models\Targets;
 /* @var $form yii\widgets\ActiveForm */
 
 $targets=Targets::find()->all();
-$targers=ArrayHelper::map($targets,'targetID','description');
+$targets=ArrayHelper::map($targets,'targetID','description');
 ?>
 
 <div class="objectives-form">

@@ -61,4 +61,40 @@ class Goals extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Strategies::className(), ['goal' => 'goalID']);
     }
+
+    public function completionStatus()
+    {
+        $strategies=$this->strategies;
+        $total=0;
+        if($strategies==null)
+        {
+            return 0;
+        }
+        foreach($strategies as $strategy)
+        {
+          $total+=$strategy->getCompletionStatus();
+        }
+
+        return $total;
+    }
+    public function getCompletionstatus()
+    {
+        return $this->completionStatus()/(($this->strategies!=null)?count($this->strategies):1); 
+    }
+
+    public function getAVGCompletionStatus()
+    {
+        $goals=$this->find()->all();
+
+        $total=0;
+        if($goals==null){return 0;}
+
+        foreach($goals as $goal)
+        {
+            $total+=$goal->getCompletionstatus();
+        }
+
+        return $total/(($goals!=null)?count($goals):1);
+
+    }
 }

@@ -5,17 +5,19 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\Objectives */
 
-$this->title = 'Update Objectives: ' . $model->objID;
-$this->params['breadcrumbs'][] = ['label' => 'Objectives', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->objID, 'url' => ['view', 'id' => $model->objID]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Update Objectives';
+$this->params['pageTitle']= 'Update Objective';
 ?>
-<div class="objectives-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
+<div class="container p-5">
+<div class="container p-5 shadow">
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
-
 </div>
+</div>
+<?php
+$script = <<<JS
+    $('.monitor').addClass('active');
+JS;
+$this->registerJs($script);
+?>

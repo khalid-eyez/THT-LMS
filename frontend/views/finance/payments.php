@@ -30,9 +30,9 @@ $this->params["pageTitle"]="Payments";
             <div class="row text-center money">
             <span  class="col"><?=yii::$app->MoneyFormatter->format($item->unitcost)?></span>
             <span  class="col"><?=$item->availableunits()?> (<?=$item->unit?>)</span>
-            <span  class="col"><?=yii::$app->MoneyFormatter->format($item->totalcost)?> </span>
+            <span  class="col"><?=yii::$app->MoneyFormatter->format($item->proj->allocated())?> </span>
             <span  class="col"><?=yii::$app->MoneyFormatter->format($item->getTotalExpenses())?> </span>
-            <span  class="col"><?=yii::$app->MoneyFormatter->format($item->balance())?></span>
+            <span  class="col"><?=yii::$app->MoneyFormatter->format($item->available())?></span>
 
          </div>
 

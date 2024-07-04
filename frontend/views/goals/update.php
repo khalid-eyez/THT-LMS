@@ -15,3 +15,9 @@ $this->params['pageTitle']="Update Goal";
     ]) ?>
 </div>
 </div>
+<?php
+$script = <<<JS
+    $('.monitor').addClass('active');
+JS;
+$this->registerJs($script);
+?>
