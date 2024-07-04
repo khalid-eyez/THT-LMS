@@ -13,8 +13,16 @@ $user=yii::$app->user;
      ){?>
   <a href="<?=Url::to('/finance/finance')?>" class="finance"> <i class="nav-icon fas fa-coins"></i> <span class="mn">Finance</span></a>
   <?php } ?>
+
+  <?php if(yii::$app->user->can('view_budget_items')){?>
+  <a href="<?=Url::to('/items/index')?>" class="bitems"> <i class="nav-icon fa fa-list"></i> <span class="mn">Budget Items</span></a>
+  <?php } ?>
+  <?php if(yii::$app->user->can('view_costcenters')){?>
   <a href="<?=Url::to('/costcenter/index')?>" class="costcenter"> <i class="nav-icon fa fa-money"></i> <span class="mn">Cost Centers</span></a>
+  <?php } ?>
+  <?php if(yii::$app->user->can('view_strategy')){?>
   <a href="<?=Url::to('/organisation/monitor')?>" class="monitor"> <i class="nav-icon fa fa-desktop"></i> <span class="mn">Monitor</span></a>
+  <?php } ?>
   <?php if($user->can("MGT SECRETARY")){?>
   <a href="<?=Url::to('/filecabinet/filecabinet')?>" class="cabinet"> <i class="nav-icon fa fa-folder-open"></i> <span class="mn">File cabinet</span></a>
   <?php } ?>

@@ -3,18 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
-use common\models\Goals;
-use common\models\GoalsSearch;
+use common\models\Budgetitem;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\helpers\Html;
 use yii\filters\AccessControl;
-
 /**
- * GoalsController implements the CRUD actions for Goals model.
+ * ItemsController implements the CRUD actions for Budgetitem model.
  */
-class OrganisationController extends Controller
+class ItemsController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -23,18 +21,36 @@ class OrganisationController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                        [
-                            'actions' => ['monitor'],
-                            'allow' => true,
-                            'roles' => ['view_strategy']
-                        ],
-                    
-                    
-                     
-                ],
+            'class' => AccessControl::className(),
+            'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['view_budget_items']
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['update_budget_item']
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['create_budget_item']
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['delete_budget_item']
+                    ],
+                    [
+                        'actions' => ['view'],
+                        'allow' => true,
+                        'roles' => ['view_budget_item']
+                    ],
+                 
             ],
+        ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -45,17 +61,23 @@ class OrganisationController extends Controller
     }
 
     /**
-     * Lists all Goals models.
+     * Lists all Budgetitem models.
      * @return mixed
      */
-    public function actionMonitor()
+    public function actionIndex()
     {
-      return $this->render('index');
+        $dataProvider = new ActiveDataProvider([
+            'query' => Budgetitem::find(),
+        ]);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**
-     * Displays a single Goals model.
-     * @param integer $id
+     * Displays a single Budgetitem model.
+     * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -67,24 +89,16 @@ class OrganisationController extends Controller
     }
 
     /**
-     * Creates a new Goals model.
+     * Creates a new Budgetitem model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Goals();
-        if(yii::$app->request->isPost)
-        {
+        $model = new Budgetitem();
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Goal added successfully ! ');
-            return $this->redirect(yii::$app->request->referrer);
-        }
-        else
-        {
-            yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Goal adding failed ! '.Html::errorSummary($model));
-            return $this->redirect(yii::$app->request->referrer);
-        }
+            return $this->redirect(['view', 'id' => $model->name]);
         }
 
         return $this->render('create', [
@@ -93,9 +107,9 @@ class OrganisationController extends Controller
     }
 
     /**
-     * Updates an existing Goals model.
+     * Updates an existing Budgetitem model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
+     * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -104,7 +118,7 @@ class OrganisationController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->goalID]);
+            return $this->redirect(['view', 'id' => $model->name]);
         }
 
         return $this->render('update', [
@@ -113,9 +127,9 @@ class OrganisationController extends Controller
     }
 
     /**
-     * Deletes an existing Goals model.
+     * Deletes an existing Budgetitem model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
+     * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -127,15 +141,15 @@ class OrganisationController extends Controller
     }
 
     /**
-     * Finds the Goals model based on its primary key value.
+     * Finds the Budgetitem model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Goals the loaded model
+     * @param string $id
+     * @return Budgetitem the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Goals::findOne($id)) !== null) {
+        if (($model = Budgetitem::findOne($id)) !== null) {
             return $model;
         }
 

@@ -2,12 +2,15 @@
 
 namespace frontend\controllers;
 
+use common\models\Branch;
 use Yii;
 use common\models\Costcenter;
 use common\models\CostcenterSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\helpers\Html;
 
 /**
  * CostcenterController implements the CRUD actions for Costcenter model.
@@ -20,6 +23,37 @@ class CostcenterController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                        [
+                            'actions' => ['index'],
+                            'allow' => true,
+                            'roles' => ['view_costcenters']
+                        ],
+                        [
+                            'actions' => ['update'],
+                            'allow' => true,
+                            'roles' => ['update_costcenter']
+                        ],
+                        [
+                            'actions' => ['create'],
+                            'allow' => true,
+                            'roles' => ['create_costcenter']
+                        ],
+                        [
+                            'actions' => ['delete'],
+                            'allow' => true,
+                            'roles' => ['delete_costcenter']
+                        ],
+                        [
+                            'actions' => ['view'],
+                            'allow' => true,
+                            'roles' => ['view_costcenter']
+                        ],
+                     
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -65,11 +99,20 @@ class CostcenterController extends Controller
     public function actionCreate()
     {
         $model = new Costcenter();
-
+        $user=yii::$app->user;
+        $branch=($user->can('HQ'))?((new Branch())->getHQ()):(($user->member!=null)?$user->member->branch:null);
+        if($branch==null)
+        {
+            throw new NotFoundHttpException("Branch Not Found");
+        }
+        $model->branch=$branch->branchID;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->centerID]);
         }
-
+        else
+        {
+            throw new \Exception(Html::errorSummary($model));
+        }
         return $this->render('create', [
             'model' => $model,
         ]);
