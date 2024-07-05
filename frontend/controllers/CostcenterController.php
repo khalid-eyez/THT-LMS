@@ -109,10 +109,6 @@ class CostcenterController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->centerID]);
         }
-        else
-        {
-            throw new \Exception(Html::errorSummary($model));
-        }
         return $this->render('create', [
             'model' => $model,
         ]);
