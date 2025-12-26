@@ -16,6 +16,12 @@ use Yii;
  */
 class AuthRule extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+          'bedezign\yii2\audit\AuditTrailBehavior'
+        ];
+    }
     /**
      * {@inheritdoc}
      */

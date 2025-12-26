@@ -22,21 +22,24 @@ $this->params['pageTitle']="Access Control";
 <div class="tab-content mt-3">
   <div class="tab-pane  container active" id="roles">
     <div class="row">
-      <div class="col-sm-9">
+      <div class="col-sm-4">
       <div class="form-inline mb-3 " >
                 <div class="input-group " style="width:100%!important" >
                   <input class="form-control  sh" type="search" placeholder="Search" aria-label="Search">
                   <div class="input-group-append">
-                    <button class="btn btn-sm btn-sidebar bg-success">
+                    <button class="btn btn-sm btn-sidebar bg-primary">
                       <i class="fas fa-search fa-fw"></i>
                     </button>
                   </div>
                 </div>
                 </div>
       </div>
-      <div class="col-sm-3">
-       <a class="btn btn-success" data-toggle="modal" data-target="#rolemodal"><i class="fa fa-plus-circle"></i> Add Role</a>
-       <a class="btn btn-danger"><i class="fa fa-trash"></i> Remove All</a>
+      <div class="col-sm-8">
+
+       <a class="btn btn-danger rmad float-right ml-1"><i class="fa fa-trash"></i> Remove Auth. Data</a>
+       <a class="btn btn-danger rmass float-right ml-1"><i class="fa fa-trash"></i> Remove Assignments</a>
+       <a class="btn btn-danger rmroles float-right ml-1"><i class="fa fa-trash"></i> Remove Roles</a>
+       <a class="btn btn-primary float-right" data-toggle="modal" data-target="#rolemodal"><i class="fa fa-plus-circle"></i> Add Role</a>
       </div>
     </div>
   <div id="accordion" class="rl">
@@ -51,7 +54,7 @@ $this->params['pageTitle']="Access Control";
                 <div class="input-group " style="width:100%!important" >
                   <input class="form-control  ph" type="search" placeholder="Search" aria-label="Search">
                   <div class="input-group-append">
-                    <button class="btn btn-sm btn-sidebar bg-success">
+                    <button class="btn btn-sm btn-sidebar bg-primary">
                       <i class="fas fa-search fa-fw"></i>
                     </button>
                   </div>
@@ -59,8 +62,8 @@ $this->params['pageTitle']="Access Control";
                 </div>
       </div>
       <div class="col-sm-4">
-       <a class="btn btn-success" data-toggle="modal" data-target="#permmodal"><i class="fa fa-plus-circle"></i> Add Permission</a>
-       <a class="btn btn-danger"><i class="fa fa-trash"></i> Remove All</a>
+       <a class="btn btn-primary" data-toggle="modal" data-target="#permmodal"><i class="fa fa-plus-circle"></i> Add Permission</a>
+       <a class="btn btn-danger rmpermissions"><i class="fa fa-trash"></i> Remove All</a>
       </div>
     </div>
   <div id="accordion" class="perm">
@@ -75,7 +78,7 @@ $this->params['pageTitle']="Access Control";
                 <div class="input-group " style="width:100%!important" >
                   <input class="form-control  rulesearch" type="search" placeholder="Search" aria-label="Search">
                   <div class="input-group-append">
-                    <button class="btn btn-sm btn-sidebar bg-success">
+                    <button class="btn btn-sm btn-sidebar bg-primary">
                       <i class="fas fa-search fa-fw"></i>
                     </button>
                   </div>
@@ -83,7 +86,7 @@ $this->params['pageTitle']="Access Control";
                 </div>
       </div>
       <div class="col-sm-4">
-       <a class="btn btn-success" data-toggle="modal" data-target="#rulemodal"><i class="fa fa-plus-circle"></i> Add Rule</a>
+       <a class="btn btn-primary" data-toggle="modal" data-target="#rulemodal"><i class="fa fa-plus-circle"></i> Add Rule</a>
        <a class="btn btn-danger rulesdel"><i class="fa fa-trash"></i> Remove All</a>
       </div>
     </div>
@@ -92,7 +95,7 @@ $this->params['pageTitle']="Access Control";
     if($rules==null)
     {
       ?>
-         <div class="container border border-success p-5 text-lg text-success text-center text-bold">
+         <div class="container border border-primary p-5 text-lg text-primary text-center text-bold">
           <i class="fa fa-info-circle"></i> No Rules Found
         </div>
       <?php
@@ -241,6 +244,147 @@ $(document).on('click', '.rulesdel', function(e){
     )
  
         }
+      }
+    })
+   
+  }
+})
+
+})
+
+//////////////////////////////////////////////////
+///removing all permissions////////////////////////////
+
+$(document).on('click', '.rmpermissions', function(e){
+  e.stopPropagation();
+      Swal.fire({
+  title: 'Remove All Permissions?',
+  text: "You won't be able to revert to this !",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: "red",
+
+  confirmButtonText: 'Remove All'
+}).then((result) => {
+  if (result.isConfirmed) {
+ 
+    $.ajax({
+      url:'/access/remove-all-permissions',
+      method:'post',
+      async:false,
+      dataType:'JSON',
+      success:function(data){
+      setTimeout(() => {
+        window.location.reload();
+        
+      }, 500);
+     
+    
+      }
+    })
+   
+  }
+})
+
+})
+//////////////////////////////////////////////////
+///removing all assignments////////////////////////////
+
+$(document).on('click', '.rmass', function(e){
+  e.stopPropagation();
+      Swal.fire({
+  title: 'Remove All Role Assignments ?',
+  text: "You won't be able to revert to this !",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: "red",
+
+  confirmButtonText: 'Remove All'
+}).then((result) => {
+  if (result.isConfirmed) {
+ 
+    $.ajax({
+      url:'/access/remove-all-roles-assignments',
+      method:'post',
+      async:false,
+      dataType:'JSON',
+      success:function(data){
+      setTimeout(() => {
+        window.location.reload();
+        
+      }, 300);
+     
+    
+      }
+    })
+   
+  }
+})
+
+})
+//////////////////////////////////////////////////
+///removing all assignments////////////////////////////
+
+$(document).on('click', '.rmad', function(e){
+  e.stopPropagation();
+      Swal.fire({
+  title: 'Remove All Authorization Data [roles, permissions, rules & assignments] ?',
+  text: "You won't be able to revert to this !",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: "red",
+
+  confirmButtonText: 'Remove All'
+}).then((result) => {
+  if (result.isConfirmed) {
+ 
+    $.ajax({
+      url:'/access/remove-all-auth-data',
+      method:'post',
+      async:false,
+      dataType:'JSON',
+      success:function(data){
+      setTimeout(() => {
+        window.location.reload();
+        
+      }, 300);
+     
+    
+      }
+    })
+   
+  }
+})
+
+})
+//////////////////////////////////////////////////
+///removing all roles////////////////////////////
+
+$(document).on('click', '.rmroles', function(e){
+  e.stopPropagation();
+      Swal.fire({
+  title: 'Remove All Roles?',
+  text: "You won't be able to revert to this !",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: "red",
+
+  confirmButtonText: 'Remove All'
+}).then((result) => {
+  if (result.isConfirmed) {
+ 
+    $.ajax({
+      url:'/access/remove-all-roles',
+      method:'post',
+      async:false,
+      dataType:'JSON',
+      success:function(data){
+      setTimeout(() => {
+        window.location.reload();
+        
+      }, 500);
+     
+    
       }
     })
    

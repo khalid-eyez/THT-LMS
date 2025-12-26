@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use frontend\models\AddPerm;
 use frontend\models\AddRole;
 use frontend\models\AddRule;
+use frontend\models\AddUser;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -14,6 +15,7 @@ use frontend\models\AccessManager;
 use yii\helpers\Html;
 use common\rules\TestRule;
 use frontend\models\AddChildren;
+use frontend\models\AssignRule;
 
 class AccessController extends Controller
 {
@@ -29,23 +31,143 @@ class AccessController extends Controller
                   
                     [
                         'actions' => [
-                         
+                         'access-manager'
                         ],
                         'allow' => true,
-                        'roles' => ['ADMIN'],
+                        'roles' => ['view_auth_data'],
                     ],
+                    [
+                        'actions' => [
+                         'add-rule'
+                        ],
+                        'allow' => true,
+                        'roles' => ['add_rule'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-children'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_children'],
+                    ],
+                    [
+                        'actions' => [
+                         'delete-item'
+                        ],
+                        'allow' => true,
+                        'roles' => ['delete_item'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-all-rules'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_all_rules'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-rule'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_rule'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-all-permissions'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_all_permissions'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-all-auth-data'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_all_auth_data'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-all-roles-assignments'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_all_roles_assignments'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-all-roles'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_all_roles'],
+                    ],
+                    [
+                        'actions' => [
+                         'remove-child'
+                        ],
+                        'allow' => true,
+                        'roles' => ['remove_child'],
+                    ],
+                    [
+                        'actions' => [
+                         'add-children'
+                        ],
+                        'allow' => true,
+                        'roles' => ['add_children'],
+                    ],
+                    [
+                        'actions' => [
+                         'discharge-user'
+                        ],
+                        'allow' => true,
+                        'roles' => ['discharge_user'],
+                    ],
+                    [
+                        'actions' => [
+                         'add-users'
+                        ],
+                        'allow' => true,
+                        'roles' => ['item_add_users'],
+                    ],
+                    [
+                        'actions' => [
+                         'deassign-all-users'
+                        ],
+                        'allow' => true,
+                        'roles' => ['discharge_all_users'],
+                    ],
+                    [
+                        'actions' => [
+                         'item-view'
+                        ],
+                        'allow' => true,
+                        'roles' => ['item_view'],
+                    ],
+                    [
+                        'actions' => [
+                         'add-perm'
+                        ],
+                        'allow' => true,
+                        'roles' => ['add_perm'],
+                    ],
+                    [
+                        'actions' => [
+                         'add-role'
+                        ],
+                        'allow' => true,
+                        'roles' => ['add_role'],
+                    ],
+                   
                 ],
             ],
         ];
     }
-
+/**
+ * Renders the access control  interface
+ * @return string
+ * @author khalid <thewinner016@gmail.com>
+ */
 public function actionAccessManager()
 {
     $roles=(new AccessManager())->allRoles();
-
-    //print($roles);
-  
-    // return null;
     $permissions=(new AccessManager())->allPermissions();
     $rolemodel=new AddRole();
     $permmodel=new AddPerm();
@@ -61,6 +183,12 @@ public function actionAccessManager()
         'rulemodel'=>$rulemodel
      ]);
 }
+/**
+ * Adds a rule to the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionAddRule()
 {
    $rulemodel=new AddRule();
@@ -83,7 +211,77 @@ catch(\Exception $e)
     return $this->redirect(yii::$app->request->referrer); 
 }
 }
+/**
+ * Removes all roles from the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
+public function actionRemoveAllRoles()
+{
+    if(yii::$app->request->isPost)
+    {
+        yii::$app->authManager->removeAllRoles();
+    }
+    yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> All Roles Removed Successfully !');
+    return $this->asJson(['res'=>null]);
 
+
+}
+/**
+ * Removes all roles assignments from the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
+public function actionRemoveAllRolesAssignments()
+{
+    if(yii::$app->request->isPost)
+    {
+        yii::$app->authManager->removeAllAssignments();
+    }
+    yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> All Roles Assignments Removed Successfully !');
+    return $this->asJson(['res'=>null]);
+
+
+}
+/**
+ * removes all authorization data from the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
+public function actionRemoveAllAuthData()
+{
+    if(yii::$app->request->isPost)
+    {
+        yii::$app->authManager->removeAll();
+    }
+    yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> All Authorization Data Removed Successfully !');
+    return $this->asJson(['res'=>null]);
+
+
+}
+/**
+ * removes all permissions from the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
+public function actionRemoveAllPermissions()
+{
+    if(yii::$app->request->isPost)
+    {
+        yii::$app->authManager->removeAllPermissions();
+    }
+    return $this->asJson(['res'=>null]);
+}
+/**
+ * removes a rule from the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionRemoveRule()
 {
     $rulename=yii::$app->request->post('name');
@@ -97,13 +295,24 @@ public function actionRemoveRule()
         return $this->asJson(['failure'=>'Rule removing failed']);  
     }
 }
-
+/**
+ * removes all rules from the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionRemoveAllRules()
 {
     yii::$app->authManager->removeAllRules();
 
     return $this->asJson(['removed'=>'All Rules Removed']);
 }
+/**
+ * deletes an item (role/permission) from the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionDeleteItem()
 {
     $name=yii::$app->request->post('name');
@@ -117,6 +326,12 @@ public function actionDeleteItem()
         return $this->asJson(['failure'=>'Item deleting failed']);    
     }
 }
+/**
+ * removes children from its parent
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionRemoveChildren()
 {
     $parentname=yii::$app->request->post('parent'); 
@@ -130,6 +345,12 @@ public function actionRemoveChildren()
         return $this->asJson(['failure'=>'Children Removing failed']);    
     }
 }
+/**
+ * removes a single child from its parent
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionRemoveChild()
 {
     $parentname=yii::$app->request->post('parent'); 
@@ -153,6 +374,73 @@ catch(\Exception $m)
     return $this->asJson(['failure'=>'Child Removing failed '.$m->getMessage()]);    
 }
 }
+/**
+ * Assigns a user to a role/permission
+ * @param mixed $name the name of the item (role or permission)
+ * @return string|Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
+public function actionAddUsers($name)
+{
+    $model=new AddUser();
+    $name=base64_decode(urldecode($name));
+   if(yii::$app->request->isPost)
+   {
+    try
+    {
+      if($model->load(yii::$app->request->post()) && $model->addTo($name))
+      {
+        yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> User(s) added successfully !');
+        return $this->redirect(yii::$app->request->referrer);
+      }
+      else
+      {
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> User(s) adding failed ! '.Html::errorSummary($model));
+        return $this->redirect(yii::$app->request->referrer);
+      }
+    }
+    catch(\Exception $t)
+    {
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> User(s) adding failed ! '.$t->getMessage());
+        return $this->redirect(yii::$app->request->referrer);
+    }
+   }
+
+   return $this->render('adduser',['model'=>$model]);
+}
+/**
+ * discharges a user from a role/permission
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
+public function actionDischargeUser()
+{
+    $manager=yii::$app->authManager;
+    $item=yii::$app->request->post('item');
+    $item=base64_decode(urldecode($item));
+    $item=($manager->getRole($item))?$manager->getRole($item):$manager->getPermission($item);
+    $userid=yii::$app->request->post('user');
+
+    
+    if($manager->revoke($item,$userid))
+    {
+        return $this->asJson(['removed'=>'revoking successful']);
+    }
+    else
+    {
+        return $this->asJson(['failure'=>'revoking failed']); 
+    }
+}
+/**
+ * Adds children(roles or permissions) to an item (role or permission)
+ * @param mixed $name the name of the item (role or permission) to be assigned children
+ * @param mixed $type the type of the item (role or permission) to be assigned children
+ * @return string|Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionAddChildren($name,$type)
 {
     $model=new AddChildren;
@@ -182,6 +470,14 @@ public function actionAddChildren($name,$type)
 
    return $this->render('addchildren',['model'=>$model]);
 }
+/**
+ * Displays item (role or permission) details
+ * @param mixed $item the name of the item (role or permission)
+ * @param mixed $type the type of the item 
+ * @return string the rendered page
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionItemView($item,$type)
 {
     $name=base64_decode(urldecode($item));
@@ -192,25 +488,36 @@ public function actionItemView($item,$type)
 
     return $this->render('itemView',['children'=>$children,'users'=>$users,'item'=>$item]);
 }
-
-public function actionDeassignAllUsers($item)
+/**
+ * Discharges all users from an item (role or permission)
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
+public function actionDeassignAllUsers()
 {
+    $item=yii::$app->request->post('item');
     $item=base64_decode(urldecode($item));
     if((new AccessManager())->deassignAllUsers($item))
     {
-        yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> All Users Removed Successfully !');
+        yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> All Users Discharged Successfully !');
         return $this->redirect(yii::$app->request->referrer);  
     }
     else
     {
-        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Users Removing Failed ! ');
+        yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Users Discharging Failed ! ');
         return $this->redirect(yii::$app->request->referrer);  
     }
 }
+/**
+ * Adds a role to the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionAddRole()
 {
     $model=new AddRole();
-    //print_r(yii::$app->request->post());return null;
     try
     {
         if($model->load(yii::$app->request->post()) && $model->addRole())
@@ -230,7 +537,12 @@ public function actionAddRole()
         return $this->redirect(yii::$app->request->referrer); 
     }
 }
-
+/**
+ * Adds a permission to the RBAC system
+ * @return Yii\web\Response
+ * @author khalid <thewinner016@gmail.com>
+ * @since 1.0.0
+ */
 public function actionAddPerm()
 {
     $model=new AddPerm();

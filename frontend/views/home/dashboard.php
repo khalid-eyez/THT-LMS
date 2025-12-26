@@ -1,31 +1,18 @@
 <?php
 
-use yii\helpers\Html;
-use yii\bootstrap4\ActiveForm;
-use yii\helpers\Url;
+$this->params['pageTitle']='Dashboard';
 
-/* @var $this yii\web\View */
-/* @var $model common\models\User */
-/* @var $form ActiveForm */
-$this->params['pageTitle'] ="Dashboard"; 
+
 ?>
-<div class="container-fluid d-flex justify-content-center">
-     <div class="container-fluid m-5 justify-content-center">
-        <img class="m-5" src="/img/logo.png" style="width:150px;height:150px;margin-left:20%"></img>
-        <span class="text-lg text-success text-bold">
 
-        Welcome to THTU Management Information System
-</span>
-     </div>
-</div>
-
+<p class="container border border-primary text-bold text-center p-5 mt-3 text-lg">
+    Welcome <br><span class="text-primary"><?=yii::$app->user->identity->username?></span>
+    <br><i class="fas fa-smile fa-2x text-info"></i>
+</p>
 <?php
 $script = <<<JS
-    $('document').ready(function(){
 
-    $('.dashboard').addClass("active");
-})
+    $('.dash').addClass("active");
 JS;
 $this->registerJs($script);
 ?>
-

@@ -20,6 +20,23 @@ return [
             'class' => 'yii\console\controllers\FixtureController',
             'namespace' => 'common\fixtures',
           ],
+          'migration' => [
+            'class' => 'bizley\migration\controllers\MigrationController',
+            'excludeTables' => [ //because they might exist already 
+                'audit_data',
+                'audit_entry',
+                'audit_error',
+                'audit_javascript',
+                'audit_mail',
+                'audit_trail'
+            ],
+        ],
+          'migrate' => [
+      'class' => 'yii\console\controllers\MigrateController',
+      'migrationNamespaces' => [
+          'bedezign\yii2\audit\migrations',
+      ],
+          ]
     ],
     'components' => [
         'log' => [
@@ -29,6 +46,10 @@ return [
                     'levels' => ['error', 'warning'],
                 ],
             ],
+        ],
+        'errorHandler' => [
+            // console error handler
+            'class' => '\bedezign\yii2\audit\components\console\ErrorHandler',
         ],
     ],
     'params' => $params,

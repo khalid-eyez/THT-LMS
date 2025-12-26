@@ -1,7 +1,7 @@
 <?php
 use \common\models\User;
 use yii\helpers\Url;
-$this->params['pageTitle']="Add Children";
+$this->params['pageTitle']="View Item";
 
 ?>
 <div class="container-fluid mt-3">
@@ -17,7 +17,7 @@ $this->params['pageTitle']="Add Children";
 <div class="container shadow-sm mb-2">
   <div class="row  p-2">
     <div class="col-sm-12  p-3">
-      <span class="text-bold"><?=$item->name?></span>
+      <span class=""><span class="text-bold">Name:</span> <?=$item->name?></span>
       <a href="#" name="<?=$item->name?>" type="<?=base64_decode(urldecode($_GET['type']))?>" class="itemviewdel float-right text-danger ml-1" data-toggle="tooltip" data-title="Delete Item"><i class="fa fa-trash"></i> </a>
     </div>
     <div class="col-sm-12 p-3">
@@ -28,14 +28,7 @@ $this->params['pageTitle']="Add Children";
     </div>
     <div class="col-sm-12 p-3">
       <span class="text-bold">Rule:</span><?=$item->ruleName?>
-      <?php
-      if($item->ruleName!=null)
-      {
-      ?>
-      <i data-toggle="tooltip" data-title="Remove rule" class="float-right fa fa-minus border border-danger text-danger p-1"></i>
-      <?php
-      }
-      ?>
+ 
     </div>
   </div>
   </div>
@@ -44,8 +37,8 @@ $this->params['pageTitle']="Add Children";
     <div class="col-sm-12  p-3 border-bottom">
 
        <span class="text-bold">Child roles | permissions</span>
-       <a data-toggle="tooltip" parent="<?=$item->name?>" type="<?=base64_decode(urldecode($_GET['type']))?>" data-title="Remove All Children From This Role" class="rmchildren float-right btn btn-sm btn-danger "><i class="fa fa-minus"></i></a>
-       <a href="<?=Url::toRoute(['/access/add-children','name'=>$_GET['item'],'type'=>$_GET['type']])?>" data-toggle="tooltip" data-title="Add New Child Roles | Permissions" class="float-right btn btn-sm btn-success mr-1 "><i class="fa fa-plus"></i></a>
+       <a data-toggle="tooltip" parent="<?=$item->name?>" type="<?=base64_decode(urldecode($_GET['type']))?>" data-title="Remove All Children" class="rmchildren float-right btn btn-sm btn-danger "><i class="fa fa-minus"></i></a>
+       <a href="<?=Url::toRoute(['/access/add-children','name'=>$_GET['item'],'type'=>$_GET['type']])?>" data-toggle="tooltip" data-title="Add New Child Roles | Permissions" class="float-right btn btn-sm btn-primary mr-1 "><i class="fa fa-plus"></i></a>
       </div>
   </div>
   <?=$children?>
@@ -60,8 +53,8 @@ $this->params['pageTitle']="Add Children";
     <div class="col-sm-12  p-3 border-bottom">
 
        <span class="text-bold">Assigned Users</span>
-       <a href="<?=Url::toRoute(['/access/deassign-all-users','item'=>$_GET['item']])?>" data-toggle="tooltip" data-title="Remove All Users From This Role" class="float-right btn btn-sm btn-danger "><i class="fa fa-minus"></i></a>
-       <a data-toggle="tooltip" data-title="Assign New User " class="float-right btn btn-sm btn-success mr-1 "><i class="fa fa-plus"></i></a>
+       <a href="#" item="<?=$_GET['item']?>" data-toggle="tooltip" data-title="Discharge All Users From This Role" class="float-right btn btn-sm btn-danger rmusers"><i class="fa fa-minus"></i></a>
+       <a href="<?=Url::toRoute(['/access/add-users','name'=>$_GET['item']])?>" data-toggle="tooltip" data-title="Assign New User " class="float-right btn btn-sm btn-primary mr-1 "><i class="fa fa-plus"></i></a>
       </div>
       <?php
       foreach($users as $user)
@@ -71,7 +64,7 @@ $this->params['pageTitle']="Add Children";
       ?>
 <div class="col-sm-12  p-3 border-bottom">
   <?=$userreal->username?>
-  <i data-toggle="tooltip" data-title="Un-assign user from this item" class="float-right fa fa-minus border border-danger text-danger p-1"></i>
+  <a href="#" class="userdischarge" user="<?=$userreal->id?>" item="<?=$_GET['item']?>" data-toggle="tooltip" data-title="Discharge user from this item"><i  class=" float-right fa fa-minus border border-danger text-danger p-1"></i></a>
 </div>
       <?php
       }
@@ -105,7 +98,82 @@ $script = <<<JS
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
+    ////////////////////////////////////////////////////////
+  //////////Remove Rule/////////////////////////////////
 
+  $(document).on('click', '.rmrule', function(e){
+    e.stopPropagation();
+      var item = $(this).attr('item');
+      Swal.fire({
+  title: 'Discharge All Users?',
+  text: "You won't be able to revert to this !",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: "red",
+
+  confirmButtonText: 'Discharge'
+}).then((result) => {
+  if (result.isConfirmed) {
+ 
+    $.ajax({
+      url:'/access/deassign-all-users',
+      method:'post',
+      async:false,
+      dataType:'JSON',
+      data:{item:item},
+      success:function(data){
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+     
+   
+
+        
+      }
+    })
+   
+  }
+})
+
+})
+  ////////////////////////////////////////////////////////
+  //////////remove all users from the parent role or permission/////////////////////////////////
+
+  $(document).on('click', '.rmusers', function(e){
+    e.stopPropagation();
+      var item = $(this).attr('item');
+      Swal.fire({
+  title: 'Discharge All Users?',
+  text: "You won't be able to revert to this !",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: "red",
+
+  confirmButtonText: 'Discharge'
+}).then((result) => {
+  if (result.isConfirmed) {
+ 
+    $.ajax({
+      url:'/access/deassign-all-users',
+      method:'post',
+      async:false,
+      dataType:'JSON',
+      data:{item:item},
+      success:function(data){
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+     
+   
+
+        
+      }
+    })
+   
+  }
+})
+
+})
   ////////////////////////////////////////////////////////
   //////////deleting rule/////////////////////////////////
 
@@ -139,6 +207,60 @@ $script = <<<JS
               'success'
     )
         window.location.reload();
+      }, 500);
+     
+   
+
+        }
+        else
+        {
+          Swal.fire(
+              'Removing failed !',
+              data.failure,
+              'error'
+    )
+ 
+        }
+      }
+    })
+   
+  }
+})
+
+})
+//////////////////////////////////////////////////
+///Discharge a user////////////////////////////
+
+$(document).on('click', '.userdischarge', function(e){
+  e.stopPropagation();
+  var item=$(this).attr('item');
+  var user=$(this).attr('user');
+  var parent=$(this).parent();
+      Swal.fire({
+  title: 'Discharge User?',
+  text: "You won't be able to revert to this !",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonColor: "red",
+
+  confirmButtonText: 'Discharge'
+}).then((result) => {
+  if (result.isConfirmed) {
+ 
+    $.ajax({
+      url:'/access/discharge-user',
+      method:'post',
+      async:false,
+      dataType:'JSON',
+      data:{item:item,user:user},
+      success:function(data){
+        if(data.removed){
+      parent.addClass('bg-danger');
+      setTimeout(() => {
+          parent.fadeOut('slow','swing',function(){
+          parent.remove();
+        })
+        
       }, 500);
      
    

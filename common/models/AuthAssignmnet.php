@@ -1,7 +1,6 @@
 <?php
 
 namespace common\models;
-use ruturajmaniyar\mod\audit\behaviors\AuditEntryBehaviors;
 use Yii;
 
 /**
@@ -26,9 +25,7 @@ class AuthAssignmnet extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            'auditEntryBehaviors' => [
-                'class' => AuditEntryBehaviors::class
-             ],
+         'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }
     /**

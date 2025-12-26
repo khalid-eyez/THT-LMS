@@ -26,5 +26,6 @@ class LoginAsset extends AssetBundle
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap4\BootstrapAsset',
+        'bedezign\yii2\audit\web\JSLoggingAsset', //remove js logging in case of production performance issues
     ];
 }

@@ -11,11 +11,14 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 use yii\helpers\Url;
 use common\widgets\Page;
+use yii\debug\DebugAsset;
+use bedezign\yii2\audit\web\JSLoggingAsset;
 use yii\widgets\Pjax;
-use frontend\models\ClassRoomSecurity;
 //use Yii;
 
 AppAsset::register($this);
+//DebugAsset::register($this);
+JSLoggingAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -68,13 +71,13 @@ AppAsset::register($this);
 
 /* Active/current link */
 .sidebar1 a.active {
-  background-color: #04AA6D;
+  background-color: #034aa6;
   color: white;
 }
 
 /* Links on mouse-over */
 .sidebar1 a:hover:not(.active) {
-  background-color: #04AA6D;
+  background-color: #0588e6;
   color: white;
 }
 .mini-sidebar
@@ -115,17 +118,18 @@ div.sidecontent {
 
 body{
   overflow: hidden;
-  background-color: rgba(6, 92, 27)!important;
+  background-color: rgba(5, 125, 176)!important;
 }
-      
+ 
       </style>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="hold-transition  layout-fixed bg-suc">
+<body class="hold-transition  layout-fixed ">
 <?php $this->beginBody() ?>
-<?= $this->render("/includes/header.php") ?>
-<?=$this->render("/includes/sidebar")?>
+
+<?= $this->render("@frontend/views/includes/header.php") ?>
+<?= $this->render("@frontend/views/includes/sidebar")?>
 
 <!-- Page content -->
 <div class="sidecontent mt-0 pt-0" style="font-family:regulartext">
@@ -172,26 +176,18 @@ body{
         
           
           <div class="navbar float-right navbar-expand p-0 ">
-            [ <?=array_keys(Yii::$app->authManager->getAssignments(yii::$app->user->id))[0];?> ]
+            [ <?=yii::$app->user->identity->username;?> ]
 <ul class="navbar-nav ml-auto">
 
       <li class="nav-item dropdown">
-        <a class="nav-link responsivetext" data-toggle="dropdown" href="#" id="username"><span class="fas fa-user text-success"></span>
+        <a class="nav-link responsivetext" data-toggle="dropdown" href="#" id="username"><span class="fas fa-user text-primary"></span>
         </a>
 <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                <?php
-                if(yii::$app->user->identity->isMember()){
-                  ?>
-                <a href="<?=Url::to('/member/profile')?>" class="dropdown-item">
-                    <i class="fa fa-user-circle mr-2"></i> <span class="small">My Profile</span>
-                </a>
-                <?php
-                }
-               ?>
+           
 
             <div class="dropdown-divider"></div>
 
-          <a href="<?=Url::to('/home/changepassword')?>" class="dropdown-item">
+          <a href="<?=Url::to('/auth/changepassword')?>" class="dropdown-item">
             <i class="fas fa-lock mr-2"></i> <span class="small"> Change Password</span>
           </a>
           <div class="dropdown-divider"></div>
@@ -269,22 +265,14 @@ body{
   
       </div> 
   <!-- footer -->
- <?= $this->render('/includes/loginfooter') ?>
+ <?= $this->render('@frontend/views/includes/loginfooter') ?>
   <!-- footer end -->
+
 <?php $this->endBody() ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.17/mediaelement-and-player.min.js" integrity="sha512-hLCA6qoEOSjwOEIc6xi7p0g6/uW2SAqS7gGZIxfN4jYabdJVsW7ANuUeih/vRrU3nGpf9cnsadaC+W3qoDqIQg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement-plugins/2.5.1/jump-forward/jump-forward.min.js" integrity="sha512-C0d4gm7678yhqNgSYXd14/1EZ/CE1QgubhVs8r7iLKl+ElSjzCNVrpSYwW8C+V6q/qHUJ1ZDos4g6Kmpw5uMjA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement-plugins/2.5.1/skip-back/skip-back.min.js" integrity="sha512-MRqijnTHZOc7Nxy7cbVb81q6cMP48Z9yS0xv/cmBq0Y4q1MoL5toFSckjsW42SfD3/If27aIaq/v6tVCwmDOFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement-plugins/2.5.1/airplay/airplay.min.js" integrity="sha512-q18A9OHcyp4bXsGsJitgyx4A9EIL7FWV11HMrm/Tb5xrStI3YLBF0o6Bc7iPT5ipfIsVpS7pbNzkAdEUkpGayA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement-plugins/2.5.1/context-menu/context-menu.min.js" integrity="sha512-SCF51k9SJUZXsQbbiqzjE7SwsbS/Nbt8upzpl1Cboen7sVisv3BTrDjlCPBLihM8fbTBwwGSM4QJdBH3n+vmEw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script type="text/javascript" src="/plugins/popper/popper.min.js"></script>
-<script type="text/javascript" src="/emojionearea/emojionearea.min.js"></script>
+
 
 
 
@@ -384,7 +372,31 @@ JS;
 $this->registerJs($script);
 ?>
 
+<style>
+  :root {
+    --bs-primary: rgba(5, 125, 176, 1);
+    --bs-primary-rgb: 5, 125, 176;
+}
 
+.bg-primary {
+    background-color: rgba(5, 125, 176, 1) !important;
+}  
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: rgba(5, 125, 176, 1);
+    --bs-btn-border-color: rgba(5, 125, 176, 1);
+
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: rgba(4, 110, 155, 1);
+    --bs-btn-hover-border-color: rgba(4, 110, 155, 1);
+
+    --bs-btn-active-bg: rgba(3, 95, 135, 1);
+    --bs-btn-active-border-color: rgba(3, 95, 135, 1);
+
+    --bs-btn-disabled-bg: rgba(5, 125, 176, 0.65);
+    --bs-btn-disabled-border-color: rgba(5, 125, 176, 0.65);
+}
+</style>
 </body>
 </html>
 <?php $this->endPage() ?>

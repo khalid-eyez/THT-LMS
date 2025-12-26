@@ -9,15 +9,12 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log','debug'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],
-        'dateTimeConversion' => [
-            'class' => 'ruturajmaniyar\mod\audit\components\DateTimeHelper'
-],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => false,
@@ -40,6 +37,7 @@ return [
         ],
         'errorHandler' => [
             'errorAction' => 'auth/error',
+            'class' => '\bedezign\yii2\audit\components\web\ErrorHandler'
         ],
         
         // 'urlManager' => [
@@ -61,10 +59,41 @@ return [
         
     ],
     'modules' => [
-        'auditlog' => [
-                    'class' => 'ruturajmaniyar\mod\audit\AuditEntryModule'
+        'debug' => [
+            'class' => 'yii\debug\Module',
+        ],
+        'audit' => [
+            'class' => 'bedezign\yii2\audit\Audit',
+            // the layout that should be applied for views within this module
+            'layout' => '@frontend/views/layouts/audit.php',
+            'userIdentifierCallback' => ['common\models\User', 'userIdentifierCallback'],
+            'userFilterCallback' => ['common\models\User', 'filterByUserIdentifierCallback'],
+            // Name of the component to use for database access
+            'db' => 'db', 
+            // List of actions to track. '*' is allowed as the last character to use as wildcard
+            'trackActions' => ['*'], 
+            // Actions to ignore. '*' is allowed as the last character to use as wildcard (eg 'debug/*')
+            'ignoreActions' => ['audit/*', 'debug/*'],
+            // Maximum age (in days) of the audit entries before they are truncated
+            'maxAge' => 'debug',
+            // Role or list of roles with access to the viewer, null for everyone (if the user matches)
+            'accessRoles' => ['view_audit_data'],
+            // Compress extra data generated or just keep in text? For people who don't like binary data in the DB
+            'compressData' => true,
+            // If the value is a simple string, it is the identifier of an internal to activate (with default settings)
+            // If the entry is a '<key>' => '<string>|<array>' it is a new panel. It can optionally override a core panel or add a new one.
+            // 'panels' => [
+            //     'audit/log',
+            //     'audit/error',
+            //     'audit/trail',
+            //     // 'app/views' => [
+            //     //     'class' => 'app\panels\ViewsPanel',
+            //     //     // ...
+            //     // ],
+            // ],
         ],
     ],
+
     'defaultRoute' => 'auth',
     'params' => $params,
 ];

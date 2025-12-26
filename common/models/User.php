@@ -6,11 +6,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-use common\models\Admin;
-use common\models\Instructor;
-use common\models\Student;
-use common\models\Hod;
-use ruturajmaniyar\mod\audit\behaviors\AuditEntryBehaviors;
+use yii\helpers\Html;
 
 /**
  * User model
@@ -27,7 +23,6 @@ use ruturajmaniyar\mod\audit\behaviors\AuditEntryBehaviors;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $last_login
- * @property Costcenter $costcenter
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -52,9 +47,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
-            'auditEntryBehaviors' => [
-                'class' => AuditEntryBehaviors::class
-             ],
+             'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }
 
@@ -77,10 +70,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
     }
-public function getCostcenter()
-{
-    return $this->hasOne(Costcenter::className(),['authority'=>'id']);
-}
+
     /**
      * {@inheritdoc}
      */
@@ -233,13 +223,20 @@ public function getCostcenter()
         $this->password_reset_token = null;
     }
     
-    public function getMember(){
-        return $this->hasOne(Member::class, ['userID'=>'id']);
+    public static function userIdentifierCallback($id)
+    {
+        $user = self::findOne($id);
+        return $user ? Html::a($user->username, ['/users/update', 'id' => urlencode(base64_encode($user->id))]) : $id;
     }
-  
+    public static function filterByUserIdentifierCallback($identifier)
+    {
+    	return static::find()->select('id')
+    		->where(['like', 'username', $identifier])
+    		->column();
+    }
     public function hasDefaultPassword()
     {
-        $pass=($this->member!=null)?$this->member->phone:"123";
+        $pass="123";
         return $this->validatePassword($pass);
     }
 
@@ -284,118 +281,6 @@ public function getCostcenter()
         $this->status=self::STATUS_DELETED;
         return $this->save();  
     }
-    public function canCallMeetings()
-    {
-        $callers=[
-            "GENERAL SECRETARY HQ",
-            "WOMEN'S COORDINATOR HQ",
-            "DEPUTY WOMEN'S COORDINATOR HQ",
-            "GENERAL SECRETARY BR",
-            "WOMEN'S COORDINATOR BR"
-        ];
-        $userid=$this->id;
-        $user=array_keys(Yii::$app->authManager->getAssignments($userid))[0];
-        return in_array($user,$callers);
-    }
-    public function getRank()
-    {
-        $userid=$this->id;
-        $role=array_keys(Yii::$app->authManager->getAssignments($userid))[0];
 
-        return $role;
-    }
-    public function getBranch()
-    {
-        $HQ=(new Branch)->getHQ();
-        $branch=($this->member!=null)?$this->member->branch0:$HQ;
-
-        return $branch;
-    }
-
-    public function isMember()
-    {
-        return $this->member!=null;
-    }
-    public function fullName()
-    {
-        if($this->isMember())
-        {
-            return $this->member->fullName();
-        }
-
-        return $this->username." [".$this->getRank()."]";
-    }
-    public function branch(){
-        if($this->isMember())
-        {
-            return $this->member->branch();
-        }
-
-        return "THTU-HQ";
-    }
-    public function hasConfirmed($meeting)
-    {
-        return (new MeetingConfirmations)->isConfirmed($this->id,$meeting);
-    }
-    public function hasCancelledParticipation($meeting)
-    {
-        return (new Meetingcancel)->isParticipationCancelled($meeting,$this->id);
-    }
-    public function hasAttended($meeting)
-    {
-        return (new Meetingattendance)->isAttended($this->id,$meeting); 
-    }
-    public function getParticipantStatus($meeting)
-    {
-   
-      if($this->hasAttended($meeting) && $this->hasConfirmed($meeting))
-      {
-         return "Attended";
-      }
-      else if($this->hasConfirmed($meeting))
-      {
-           return "Confirmed";
-      }
-      else if($this->hasAttended($meeting))
-      {
-        return "Attended";
-      }
-      else if($this->hasCancelledParticipation($meeting))
-      {
-        return "Cancelled";
-      }
-      else
-      {
-        
-      
-        if($this->canView($meeting))
-        {
-            return "Invited";
-        }
-        else
-        {
-            return "Not invited";
-        }
-       
-      }
-    }
-    public function canView($meeting)
-    {
-        $meeting=Meeting::findOne($meeting);
-        $userid=$this->id;
-        $user=User::findIdentity($userid);
-        $role=array_keys(Yii::$app->authManager->getAssignments($userid))[0];
-        if(($meeting->isParticipant($role) && $meeting->canParticipate($userid)) || $meeting->isInvited($this->id))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function isMemberOf($branch)
-    {
-        return $this->getBranch()->branchID==$branch;
-    }
 
 }

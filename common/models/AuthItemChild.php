@@ -15,6 +15,12 @@ use Yii;
  */
 class AuthItemChild extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+          'bedezign\yii2\audit\AuditTrailBehavior'
+        ];
+    }
     /**
      * {@inheritdoc}
      */

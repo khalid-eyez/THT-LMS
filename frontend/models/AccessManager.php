@@ -90,7 +90,7 @@ use yii;
         <div class="col" href="#'.$href.'" data-toggle="collapse"><a class="card-link" data-toggle="collapse" href="#'.$href.'">'.$role->name.'  </a>
         <span class="text-muted text-sm">['.$type.']</span><a class="ml-1 text-success text-sm text-bold">['.count($this->manager->getUserIdsByRole($role->name)).' Users]</a>
         <a class="ml-1 float-right itemdel" name="'.$role->name.'" type="'.$role->type.'" data-toggle="tooltip" data-title="Delete Item"><i class="fa fa-trash btn btn-sm  btn-danger"></i></a>
-        <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($role->name)),'type'=>urlencode(base64_encode($role->type))]).'" class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right btn btn-sm  btn-success"></i></a>
+        <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($role->name)),'type'=>urlencode(base64_encode($role->type))]).'" class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right btn btn-sm  btn-primary"></i></a>
         <span class="text-muted text-sm float-right">'.(($role->ruleName!=null)?"[Rule: ".$role->ruleName."]":"").'</span></div>';
         $html.='<div id="'.$href.'" class="collapse container" >';
         $html.='<div class="col">';
@@ -114,7 +114,7 @@ use yii;
         <div class="col" href="#'.$href.'" data-toggle="collapse"><a class="card-link" data-toggle="collapse" href="#'.$href.'">'.$role->name.'  </a>
         <span class="text-muted text-sm">['.$type.']</span><a class="ml-1 text-success text-sm text-bold">['.count($this->manager->getUserIdsByRole($role->name)).' Users]</a>
         <a class="ml-1 float-right itemdel" name="'.$role->name.'" type="'.$role->type.'" data-toggle="tooltip" data-title="Remove Child"><i class="fa fa-times btn btn-sm  btn-danger"></i></a>
-        <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($role->name)),'type'=>urlencode(base64_encode($role->type))]).'" class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right btn btn-sm  btn-success"></i></a>
+        <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($role->name)),'type'=>urlencode(base64_encode($role->type))]).'" class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right btn btn-sm  btn-primary"></i></a>
         <span class="text-muted text-sm float-right">'.(($role->ruleName!=null)?"[Rule: ".$role->ruleName."]":"").'</span></div>';
         $html.='<div id="'.$href.'" class="collapse container" >';
         $html.='<div class="col">';
@@ -137,7 +137,7 @@ use yii;
         <div class="col" href="#'.$href.'" data-toggle="collapse"><a class="card-link" data-toggle="collapse" href="#'.$href.'">'.$role->name.'  </a>
         <span class="text-muted text-sm">['.$type.']</span><a class="ml-1 text-success text-sm text-bold">['.count($this->manager->getUserIdsByRole($role->name)).' Users]</a>
         <a class="ml-1 float-right itemdel" name="'.$role->name.'" type="'.$role->type.'" data-toggle="tooltip" data-title="Delete Item"><i class="fa fa-trash btn btn-sm  btn-danger"></i></a>
-        <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($role->name)),'type'=>urlencode(base64_encode($role->type))]).'" class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right btn btn-sm  btn-success"></i></a>
+        <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($role->name)),'type'=>urlencode(base64_encode($role->type))]).'" class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right btn btn-sm  btn-primary"></i></a>
         <span class="text-muted text-sm float-right">'.(($role->ruleName!=null)?"[Rule: ".$role->ruleName."]":"").'</span></div>';
         $html.='<div id="'.$href.'" class="collapse container" >';
         $html.='<div class="col">';
@@ -160,7 +160,7 @@ use yii;
           $type=($child->type==1)?'Role':'Permission';
           $childrenHTML.='<div class="row p-2 text-sm bg-white child border-top" data-toggle="tooltip" data-title="'.$child->description.'">
           <div class="col-sm-12 p-2" data-toggle="collapse" href="#'.$id.'">'.$child->name.' <span class="text-muted text-sm">['.$type.']</span><a class="ml-1 text-success text-sm text-bold">['.count($this->manager->getUserIdsByRole($child->name)).' Users]</a>
-          <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($child->name)),'type'=>urlencode(base64_encode($child->type))]).'"class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right text-success border border-success p-1"></i></a>
+          <a href="'.Url::toRoute(['/access/item-view','item'=>urlencode(base64_encode($child->name)),'type'=>urlencode(base64_encode($child->type))]).'"class="ml-3 float-right" data-toggle="tooltip" data-title="Go To Item"><i class="fas fa-arrow-right text-primary border border-primary p-1"></i></a>
           <span class="text-muted text-sm float-right">'.(($child->ruleName!=null)?"[Rule: ".$child->ruleName."]":"").'</span></div>';
           $childrenHTML.='<div id="'.$id.'" class="collapse col-sm-12 container-fluid">';
           

@@ -6,7 +6,7 @@
     
     <div class="card border border-white shadow-sm m-0 bg-white rounded p-0" style="font-family:'Lucida Bright'; height:100%">
     <div class="card-body text-center m-0 mt-3">
-      <div class="container p-0"><i class="fa fa-user-circle fa-3x text-success mt-3 mb-3"></i></div>
+      <div class="container p-0" ><i style="background-color:rgba(5, 125, 176); border-radius:50%; border:solid 2px rgba(5, 125, 176) ;" class="fa fa-user-circle fa-3x mt-3 mb-3 text-white"></i></div>
     <?php $form = ActiveForm::begin() ?>
        <div class="container-fluid p-0" >
          <div class="row">
@@ -28,7 +28,7 @@
   -->
             
            <div class="col-md-4 mr-auto ml-auto">
-             <?= Html::submitButton('<i class="fas fa-sign-in-alt"></i> Login', ['class'=>'btn btn-success btn-sm btn-block'])?>
+             <?= Html::submitButton('<i class="fas fa-sign-in-alt"></i> Login', ['class'=>'btn btn-sm btn-block text-white','style'=>'background-color:rgba(5, 125, 176)'])?>
            </div>
 
            </div>

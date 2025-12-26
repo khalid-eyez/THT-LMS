@@ -1,93 +1,91 @@
 <?php
 
 namespace common\models;
-use ruturajmaniyar\mod\audit\behaviors\AuditEntryBehaviors;
+
+use Exception;
 use Yii;
-use kartik\validators\PhoneValidator;
+use yii\base\Model;
+use common\models\User;
+use yii\helpers\Html;
+use bedezign\yii2\audit\AuditTrailBehavior;
 
 /**
- * This is the model class for table "admin".
- *
- * @property int $adminID
- * @property int|null $userID
- * @property int|null $collegeID
- * @property string $full_name
- * @property string $email
- * @property string|null $phone
- *
- * @property College $college
- * @property User $user
+ * Signup form
  */
-class Admin extends \yii\db\ActiveRecord
+class Admin extends Model
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'admin';
-    }
-  
-    public function behaviors()
-    {
-        return [
-            'auditEntryBehaviors' => [
-                'class' => AuditEntryBehaviors::class
-             ],
-        ];
-    }
+    public $role ='ADMIN';
+    public $username="admin@ws.com";
+    public $password="123";
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['userID', 'collegeID'], 'integer'],
-            [['full_name', 'email'], 'required'],
-            [['full_name'], 'string', 'max' => 255],
-            [['email'], 'string', 'max' => 100],
-            [['phone'], 'string', 'max' => 30],
-            ['phone', 'k-phone','countryValue' => 'TZ'],
-            [['email'], 'unique'],
-            [['email'], 'email','message'=>'This E-mail seems invalid, try another one'],
-            [['phone'], 'unique'],
-            [['collegeID'], 'exist', 'skipOnError' => true, 'targetClass' => College::className(), 'targetAttribute' => ['collegeID' => 'collegeID']],
-            [['userID'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['userID' => 'id']],
+            ['username', 'trim'],
+            [['username'], 'required'],
+            ['role','required','message'=>'Privilege or position must be assigned'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'User already exists.'],
+            ['username', 'email','message' => 'Username must be a valid Email Address.'],
+            ['username', 'string', 'min' => 5, 'max' => 255],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+ 
+    public function __construct($username,$password,$config = [])
     {
-        return [
-            'adminID' => 'Admin ID',
-            'userID' => 'User ID',
-            'collegeID' => 'College ID',
-            'full_name' => 'Full Name',
-            'email' => 'Email',
-            'phone' => 'Phone',
-        ];
+        if(isset($username) && $username!=null)
+        {
+            $this->username=$username;
+        }
+        if(isset($password) && $password!=null)
+        {
+            $this->password=$password;
+        }
+        parent::__construct($config);
+    }
+    public function create()
+    {
+        //get authManager instance
+        $auth = Yii::$app->authManager;
+        if (!$this->validate()) {
+            foreach($this->getErrorSummary(true) as $error)
+            {
+                throw new Exception($error."\n");
+            }
+        }
+
+        $user = new User();
+        $user->detachBehavior('auditBehaviour');
+       
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user->username = $this->username;
+            $user->setPassword($this->password);
+            $user->generateAuthKey();
+            $user->generateEmailVerificationToken();
+
+           
+            if ($user->save()) {
+                    //now assign role to this newlly created user========>>
+             
+                        $userRole = $auth->getRole($this->role);
+                        if(!$userRole){ throw new Exception("The user role does not exist !");}
+                        $auth->assign($userRole, $user->getId());
+                    
+                   
+                    $transaction->commit();
+                    return true;
+                }
+        
+            throw new \Exception("Could not create user ! \n");
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw new \Exception($e->getMessage());
+        }
     }
 
-    /**
-     * Gets query for [[College]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCollege()
-    {
-        return $this->hasOne(College::className(), ['collegeID' => 'collegeID']);
-    }
+   
 
-    /**
-     * Gets query for [[User]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'userID']);
-    }
 }

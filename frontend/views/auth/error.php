@@ -8,12 +8,13 @@
 use yii\helpers\Html;
 
 $this->title = $name;
+$this->params['pageTitle']="Error";
 ?>
 <div class="site-error">
 
-    <h1 class="text-warning"><?= Html::encode($this->title) ?></h1>
+    <h2 class="text-warning"><?= Html::encode($this->title) ?></h2>
 
-    <div class="alert alert-danger" style="opacity:0.7">
+    <div class="alert alert-danger" style="opacity:0.6">
         <?= nl2br(Html::encode($message)) ?>
     </div>
 

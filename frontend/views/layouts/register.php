@@ -63,6 +63,16 @@ AppAsset::register($this);
 <?= $this->render('/includes/loginfooter') ?>
 <!-- /.login-box -->
 <?php $this->endBody() ?>
+    <style>
+      :root {
+    --bs-primary: rgba(5, 125, 176, 1);
+    --bs-primary-rgb: 5, 125, 176;
+}
+
+.bg-primary {
+    background-color: rgba(5, 125, 176, 1) !important;
+}
+    </style>
 </body>
 </html>
 <?php $this->endPage() ?>

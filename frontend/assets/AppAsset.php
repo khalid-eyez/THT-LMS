@@ -29,7 +29,23 @@ class AppAsset extends AssetBundle
         'plugins/pace-progress/themes/orange/pace-theme-flat-top.css',
         'plugins/sweetalert2/sweetalert2.min.css',
         'js/select2/css/select2.min.css',
-        'css/buttons.css'
+        'css/buttons.css',
+        //'css/bootstrap.min.css',
+        //'css/font-awesome.min.css',
+        'css/owl.carousel.css',
+        'css/owl.theme.css',
+        'css/owl.transitions.css',
+        'css/meanmenu/meanmenu.min.css',
+        'css/animate.css',
+        'css/normalize.css',
+        'css/style.css',
+        'css/scrollbar/jquery.mCustomScrollbar.min.css',
+        'css/jvectormap/jquery-jvectormap-2.0.3.css',
+        'css/notika-custom-icon.css',
+        'css/main.css',
+        'css/wave/waves.min.css',
+        'css/responsive.css',
+        'js/vendor/modernizr-2.8.3.min.js'
       
         
     ];
@@ -74,5 +90,6 @@ class AppAsset extends AssetBundle
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap4\BootstrapAsset',
+        'bedezign\yii2\audit\web\JSLoggingAsset',//remove js logging in case of production performance issues
     ];
 }

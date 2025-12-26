@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use yii\helpers\Url;
-use common\models\Member;
 use common\models\User;
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\MemberSearch */
@@ -24,10 +23,10 @@ $this->params['pageTitle']="Users";
       <div class="row">
                <!-- Left col -->
                <section class="col-sm-12 table-responsive">
-               <div class="col-sm-12"><?= Html::a('<i class="fa fa-plus-circle"></i> Add Member', ['create'], ['class' => 'btn btn-success btn-sm float-right ml-1','data-toggle'=>'modal','data-target'=>'#membermodal']) ?></div>
+               <div class="col-sm-12"><?= Html::a('<i class="fa fa-plus-circle"></i> Add User', ['create'], ['class' => 'btn btn-primary btn-sm float-right ml-1','data-toggle'=>'modal','data-target'=>'#membermodal']) ?></div>
     <table class="table table-bordered table-striped table-hover text-sm" id="userTable" style="width:100%">
             <thead>
-            <tr class="bg-success p-1"><th width="1%">#</th><th>Username</th><th>Positions</th><th>Email</th><th>Phone</th><th>Branch</th><th>Last Login</th><th width="10%"></th></tr>
+            <tr class="p-1" style="background-color:#0341a3;color:white"><th width="1%">#</th><th>Username</th><th>Roles</th><th>Last Login</th><th width="10%"></th></tr>
             
             </thead>
             <tbody>
@@ -48,10 +47,6 @@ $this->params['pageTitle']="Users";
               
               <?=implode(",",$roles)?>
             </td>
-            <td><?=($user->member!=null)?$user->member->email:"N/A"?></td>
-            
-            <td><?=($user->member!=null)?$user->member->phone:"N/A"?></td>
-            <td><?=($user->member!=null)?$user->member->branch():"HQ"?></td>
             <td><?=$user->last_login?></td>
             <td>
             <a href="<?=Url::to(['/users/update','id'=>urlencode(base64_encode($user->id))])?>" data-toggle="tooltip" data-title="Update User" class="mr-1"><i class="fas fa-edit"></i></a>  
@@ -90,7 +85,7 @@ $script = <<<JS
     $('.users').addClass("active");
     $('.priv').select2({
       width:'resolve',
-      maximumSelectionLength:2
+      //maximumSelectionLength:2
     });
     $("#userTable").DataTable({
     responsive:true,
@@ -99,6 +94,8 @@ $script = <<<JS
             'csv',
             {
                 extend: 'pdfHtml5',
+                orientation:'landscape',
+                pageSize:'LEGAL',
                 title: 'Users list'
             },
             {
