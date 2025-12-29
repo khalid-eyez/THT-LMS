@@ -52,7 +52,7 @@ class CustomerLoans extends \yii\db\ActiveRecord
         return [
             [['approved_at', 'deleted_at'], 'default', 'value' => null],
             [['isDeleted'], 'default', 'value' => 0],
-            [['customerID', 'loan_type_ID', 'amount', 'repayment_frequency', 'loan_duration_units', 'approvedby'], 'required'],
+            [['customerID', 'loan_type_ID', 'amount', 'repayment_frequency', 'loan_duration_units'], 'required'],
             [['customerID', 'loan_type_ID', 'loan_duration_units', 'approvedby', 'isDeleted'], 'integer'],
             [['amount'], 'number'],
             [['repayment_frequency'], 'string'],

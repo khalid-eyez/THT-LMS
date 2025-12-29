@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37203968a6fe962c0481dedff0cf9709",
+    "content-hash": "dc83bf02e757436210a3705bf471de84",
     "packages": [
         {
             "name": "2amigos/yii2-chartjs-widget",
@@ -1110,6 +1110,70 @@
             "time": "2020-09-18T13:47:07+00:00"
         },
         {
+            "name": "sandritsch91/yii2-widget-form-wizard",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sandritsch91/yii2-form-wizard.git",
+                "reference": "ad4f10f2a9529f35fc9aea1ccb7d5291c45f13c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sandritsch91/yii2-form-wizard/zipball/ad4f10f2a9529f35fc9aea1ccb7d5291c45f13c9",
+                "reference": "ad4f10f2a9529f35fc9aea1ccb7d5291c45f13c9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0",
+                "yiisoft/yii2": "^2.0.20",
+                "yiisoft/yii2-bootstrap5": "^2.0.0"
+            },
+            "require-dev": {
+                "codeception/module-asserts": "*",
+                "codeception/module-webdriver": "*",
+                "codeception/module-yii2": "*",
+                "codeception/specify": "*",
+                "codeception/verify": "*",
+                "yiisoft/yii2-coding-standards": "*"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "sandritsch91\\yii2\\formwizard\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sandritsch91",
+                    "email": "sandritsch91@gmail.com"
+                }
+            ],
+            "description": "A Yii2 form-wizard widget for bootstrap 5",
+            "keywords": [
+                "bootstrap",
+                "bootstrap5",
+                "form",
+                "form-wizard",
+                "widget",
+                "wizard",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/sandritsch91/yii2-form-wizard/issues",
+                "source": "https://github.com/sandritsch91/yii2-form-wizard"
+            },
+            "time": "2025-07-28T15:13:18+00:00"
+        },
+        {
             "name": "select2/select2",
             "version": "4.0.13",
             "source": {
@@ -1235,6 +1299,56 @@
                 }
             ],
             "time": "2024-12-23T08:48:59+00:00"
+        },
+        {
+            "name": "twbs/bootstrap",
+            "version": "v5.3.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/bootstrap.git",
+                "reference": "25aa8cc0b32f0d1a54be575347e6d84b70b1acd7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/25aa8cc0b32f0d1a54be575347e6d84b70b1acd7",
+                "reference": "25aa8cc0b32f0d1a54be575347e6d84b70b1acd7",
+                "shasum": ""
+            },
+            "replace": {
+                "twitter/bootstrap": "self.version"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Otto",
+                    "email": "markdotto@gmail.com"
+                },
+                {
+                    "name": "Jacob Thornton",
+                    "email": "jacobthornton@gmail.com"
+                }
+            ],
+            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
+            "homepage": "https://getbootstrap.com/",
+            "keywords": [
+                "JS",
+                "css",
+                "framework",
+                "front-end",
+                "mobile-first",
+                "responsive",
+                "sass",
+                "web"
+            ],
+            "support": {
+                "issues": "https://github.com/twbs/bootstrap/issues",
+                "source": "https://github.com/twbs/bootstrap/tree/v5.3.8"
+            },
+            "time": "2025-08-26T02:01:02+00:00"
         },
         {
             "name": "yiisoft/yii2",
@@ -1550,6 +1664,88 @@
                 }
             ],
             "time": "2025-02-13T21:11:27+00:00"
+        },
+        {
+            "name": "yiisoft/yii2-bootstrap5",
+            "version": "2.0.51",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-bootstrap5.git",
+                "reference": "23675f617ee3c86cf3e65a31a6afbc75e13028cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap5/zipball/23675f617ee3c86cf3e65a31a6afbc75e13028cb",
+                "reference": "23675f617ee3c86cf3e65a31a6afbc75e13028cb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.3",
+                "twbs/bootstrap": "^5.2.3",
+                "yiisoft/yii2": "^2.0.42"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6",
+                "symplify/easy-coding-standard": "^12.1",
+                "twbs/bootstrap-icons": "^1.7.2",
+                "yiisoft/yii2-coding-standards": "~2.0"
+            },
+            "suggest": {
+                "twbs/bootstrap-icons": "Add this package to the `require` section of your `composer.json` if you'd like to use the bootstrap icon asset."
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "bootstrap": "yii\\bootstrap5\\i18n\\TranslationBootstrap",
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\bootstrap5\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Zhukovskiy",
+                    "email": "mylistryx@gmail.com",
+                    "homepage": "https://net23.ru/"
+                },
+                {
+                    "name": "Simon Karlen",
+                    "email": "simi.albi@outlook.com"
+                }
+            ],
+            "description": "The Twitter Bootstrap v5 extension for the Yii framework",
+            "keywords": [
+                "bootstrap",
+                "bootstrap5",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/yiisoft/yii2-bootstrap5/issues",
+                "source": "https://github.com/yiisoft/yii2-bootstrap5"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/yiisoft",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/yiisoft/yii2-bootstrap5",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-12-03T13:29:11+00:00"
         },
         {
             "name": "yiisoft/yii2-composer",

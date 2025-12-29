@@ -16,7 +16,7 @@ class m251228_112841_create_table_customer_loans extends Migration
             'amount' => $this->decimal(15,2)->notNull(),
             'repayment_frequency' => "ENUM('week','month','year') NOT NULL",
             'loan_duration_units' => $this->integer()->notNull(),
-            'approvedby' => $this->integer()->notNull(),
+            'approvedby' => $this->integer(),
             'approved_at'=> $this->dateTime(),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')->append('ON UPDATE CURRENT_TIMESTAMP'),
