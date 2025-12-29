@@ -12,7 +12,6 @@ class m251228_121206_create_table_loan_attachments extends Migration
           $this->createTable('{{%loan_attachments}}', [
             'id' => $this->primaryKey(),
             'loanID' => $this->integer()->notNull(),
-            'requirementID' => $this->integer()->notNull(),
             'uploaded_doc' => $this->string(255)->notNull(),
             'timevalidated' => $this->dateTime(),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
@@ -30,15 +29,7 @@ class m251228_121206_create_table_loan_attachments extends Migration
             'CASCADE'
         );
 
-        $this->addForeignKey(
-            'fk_attachments_requirement',
-            '{{%loan_attachments}}',
-            'requirementID',
-            '{{%loan_requirements}}',
-            'id',
-            'CASCADE',
-            'CASCADE'
-        );
+    
     }
 
     /**
