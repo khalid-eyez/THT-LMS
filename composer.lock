@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc83bf02e757436210a3705bf471de84",
+    "content-hash": "879fee66f9909dc5c2055c2e54855739",
     "packages": [
         {
             "name": "2amigos/yii2-chartjs-widget",
@@ -471,6 +471,46 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "buttflattery/yii2-formwizard",
+            "version": "1.7.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/buttflattery/yii2-formwizard.git",
+                "reference": "c84e94a0c3d9ef8c54fa79de18dbd18647862077"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/buttflattery/yii2-formwizard/zipball/c84e94a0c3d9ef8c54fa79de18dbd18647862077",
+                "reference": "c84e94a0c3d9ef8c54fa79de18dbd18647862077",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "buttflattery\\formwizard\\": "//src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "omer aslam",
+                    "email": "buttflattery@hotmail.com"
+                }
+            ],
+            "description": "A yii2 widget for form wizard, to create a multistep form.",
+            "support": {
+                "issues": "https://github.com/buttflattery/yii2-formwizard/issues",
+                "source": "https://github.com/buttflattery/yii2-formwizard/tree/1.7.9"
+            },
+            "time": "2020-03-16T00:17:14+00:00"
         },
         {
             "name": "cebe/markdown",
@@ -6097,7 +6137,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "aryelds/yii2-sweet-alert": 20,
         "kartik-v/yii2-validators": 20,

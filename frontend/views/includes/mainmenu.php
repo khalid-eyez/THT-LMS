@@ -1,3 +1,7 @@
+  <?php 
+     use yii\helpers\Url;
+  ?>
+  
   <div class="main-menu-area mg-tb-40">
         <div class="container">
             <div class="row">
@@ -21,30 +25,14 @@
                         </li>
                     </ul>
                     <div class="tab-content custom-menu-content">
-                        <div id="Home" class="tab-pane in active notika-tab-menu-bg animated flipInX">
-                            <ul class="notika-main-menu-dropdown">
-                                <li><a href="index.html">Dashboard One</a>
-                                </li>
-                                <li><a href="index-2.html">Dashboard Two</a>
-                                </li>
-                                <li><a href="index-3.html">Dashboard Three</a>
-                                </li>
-                                <li><a href="index-4.html">Dashboard Four</a>
-                                </li>
-                                <li><a href="analytics.html">Analytics</a>
-                                </li>
-                                <li><a href="widgets.html">Widgets</a>
-                                </li>
-                            </ul>
-                        </div>
+                       
                         <div id="mailbox" class="tab-pane notika-tab-menu-bg animated flipInX">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="inbox.html">Inbox</a>
+                                <li><a href="inbox.html">List</a>
                                 </li>
-                                <li><a href="view-email.html">View Email</a>
+                                <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Customer</a>
                                 </li>
-                                <li><a href="compose-email.html">Compose Email</a>
-                                </li>
+                               
                             </ul>
                         </div>
                         <div id="Interface" class="tab-pane notika-tab-menu-bg animated flipInX">

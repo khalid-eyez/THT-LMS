@@ -8,7 +8,7 @@
     "support": {
       
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.6.0",
         "yiisoft/yii2": "~2.0.52",
@@ -23,7 +23,8 @@
         "kartik-v/yii2-validators": "@dev",
         "bizley/migration": "^4.3.1",
         "bedezign/yii2-audit": "1.2.8",
-        "sandritsch91/yii2-widget-form-wizard": "^1.2"
+        "sandritsch91/yii2-widget-form-wizard": "^1.2",
+        "buttflattery/yii2-formwizard": "1.7.9"
     },
     "replace": {
     "bower-asset/datatables": "self.version"

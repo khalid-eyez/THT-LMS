@@ -1,21 +1,14 @@
 <?php
-
 namespace frontend\assets;
 
 use yii\web\AssetBundle;
 
-/**
- * Main frontend application asset bundle.
- */
-class AppAsset extends AssetBundle
+class Bootstrap5Asset extends AssetBundle
 {
-    public $basePath = '@webroot';
-    public $baseUrl = '@web';
     public $css = [
-        'css/site.css',
+        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
         'plugins/icheck-bootstrap/icheck-bootstrap.min.css',
         'plugins/jqvmap/jqvmap.min.css',
-        'css/adminlte.min.css',
         'plugins/overlayScrollbars/css/OverlayScrollbars.min.css',
         'plugins/jquery-ui/jquery-ui.min.css',
         'plugins/daterangepicker/daterangepicker.css',
@@ -29,15 +22,26 @@ class AppAsset extends AssetBundle
         'plugins/sweetalert2/sweetalert2.min.css',
         'js/select2/css/select2.min.css',
         'css/buttons.css',
-       
-        
-      
-        
+        //'css/bootstrap.min.css',
+        //'css/font-awesome.min.css',
+        'css/owl.carousel.css',
+        'css/owl.theme.css',
+        'css/owl.transitions.css',
+        'css/meanmenu/meanmenu.min.css',
+        'css/animate.css',
+        'css/normalize.css',
+        'css/style.css',
+        'css/scrollbar/jquery.mCustomScrollbar.min.css',
+        'css/jvectormap/jquery-jvectormap-2.0.3.css',
+        'css/notika-custom-icon.css',
+        'css/main.css',
+        'css/wave/waves.min.css',
+        'css/responsive.css',
     ];
     public $js = [
+        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
         'js/sweetalert2.all.min.js',
         'plugins/jquery-ui/jquery-ui.min.js',
-        'plugins/bootstrap/js/bootstrap.bundle.min.js',
         'plugins/chart.js/Chart.min.js',
         'plugins/sparklines/sparkline.js',
         'plugins/jqvmap/jquery.vmap.min.js',
@@ -46,7 +50,6 @@ class AppAsset extends AssetBundle
         'plugins/moment/moment.min.js',
         'plugins/daterangepicker/daterangepicker.js',
         'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js',
-        'js/adminlte.js',
         'plugins/datatables/jquery.dataTables.min.js',
         'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js',
         'js/tablesbutton.min.js',
@@ -65,16 +68,8 @@ class AppAsset extends AssetBundle
         'plugins/sweetalert2/sweetalert2.min.js',
         'js/tooltip.js',
         'js/vendor/modernizr-2.8.3.min.js'
-       
-        
-
-
-        //'js/dashboard.js',
-        
     ];
     public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap4\BootstrapAsset',
-        'bedezign\yii2\audit\web\JSLoggingAsset',//remove js logging in case of production performance issues
+        'yii\web\JqueryAsset', // jQuery is required by FormWizard
     ];
 }

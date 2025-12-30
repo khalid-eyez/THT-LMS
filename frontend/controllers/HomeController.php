@@ -32,7 +32,7 @@ class HomeController extends \yii\web\Controller
     public function actionDashboard()
     {
         $this->layout="user_dashboard";
-        return $this->render('dashboard');
+        return $this->render('/loans/loansdashboard');
     }
 
 }
