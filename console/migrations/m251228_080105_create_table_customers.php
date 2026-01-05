@@ -11,6 +11,7 @@ class m251228_080105_create_table_customers extends Migration
     {
              $this->createTable('{{%customers}}', [
             'id' => $this->primaryKey(),
+            'customerID' => $this->string(20)->notNull()->unique(),
             'userID' => $this->integer()->notNull()->unique(),
             'full_name' => $this->string(50)->notNull(),
             'birthDate' => $this->date()->notNull(),

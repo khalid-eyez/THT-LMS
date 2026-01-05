@@ -122,7 +122,7 @@ body{
 }
  
       </style>
-    <title><?= Html::encode($this->title) ?></title>
+    <title><?= Html::encode($this?->title) ?></title>
     <?php $this->head() ?>
 </head>
 <body class="hold-transition  layout-fixed ">

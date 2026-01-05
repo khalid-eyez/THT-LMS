@@ -1,27 +1,37 @@
   <?php 
      use yii\helpers\Url;
   ?>
-  
+  <style>
+    .nav-tabs > li.active > a{
+        color:rgba(5, 125, 176)!important;
+    }
+    .nav-tabs > li>a{
+        color:white!important
+    }
+      .nav-tabs > li:hover a{
+        color:rgba(5, 125, 176)!important
+    }
+  </style>
   <div class="main-menu-area mg-tb-40">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <ul class="nav nav-tabs notika-menu-wrap menu-it-icon-pro " >
-                        <li class="active" ><a style="color:white!important" data-toggle="tab" href="#Home"><i class="notika-icon notika-app"></i> Dashboard</a>
+                        <li class="active" ><a data-toggle="tab" href="#Home"><i class="notika-icon notika-app"></i> Dashboard</a>
                         </li>
-                        <li><a style="color:white!important" data-toggle="tab" href="#mailbox"><i class="notika-icon notika-house"></i> Loans</a>
+                        <li class="loans"><a  data-toggle="tab" href="#mailbox"><i class="notika-icon notika-house "></i> Loans</a>
                         </li>
-                        <li><a style="color:white!important" data-toggle="tab" href="#Interface"><i class="notika-icon notika-edit"></i> Repayments</a>
+                        <li><a data-toggle="tab" href="#Interface"><i class="notika-icon notika-edit"></i> Repayments</a>
                         </li>
-                        <li><a style="color:white!important" data-toggle="tab" href="#Charts"><i class="notika-icon notika-bar-chart"></i> Reports</a>
+                        <li><a  data-toggle="tab" href="#Charts"><i class="notika-icon notika-bar-chart"></i> Reports</a>
                         </li>
-                        <li><a style="color:white!important" data-toggle="tab" href="#Tables"><i class="notika-icon notika-windows"></i> Customers</a>
+                        <li><a  data-toggle="tab" href="#Tables"><i class="notika-icon notika-windows"></i> Customers</a>
                         </li>
-                        <li><a style="color:white!important" data-toggle="tab" href="#Forms"><i class="notika-icon notika-form"></i> Shareholders</a>
+                        <li><a  data-toggle="tab" href="#Forms"><i class="notika-icon notika-form"></i> Shareholders</a>
                         </li>
-                        <li><a style="color:white!important" data-toggle="tab" href="#Appviews"><i class="notika-icon notika-app"></i> Settings</a>
+                        <li><a  data-toggle="tab" href="#Appviews"><i class="notika-icon notika-app"></i> Settings</a>
                         </li>
-                        <li><a style="color:white!important" data-toggle="tab" href="#Page"><i class="notika-icon notika-support"></i> Account</a>
+                        <li><a  data-toggle="tab" href="#Page"><i class="notika-icon notika-support"></i> Account</a>
                         </li>
                     </ul>
                     <div class="tab-content custom-menu-content">

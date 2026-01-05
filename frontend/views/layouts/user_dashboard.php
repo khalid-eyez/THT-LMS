@@ -1,5 +1,6 @@
   <?php 
       use frontend\assets\DashboardAsset;
+      use yii\helpers\Html;
       DashboardAsset::register($this);
     ?>
     <?php $this->beginPage() ?>
@@ -13,7 +14,7 @@
     ?>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Analytics | Notika - Notika Admin Template</title>
+    <title><?= Html::encode($this->title) ?></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- favicon

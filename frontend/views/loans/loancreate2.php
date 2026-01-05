@@ -3,6 +3,7 @@
 use buttflattery\formwizard\FormWizard;
 use frontend\assets\FormWizardAsset;
 //FormWizardAsset::register($this);
+$this->title="New Loan";
 ?>
  <div class="data-table-area" style="margin-top:0px!important;">
         <div class="container">
@@ -30,3 +31,12 @@ use frontend\assets\FormWizardAsset;
 
 ?>
                 </div></div></div></div>
+               <?php $this->registerJs("
+                    
+                    $('document').ready(function(){
+                        console.log($('.loans'));
+                        //.trigger('click');
+                    })
+                    "
+);
+                ?>

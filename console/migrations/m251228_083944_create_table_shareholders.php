@@ -12,8 +12,9 @@ class m251228_083944_create_table_shareholders extends Migration
              $this->createTable('{{%shareholders}}', [
             'id' => $this->primaryKey(),
             'customerID' => $this->integer()->notNull()->unique(),
+            'memberID' => $this->string(20)->notNull()->unique(),
             'initialCapital' => $this->decimal(15,2)->notNull(),
-            'shares' => $this->integer()->notNull(),
+            'shares' => $this->integer()->notNull()->defaultValue(0),
             'isDeleted' => $this->boolean()->defaultValue(false),
             'deleted_at'=>$this->dateTime()
         ]);
