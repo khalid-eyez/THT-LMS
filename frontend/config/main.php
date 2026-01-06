@@ -60,8 +60,13 @@ return [
     ],
     'modules' => [
         'debug' => [
-            'class' => 'yii\debug\Module',
+            'class' => 'yii\debug\Module'
+            
         ],
+        'shareholder' => [ 'class' => 'frontend\shareholder_module\Shareholder'],
+        'loans' => [ 'class' => 'frontend\loans_module\Loan' ],
+        'cashbook' => [ 'class' => 'frontend\cashbook_module\Cashbook'],
+        'reports' => [ 'class' => 'frontend\reports_module\Report'],
         'audit' => [
             'class' => 'bedezign\yii2\audit\Audit',
             // the layout that should be applied for views within this module
