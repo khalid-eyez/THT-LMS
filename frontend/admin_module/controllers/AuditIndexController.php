@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\controllers;
+namespace frontend\admin_module\controllers;
 
 use bedezign\yii2\audit\components\panels\RendersSummaryChartTrait;
 use bedezign\yii2\audit\components\web\Controller;
@@ -10,6 +10,7 @@ use Yii;
 class AuditIndexController extends Controller
 {
     use RendersSummaryChartTrait;
+  
 
      /**
      * {@inheritdoc}

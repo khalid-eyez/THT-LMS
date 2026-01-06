@@ -23,7 +23,7 @@ use Yii;
 class Cashbook extends \yii\db\ActiveRecord
 {
 
- public function behaviors()
+    public function behaviors()
     {
         return [
             TimestampBehavior::className(),

@@ -1,6 +1,4 @@
 <?php
-use common\models\User;
-use frontend\models\RegisterUserForm;
 $this->params['pageTitle']="Update User";
 ?>
 <div class="container p-5">

@@ -60,7 +60,7 @@ $this->registerCss('canvas {width: 100% !important;height: 400px;}');
                 continue;
             }
             $indexUrl = $panel->getIndexUrl();
-            $indexUrl[0]="/audit/".$indexUrl[0];
+            $indexUrl[0]="/admin/audit/".$indexUrl[0];
             ?>
             <div class="col-md-3 col-lg-3">
                 <h2><?php echo $indexUrl ? Html::a($panel->getName(), $indexUrl) : $panel->getName(); ?></h2>

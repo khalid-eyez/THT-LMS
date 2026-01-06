@@ -1,12 +1,9 @@
 <?php
 
-namespace frontend\controllers;
-use Yii;
-use yii\web\Controller;
+namespace frontend\admin_module\controllers;
 use yii\filters\AccessControl;
-class StorageController extends Controller
+class HomeController extends \yii\web\Controller
 {
-
     public function behaviors()
     {
         return [
@@ -16,25 +13,26 @@ class StorageController extends Controller
                   
                     [
                         'actions' => [
-                            'monitor',
+                            'dashboard',
                         ],
                         'allow' => true,
-                        'roles' => ['view_storage_info'],
+                        'roles' => ['view_dashboard'],
                     ],
                 ],
             ],
         ];
     }
     /**
-     * Displays storage information from a linux server
-     * @return string
+     * display a welcome message to a User
+     * @return string the page to be rendered
      * @author khalid <thewinner016@gmail.com>
      * @since 1.0.0
+     * 
      */
-    public function actionMonitor()
+    public function actionDashboard()
     {
-        $info = shell_exec("df -h");
-        return $this->render('storage', ['info' => $info]);
+        $this->layout="user_dashboard";
+        return $this->render('/loans/loansdashboard');
     }
 
 }

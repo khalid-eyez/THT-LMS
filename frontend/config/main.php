@@ -36,7 +36,7 @@ return [
             ],
         ],
         'errorHandler' => [
-            'errorAction' => 'auth/error',
+            'errorAction' => 'admin/auth/error',
             'class' => '\bedezign\yii2\audit\components\web\ErrorHandler'
         ],
         
@@ -67,10 +67,11 @@ return [
         'loans' => [ 'class' => 'frontend\loans_module\Loan' ],
         'cashbook' => [ 'class' => 'frontend\cashbook_module\Cashbook'],
         'reports' => [ 'class' => 'frontend\reports_module\Report'],
+        'admin' => [ 'class' => 'frontend\admin_module\Admin'],
         'audit' => [
             'class' => 'bedezign\yii2\audit\Audit',
             // the layout that should be applied for views within this module
-            'layout' => '@frontend/views/layouts/audit.php',
+            'layout' => '@frontend/admin_module/views/layouts/audit.php',
             'userIdentifierCallback' => ['common\models\User', 'userIdentifierCallback'],
             'userFilterCallback' => ['common\models\User', 'filterByUserIdentifierCallback'],
             // Name of the component to use for database access

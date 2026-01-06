@@ -1,11 +1,11 @@
 <?php
 
-namespace frontend\controllers;
+namespace frontend\admin_module\controllers;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
-use frontend\models\ChangePasswordForm;
+use frontend\admin_module\models\ChangePasswordForm;
 class AuthController extends \yii\web\Controller
 {
         /**
@@ -47,6 +47,7 @@ class AuthController extends \yii\web\Controller
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
+                'view' => '@frontend/admin_module/views/auth/error.php',
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',

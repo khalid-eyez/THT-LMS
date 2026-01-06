@@ -1,21 +1,18 @@
 <?php
 
-namespace frontend\controllers;
+namespace frontend\admin_module\controllers;
 
-use frontend\models\AddPerm;
-use frontend\models\AddRole;
-use frontend\models\AddRule;
-use frontend\models\AddUser;
+use frontend\admin_module\models\AddPerm;
+use frontend\admin_module\models\AddRole;
+use frontend\admin_module\models\AddRule;
+use frontend\admin_module\models\AddUser;
 use Yii;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use frontend\models\AccessManager;
+use frontend\admin_module\models\AccessManager;
 use yii\helpers\Html;
-use common\rules\TestRule;
-use frontend\models\AddChildren;
-use frontend\models\AssignRule;
+use frontend\admin_module\models\AddChildren;
+
 
 class AccessController extends Controller
 {
