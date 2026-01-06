@@ -10,17 +10,18 @@ use Yii;
  * @property int $id
  * @property int $categoryID
  * @property string $type
- * @property float $interestrate
- * @property float $penaltyrate
+ * @property float $interest_rate
+ * @property float $topup_rate
+ * @property float $penalty_rate
+ * @property float $processing_fee_rate
  * @property int $penalty_grace_days
  * @property string $created_at
  * @property string $updated_at
  *
- * @property LoanCategories $category
- * @property CustomerLoans[] $customerLoans
- * @property LoanRequirements[] $loanRequirements
+ * @property LoanCategory $category
+ * @property CustomerLoan[] $customerLoans
  */
-class LoanTypes extends \yii\db\ActiveRecord
+class LoanType extends \yii\db\ActiveRecord
 {
 
 
@@ -38,12 +39,14 @@ class LoanTypes extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['categoryID', 'type', 'interestrate', 'penaltyrate', 'penalty_grace_days'], 'required'],
+            [['processing_fee_rate'], 'default', 'value' => 0.00],
+            [['penalty_grace_days'], 'default', 'value' => 1],
+            [['categoryID', 'type'], 'required'],
             [['categoryID', 'penalty_grace_days'], 'integer'],
-            [['interestrate', 'penaltyrate'], 'number'],
+            [['interest_rate', 'topup_rate', 'penalty_rate', 'processing_fee_rate'], 'number'],
             [['created_at', 'updated_at'], 'safe'],
             [['type'], 'string', 'max' => 50],
-            [['categoryID'], 'exist', 'skipOnError' => true, 'targetClass' => LoanCategories::class, 'targetAttribute' => ['categoryID' => 'id']],
+            [['categoryID'], 'exist', 'skipOnError' => true, 'targetClass' => LoanCategory::class, 'targetAttribute' => ['categoryID' => 'id']],
         ];
     }
 
@@ -56,8 +59,10 @@ class LoanTypes extends \yii\db\ActiveRecord
             'id' => 'ID',
             'categoryID' => 'Category ID',
             'type' => 'Type',
-            'interestrate' => 'Interestrate',
-            'penaltyrate' => 'Penaltyrate',
+            'interest_rate' => 'Interest Rate',
+            'topup_rate' => 'Topup Rate',
+            'penalty_rate' => 'Penalty Rate',
+            'processing_fee_rate' => 'Processing Fee Rate',
             'penalty_grace_days' => 'Penalty Grace Days',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
@@ -67,40 +72,30 @@ class LoanTypes extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Category]].
      *
-     * @return \yii\db\ActiveQuery|LoanCategoriesQuery
+     * @return \yii\db\ActiveQuery|LoanCategoryQuery
      */
     public function getCategory()
     {
-        return $this->hasOne(LoanCategories::class, ['id' => 'categoryID']);
+        return $this->hasOne(LoanCategory::class, ['id' => 'categoryID']);
     }
 
     /**
      * Gets query for [[CustomerLoans]].
      *
-     * @return \yii\db\ActiveQuery|CustomerLoansQuery
+     * @return \yii\db\ActiveQuery|CustomerLoanQuery
      */
     public function getCustomerLoans()
     {
-        return $this->hasMany(CustomerLoans::class, ['loan_type_ID' => 'id']);
-    }
-
-    /**
-     * Gets query for [[LoanRequirements]].
-     *
-     * @return \yii\db\ActiveQuery|LoanRequirementsQuery
-     */
-    public function getLoanRequirements()
-    {
-        return $this->hasMany(LoanRequirements::class, ['loan_type_ID' => 'id']);
+        return $this->hasMany(CustomerLoan::class, ['loan_type_ID' => 'id']);
     }
 
     /**
      * {@inheritdoc}
-     * @return LoanTypesQuery the active query used by this AR class.
+     * @return LoanTypeQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new LoanTypesQuery(get_called_class());
+        return new LoanTypeQuery(get_called_class());
     }
 
 }

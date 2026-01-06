@@ -9,15 +9,16 @@ use Yii;
  *
  * @property int $id
  * @property int $customerID
+ * @property string $memberID
  * @property float $initialCapital
  * @property int $shares
  * @property int|null $isDeleted
  * @property string|null $deleted_at
  *
- * @property Customers $customer
- * @property Deposits[] $deposits
+ * @property Customer $customer
+ * @property Deposit[] $deposits
  */
-class Shareholders extends \yii\db\ActiveRecord
+class Shareholder extends \yii\db\ActiveRecord
 {
 
 
@@ -37,12 +38,14 @@ class Shareholders extends \yii\db\ActiveRecord
         return [
             [['deleted_at'], 'default', 'value' => null],
             [['isDeleted'], 'default', 'value' => 0],
-            [['customerID', 'initialCapital', 'shares'], 'required'],
+            [['customerID', 'memberID', 'initialCapital'], 'required'],
             [['customerID', 'shares', 'isDeleted'], 'integer'],
             [['initialCapital'], 'number'],
             [['deleted_at'], 'safe'],
+            [['memberID'], 'string', 'max' => 20],
             [['customerID'], 'unique'],
-            [['customerID'], 'exist', 'skipOnError' => true, 'targetClass' => Customers::class, 'targetAttribute' => ['customerID' => 'id']],
+            [['memberID'], 'unique'],
+            [['customerID'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customerID' => 'id']],
         ];
     }
 
@@ -54,6 +57,7 @@ class Shareholders extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'customerID' => 'Customer ID',
+            'memberID' => 'Member ID',
             'initialCapital' => 'Initial Capital',
             'shares' => 'Shares',
             'isDeleted' => 'Is Deleted',
@@ -64,30 +68,30 @@ class Shareholders extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Customer]].
      *
-     * @return \yii\db\ActiveQuery|CustomersQuery
+     * @return \yii\db\ActiveQuery|CustomerQuery
      */
     public function getCustomer()
     {
-        return $this->hasOne(Customers::class, ['id' => 'customerID']);
+        return $this->hasOne(Customer::class, ['id' => 'customerID']);
     }
 
     /**
      * Gets query for [[Deposits]].
      *
-     * @return \yii\db\ActiveQuery|DepositsQuery
+     * @return \yii\db\ActiveQuery|DepositQuery
      */
     public function getDeposits()
     {
-        return $this->hasMany(Deposits::class, ['shareholderID' => 'id']);
+        return $this->hasMany(Deposit::class, ['shareholderID' => 'id']);
     }
 
     /**
      * {@inheritdoc}
-     * @return ShareholdersQuery the active query used by this AR class.
+     * @return ShareholderQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new ShareholdersQuery(get_called_class());
+        return new ShareholderQuery(get_called_class());
     }
 
 }

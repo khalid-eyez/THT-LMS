@@ -23,6 +23,7 @@ use yii\helpers\Html;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $last_login
+ * @property Customer $customer
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -275,6 +276,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->status=self::STATUS_DELETED;
         return $this->save();  
+    }
+    public function customer(){
+        return $this->hasOne(Customer::class,['userID'=>'id']);
     }
 
 

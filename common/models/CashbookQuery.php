@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[LoanTypes]].
+ * This is the ActiveQuery class for [[Cashbook]].
  *
- * @see LoanTypes
+ * @see Cashbook
  */
-class LoanTypesQuery extends \yii\db\ActiveQuery
+class CashbookQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class LoanTypesQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return LoanTypes[]|array
+     * @return Cashbook[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class LoanTypesQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return LoanTypes|array|null
+     * @return Cashbook|array|null
      */
     public function one($db = null)
     {

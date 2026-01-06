@@ -11,7 +11,7 @@ use Yii;
  * @property string $name
  * @property string $value
  */
-class Settings extends \yii\db\ActiveRecord
+class Setting extends \yii\db\ActiveRecord
 {
 
 
@@ -49,11 +49,11 @@ class Settings extends \yii\db\ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return SettingsQuery the active query used by this AR class.
+     * @return SettingQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new SettingsQuery(get_called_class());
+        return new SettingQuery(get_called_class());
     }
 
 }

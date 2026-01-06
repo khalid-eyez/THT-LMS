@@ -9,18 +9,20 @@ use Yii;
  *
  * @property int $id
  * @property int $loanID
- * @property float $amount
- * @property float $penalty
+ * @property float $principle_amount
+ * @property float $interest_amount
+ * @property float $installment_amount
+ * @property float $loan_amount
+ * @property float $loan_balance
  * @property string $repayment_date
  * @property string $status
- * @property string|null $date_paid
- * @property string|null $payment_document
  * @property string $created_at
  * @property string $updated_at
  * @property int|null $isDeleted
  * @property string|null $deleted_at
  *
- * @property CustomerLoans $loan
+ * @property CustomerLoan $loan
+ * @property RepaymentStatement[] $repaymentStatements
  */
 class RepaymentSchedule extends \yii\db\ActiveRecord
 {
@@ -28,8 +30,8 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     /**
      * ENUM field values
      */
-    const STATUS_PAYED = 'payed';
-    const STATUS_WAITING = 'waiting';
+    const STATUS_PAID = 'paid';
+    const STATUS_ACTIVE = 'active';
     const STATUS_DELAYED = 'delayed';
 
     /**
@@ -46,18 +48,16 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date_paid', 'payment_document', 'deleted_at'], 'default', 'value' => null],
-            [['penalty'], 'default', 'value' => 0.00],
-            [['status'], 'default', 'value' => 'waiting'],
+            [['deleted_at'], 'default', 'value' => null],
+            [['status'], 'default', 'value' => 'active'],
             [['isDeleted'], 'default', 'value' => 0],
-            [['loanID', 'amount', 'repayment_date'], 'required'],
+            [['loanID', 'principle_amount', 'interest_amount', 'installment_amount', 'loan_amount', 'loan_balance', 'repayment_date'], 'required'],
             [['loanID', 'isDeleted'], 'integer'],
-            [['amount', 'penalty'], 'number'],
-            [['repayment_date', 'date_paid', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
+            [['principle_amount', 'interest_amount', 'installment_amount', 'loan_amount', 'loan_balance'], 'number'],
+            [['repayment_date', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['status'], 'string'],
-            [['payment_document'], 'string', 'max' => 255],
             ['status', 'in', 'range' => array_keys(self::optsStatus())],
-            [['loanID'], 'exist', 'skipOnError' => true, 'targetClass' => CustomerLoans::class, 'targetAttribute' => ['loanID' => 'id']],
+            [['loanID'], 'exist', 'skipOnError' => true, 'targetClass' => CustomerLoan::class, 'targetAttribute' => ['loanID' => 'id']],
         ];
     }
 
@@ -69,12 +69,13 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'loanID' => 'Loan ID',
-            'amount' => 'Amount',
-            'penalty' => 'Penalty',
+            'principle_amount' => 'Principle Amount',
+            'interest_amount' => 'Interest Amount',
+            'installment_amount' => 'Installment Amount',
+            'loan_amount' => 'Loan Amount',
+            'loan_balance' => 'Loan Balance',
             'repayment_date' => 'Repayment Date',
             'status' => 'Status',
-            'date_paid' => 'Date Paid',
-            'payment_document' => 'Payment Document',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'isDeleted' => 'Is Deleted',
@@ -85,11 +86,21 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Loan]].
      *
-     * @return \yii\db\ActiveQuery|CustomerLoansQuery
+     * @return \yii\db\ActiveQuery|CustomerLoanQuery
      */
     public function getLoan()
     {
-        return $this->hasOne(CustomerLoans::class, ['id' => 'loanID']);
+        return $this->hasOne(CustomerLoan::class, ['id' => 'loanID']);
+    }
+
+    /**
+     * Gets query for [[RepaymentStatements]].
+     *
+     * @return \yii\db\ActiveQuery|RepaymentStatementQuery
+     */
+    public function getRepaymentStatements()
+    {
+        return $this->hasMany(RepaymentStatement::class, ['scheduleID' => 'id']);
     }
 
     /**
@@ -109,8 +120,8 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     public static function optsStatus()
     {
         return [
-            self::STATUS_PAYED => 'payed',
-            self::STATUS_WAITING => 'waiting',
+            self::STATUS_PAID => 'paid',
+            self::STATUS_ACTIVE => 'active',
             self::STATUS_DELAYED => 'delayed',
         ];
     }
@@ -126,27 +137,27 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     /**
      * @return bool
      */
-    public function isStatusPayed()
+    public function isStatusPaid()
     {
-        return $this->status === self::STATUS_PAYED;
+        return $this->status === self::STATUS_PAID;
     }
 
-    public function setStatusToPayed()
+    public function setStatusToPaid()
     {
-        $this->status = self::STATUS_PAYED;
+        $this->status = self::STATUS_PAID;
     }
 
     /**
      * @return bool
      */
-    public function isStatusWaiting()
+    public function isStatusActive()
     {
-        return $this->status === self::STATUS_WAITING;
+        return $this->status === self::STATUS_ACTIVE;
     }
 
-    public function setStatusToWaiting()
+    public function setStatusToActive()
     {
-        $this->status = self::STATUS_WAITING;
+        $this->status = self::STATUS_ACTIVE;
     }
 
     /**

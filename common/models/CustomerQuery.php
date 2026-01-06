@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[Deposits]].
+ * This is the ActiveQuery class for [[Customer]].
  *
- * @see Deposits
+ * @see Customer
  */
-class DepositsQuery extends \yii\db\ActiveQuery
+class CustomerQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class DepositsQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Deposits[]|array
+     * @return Customer[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class DepositsQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Deposits|array|null
+     * @return Customer|array|null
      */
     public function one($db = null)
     {

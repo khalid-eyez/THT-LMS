@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[LoanRequirements]].
+ * This is the ActiveQuery class for [[Shareholder]].
  *
- * @see LoanRequirements
+ * @see Shareholder
  */
-class LoanRequirementsQuery extends \yii\db\ActiveQuery
+class ShareholderQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class LoanRequirementsQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return LoanRequirements[]|array
+     * @return Shareholder[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class LoanRequirementsQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return LoanRequirements|array|null
+     * @return Shareholder|array|null
      */
     public function one($db = null)
     {

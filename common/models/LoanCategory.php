@@ -12,9 +12,9 @@ use Yii;
  * @property string $created_at
  * @property string $updated_at
  *
- * @property LoanTypes[] $loanTypes
+ * @property LoanType[] $loanTypes
  */
-class LoanCategories extends \yii\db\ActiveRecord
+class LoanCategory extends \yii\db\ActiveRecord
 {
 
 
@@ -55,20 +55,20 @@ class LoanCategories extends \yii\db\ActiveRecord
     /**
      * Gets query for [[LoanTypes]].
      *
-     * @return \yii\db\ActiveQuery|LoanTypesQuery
+     * @return \yii\db\ActiveQuery|LoanTypeQuery
      */
     public function getLoanTypes()
     {
-        return $this->hasMany(LoanTypes::class, ['categoryID' => 'id']);
+        return $this->hasMany(LoanType::class, ['categoryID' => 'id']);
     }
 
     /**
      * {@inheritdoc}
-     * @return LoanCategoriesQuery the active query used by this AR class.
+     * @return LoanCategoryQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new LoanCategoriesQuery(get_called_class());
+        return new LoanCategoryQuery(get_called_class());
     }
 
 }

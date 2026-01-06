@@ -8,6 +8,7 @@ use Yii;
  * This is the model class for table "customers".
  *
  * @property int $id
+ * @property string $customerID
  * @property int $userID
  * @property string $full_name
  * @property string $birthDate
@@ -22,11 +23,12 @@ use Yii;
  * @property string $created_at
  * @property string $updated_at
  *
- * @property CustomerLoans[] $customerLoans
- * @property Shareholders $shareholders
+ * @property Cashbook[] $cashbooks
+ * @property CustomerLoan[] $customerLoans
+ * @property Shareholder $shareholder
  * @property User $user
  */
-class Customers extends \yii\db\ActiveRecord
+class Customer extends \yii\db\ActiveRecord
 {
 
     /**
@@ -52,13 +54,15 @@ class Customers extends \yii\db\ActiveRecord
             [['TIN', 'deleted_at'], 'default', 'value' => null],
             [['status'], 'default', 'value' => 'active'],
             [['isDeleted'], 'default', 'value' => 0],
-            [['userID', 'full_name', 'birthDate', 'gender', 'address', 'contacts', 'NIN'], 'required'],
+            [['customerID', 'userID', 'full_name', 'birthDate', 'gender', 'address', 'contacts', 'NIN'], 'required'],
             [['userID', 'isDeleted'], 'integer'],
             [['birthDate', 'address', 'contacts', 'deleted_at', 'created_at', 'updated_at'], 'safe'],
             [['status'], 'string'],
+            [['customerID'], 'string', 'max' => 20],
             [['full_name', 'NIN', 'TIN'], 'string', 'max' => 50],
             [['gender'], 'string', 'max' => 8],
             ['status', 'in', 'range' => array_keys(self::optsStatus())],
+            [['customerID'], 'unique'],
             [['userID'], 'unique'],
             [['NIN'], 'unique'],
             [['userID'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['userID' => 'id']],
@@ -72,6 +76,7 @@ class Customers extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'customerID' => 'Customer ID',
             'userID' => 'User ID',
             'full_name' => 'Full Name',
             'birthDate' => 'Birth Date',
@@ -89,23 +94,33 @@ class Customers extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[CustomerLoans]].
+     * Gets query for [[Cashbooks]].
      *
-     * @return \yii\db\ActiveQuery|CustomerLoansQuery
+     * @return \yii\db\ActiveQuery|CashbookQuery
      */
-    public function getCustomerLoans()
+    public function getCashbooks()
     {
-        return $this->hasMany(CustomerLoans::class, ['customerID' => 'id']);
+        return $this->hasMany(Cashbook::class, ['customerID' => 'id']);
     }
 
     /**
-     * Gets query for [[Shareholders]].
+     * Gets query for [[CustomerLoans]].
      *
-     * @return \yii\db\ActiveQuery|ShareholdersQuery
+     * @return \yii\db\ActiveQuery|CustomerLoanQuery
      */
-    public function getShareholders()
+    public function getCustomerLoans()
     {
-        return $this->hasOne(Shareholders::class, ['customerID' => 'id']);
+        return $this->hasMany(CustomerLoan::class, ['customerID' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Shareholder]].
+     *
+     * @return \yii\db\ActiveQuery|ShareholderQuery
+     */
+    public function getShareholder()
+    {
+        return $this->hasOne(Shareholder::class, ['customerID' => 'id']);
     }
 
     /**
@@ -120,11 +135,11 @@ class Customers extends \yii\db\ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return CustomersQuery the active query used by this AR class.
+     * @return CustomerQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new CustomersQuery(get_called_class());
+        return new CustomerQuery(get_called_class());
     }
 
 

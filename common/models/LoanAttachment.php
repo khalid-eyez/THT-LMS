@@ -9,7 +9,6 @@ use Yii;
  *
  * @property int $id
  * @property int $loanID
- * @property int $requirementID
  * @property string $uploaded_doc
  * @property string|null $timevalidated
  * @property string $created_at
@@ -17,10 +16,9 @@ use Yii;
  * @property int|null $isDeleted
  * @property string|null $deleted_at
  *
- * @property CustomerLoans $loan
- * @property LoanRequirements $requirement
+ * @property CustomerLoan $loan
  */
-class LoanAttachments extends \yii\db\ActiveRecord
+class LoanAttachment extends \yii\db\ActiveRecord
 {
 
 
@@ -40,12 +38,11 @@ class LoanAttachments extends \yii\db\ActiveRecord
         return [
             [['timevalidated', 'deleted_at'], 'default', 'value' => null],
             [['isDeleted'], 'default', 'value' => 0],
-            [['loanID', 'requirementID', 'uploaded_doc'], 'required'],
-            [['loanID', 'requirementID', 'isDeleted'], 'integer'],
+            [['loanID', 'uploaded_doc'], 'required'],
+            [['loanID', 'isDeleted'], 'integer'],
             [['timevalidated', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['uploaded_doc'], 'string', 'max' => 255],
-            [['loanID'], 'exist', 'skipOnError' => true, 'targetClass' => CustomerLoans::class, 'targetAttribute' => ['loanID' => 'id']],
-            [['requirementID'], 'exist', 'skipOnError' => true, 'targetClass' => LoanRequirements::class, 'targetAttribute' => ['requirementID' => 'id']],
+            [['loanID'], 'exist', 'skipOnError' => true, 'targetClass' => CustomerLoan::class, 'targetAttribute' => ['loanID' => 'id']],
         ];
     }
 
@@ -57,7 +54,6 @@ class LoanAttachments extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'loanID' => 'Loan ID',
-            'requirementID' => 'Requirement ID',
             'uploaded_doc' => 'Uploaded Doc',
             'timevalidated' => 'Timevalidated',
             'created_at' => 'Created At',
@@ -70,30 +66,20 @@ class LoanAttachments extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Loan]].
      *
-     * @return \yii\db\ActiveQuery|CustomerLoansQuery
+     * @return \yii\db\ActiveQuery|CustomerLoanQuery
      */
     public function getLoan()
     {
-        return $this->hasOne(CustomerLoans::class, ['id' => 'loanID']);
-    }
-
-    /**
-     * Gets query for [[Requirement]].
-     *
-     * @return \yii\db\ActiveQuery|LoanRequirementsQuery
-     */
-    public function getRequirement()
-    {
-        return $this->hasOne(LoanRequirements::class, ['id' => 'requirementID']);
+        return $this->hasOne(CustomerLoan::class, ['id' => 'loanID']);
     }
 
     /**
      * {@inheritdoc}
-     * @return LoanAttachmentsQuery the active query used by this AR class.
+     * @return LoanAttachmentQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new LoanAttachmentsQuery(get_called_class());
+        return new LoanAttachmentQuery(get_called_class());
     }
 
 }

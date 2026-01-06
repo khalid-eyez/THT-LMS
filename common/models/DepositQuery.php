@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[Settings]].
+ * This is the ActiveQuery class for [[Deposit]].
  *
- * @see Settings
+ * @see Deposit
  */
-class SettingsQuery extends \yii\db\ActiveQuery
+class DepositQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class SettingsQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Settings[]|array
+     * @return Deposit[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class SettingsQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Settings|array|null
+     * @return Deposit|array|null
      */
     public function one($db = null)
     {

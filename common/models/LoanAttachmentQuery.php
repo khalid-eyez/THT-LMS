@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[Customers]].
+ * This is the ActiveQuery class for [[LoanAttachment]].
  *
- * @see Customers
+ * @see LoanAttachment
  */
-class CustomersQuery extends \yii\db\ActiveQuery
+class LoanAttachmentQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class CustomersQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Customers[]|array
+     * @return LoanAttachment[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class CustomersQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return Customers|array|null
+     * @return LoanAttachment|array|null
      */
     public function one($db = null)
     {

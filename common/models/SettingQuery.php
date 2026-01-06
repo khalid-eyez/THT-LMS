@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[LoanCategories]].
+ * This is the ActiveQuery class for [[Setting]].
  *
- * @see LoanCategories
+ * @see Setting
  */
-class LoanCategoriesQuery extends \yii\db\ActiveQuery
+class SettingQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class LoanCategoriesQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return LoanCategories[]|array
+     * @return Setting[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class LoanCategoriesQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return LoanCategories|array|null
+     * @return Setting|array|null
      */
     public function one($db = null)
     {
