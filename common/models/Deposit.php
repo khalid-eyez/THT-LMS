@@ -1,6 +1,7 @@
 <?php
 
 namespace common\models;
+use yii\behaviors\TimestampBehavior;
 
 use Yii;
 
@@ -29,7 +30,13 @@ class Deposit extends \yii\db\ActiveRecord
      */
     const TYPE_CAPITAL = 'capital';
     const TYPE_MONTHLY = 'monthly';
-
+ public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+             'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
+        ];
+    }
     /**
      * {@inheritdoc}
      */

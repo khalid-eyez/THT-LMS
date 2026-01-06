@@ -1,6 +1,7 @@
 <?php
 
 namespace common\models;
+use yii\behaviors\TimestampBehavior;
 
 use Yii;
 
@@ -57,6 +58,14 @@ class CustomerLoan extends \yii\db\ActiveRecord
     const STATUS_APPROVED = 'approved';
     const STATUS_ACTIVE = 'active';
     const STATUS_FINISHED = 'finished';
+
+     public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+             'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
+        ];
+    }
 
     /**
      * {@inheritdoc}

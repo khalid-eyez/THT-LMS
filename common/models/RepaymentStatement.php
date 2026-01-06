@@ -1,6 +1,7 @@
 <?php
 
 namespace common\models;
+use yii\behaviors\TimestampBehavior;
 
 use Yii;
 
@@ -25,7 +26,13 @@ use Yii;
 class RepaymentStatement extends \yii\db\ActiveRecord
 {
 
-
+ public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+             'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
+        ];
+    }
     /**
      * {@inheritdoc}
      */

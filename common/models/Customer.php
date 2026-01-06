@@ -1,6 +1,7 @@
 <?php
 
 namespace common\models;
+use yii\behaviors\TimestampBehavior;
 
 use Yii;
 
@@ -36,7 +37,13 @@ class Customer extends \yii\db\ActiveRecord
      */
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
-
+ public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+             'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
+        ];
+    }
     /**
      * {@inheritdoc}
      */
