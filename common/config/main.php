@@ -67,6 +67,7 @@ return [
                 '/admin/users-list'=>'/admin/admin/users-list',
                 '/audit-index/index'=>'/admin/audit-index/index',
                 '/audit-index'=>'/admin/audit-index/index',
+                '/admin/audit'=>'/admin/admin/audit',
                 '/auth/login'=>'/admin/auth/login',
                 '/auth/logout'=>'/admin/auth/logout',
                 '/auth/changepassword'=>'/admin/auth/changepassword',
@@ -80,7 +81,10 @@ return [
                 '/users/unlock'=>'/admin/users/unlock',
                 '/users/delete'=>'/admin/users/delete',
                 '/users/update'=>'/admin/users/update',
-                '/users/reset-password'=>'/admin/users/reset-password'
+                '/users/reset-password'=>'/admin/users/reset-password',
+                '/loans'=>'/loans/loans/loans',
+                '/loans/create-loan'=>'/loans/loans/create-loan',
+                '/loans/dashboard'=>'/loans/loans/dashboard'
 
                  
             ],

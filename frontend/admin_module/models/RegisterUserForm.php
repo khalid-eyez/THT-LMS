@@ -15,6 +15,8 @@ class RegisterUserForm extends Model
     public $role =[];
     public $username;
     public $password="123";
+
+    public $full_name;
     /**
      * {@inheritdoc}
      */
@@ -22,7 +24,7 @@ class RegisterUserForm extends Model
     {
         return [
             ['username', 'trim'],
-            [['username'], 'required'],
+            [['username','full_name'], 'required'],
             ['role','required','message'=>'Privilege or position must be assigned'],
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This Username has already been taken.'],
             ['username', 'email','message' => 'Invalid Email Address.'],
@@ -47,6 +49,7 @@ class RegisterUserForm extends Model
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $user->username = $this->username;
+            $user->name=$this->full_name;
             $user->setPassword($this->password);
             $user->generateAuthKey();
             $user->generateEmailVerificationToken();

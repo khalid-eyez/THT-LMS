@@ -17,6 +17,8 @@ class Admin extends Model
     public $role ='ADMIN';
     public $username="admin@ws.com";
     public $password="123";
+
+    public $name="SYS ADMIN";
     /**
      * {@inheritdoc}
      */
@@ -24,7 +26,7 @@ class Admin extends Model
     {
         return [
             ['username', 'trim'],
-            [['username'], 'required'],
+            [['username','name'], 'required'],
             ['role','required','message'=>'Privilege or position must be assigned'],
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'User already exists.'],
             ['username', 'email','message' => 'Username must be a valid Email Address.'],
@@ -33,7 +35,7 @@ class Admin extends Model
     }
 
  
-    public function __construct($username,$password,$config = [])
+    public function __construct($username,$password,$name,$config = [])
     {
         if(isset($username) && $username!=null)
         {
@@ -42,6 +44,10 @@ class Admin extends Model
         if(isset($password) && $password!=null)
         {
             $this->password=$password;
+        }
+         if(isset($name) && $name!=null)
+        {
+            $this->name=$name;
         }
         parent::__construct($config);
     }
@@ -62,6 +68,7 @@ class Admin extends Model
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $user->username = $this->username;
+            $user->name=$this->name;
             $user->setPassword($this->password);
             $user->generateAuthKey();
             $user->generateEmailVerificationToken();

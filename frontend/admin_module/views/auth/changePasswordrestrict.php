@@ -19,7 +19,7 @@ AppAsset::register($this);
 ?>
 
 
-    <?php $form = ActiveForm::begin(["action"=>"change-password-restrict"]); ?>
+    <?php $form = ActiveForm::begin(["action"=>"/admin/auth/change-password-restrict"]); ?>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-3">

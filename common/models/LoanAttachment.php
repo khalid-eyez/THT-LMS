@@ -4,6 +4,7 @@ namespace common\models;
 use yii\behaviors\TimestampBehavior;
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "loan_attachments".
@@ -25,7 +26,10 @@ class LoanAttachment extends \yii\db\ActiveRecord
  public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+               [
+            'class' => TimestampBehavior::class,
+            'value' => new Expression('NOW()'),
+             ],
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }
@@ -87,6 +91,14 @@ class LoanAttachment extends \yii\db\ActiveRecord
     public static function find()
     {
         return new LoanAttachmentQuery(get_called_class());
+    }
+    public function saveAttachments($attachments)
+    {
+        foreach($attachments as $attachment){
+            $this->uploaded_doc=$attachment;
+            $this->save();
+        }
+        return true;
     }
 
 }

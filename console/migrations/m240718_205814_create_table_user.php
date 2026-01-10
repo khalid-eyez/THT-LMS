@@ -15,6 +15,7 @@ class m240718_205814_create_table_user extends Migration
             '{{%user}}',
             [
                 'id' => $this->primaryKey(),
+                'name' => $this->string()->notNull(),
                 'username' => $this->string()->notNull(),
                 'auth_key' => $this->string(32)->notNull(),
                 'password_hash' => $this->string()->notNull()->defaultValue('$2y$13$.kIiLCr/VFHDJULiTjtIk.7oKy4UN3dYlX2WKa1eJ3/mNpXhWVW96'),

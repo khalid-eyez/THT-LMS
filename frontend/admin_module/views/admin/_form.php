@@ -19,6 +19,9 @@ $roles=ArrayHelper::map($roles,'name','name');
     <?php $form = ActiveForm::begin(['method'=>'post','action'=>'/users/create']); ?>
 
 <div class="row">
+    <div class="col-sm-12">
+    <?= $form->field($model, 'full_name')->textInput(['placeholder'=>'Full name','class'=>'form-control form-control-sm'])->label(false)  ?>
+</div>
 <div class="col-sm-12">
     <?= $form->field($model, 'username')->textInput(['placeholder'=>'E-mail','class'=>'form-control form-control-sm'])->label(false)  ?>
 </div></div>

@@ -2,7 +2,7 @@
 
 namespace common\models;
 use yii\behaviors\TimestampBehavior;
-
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -62,7 +62,10 @@ class CustomerLoan extends \yii\db\ActiveRecord
      public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+               [
+            'class' => TimestampBehavior::class,
+            'value' => new Expression('NOW()'),
+             ],
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }
@@ -221,12 +224,12 @@ class CustomerLoan extends \yii\db\ActiveRecord
     public static function optsRepaymentFrequency()
     {
         return [
-            self::REPAYMENT_FREQUENCY_DAILY => 'daily',
-            self::REPAYMENT_FREQUENCY_WEEKLY => 'weekly',
-            self::REPAYMENT_FREQUENCY_MONTHLY => 'monthly',
-            self::REPAYMENT_FREQUENCY_QUARTERLY => 'quarterly',
-            self::REPAYMENT_FREQUENCY_SEMI_ANNUALLY => 'semi-annually',
-            self::REPAYMENT_FREQUENCY_ANNUALLY => 'annually',
+            self::REPAYMENT_FREQUENCY_DAILY => ucfirst('daily'),
+            self::REPAYMENT_FREQUENCY_WEEKLY => ucfirst('weekly'),
+            self::REPAYMENT_FREQUENCY_MONTHLY => ucfirst('monthly'),
+            self::REPAYMENT_FREQUENCY_QUARTERLY => ucfirst('quarterly'),
+            self::REPAYMENT_FREQUENCY_SEMI_ANNUALLY => ucfirst('semi-annually'),
+            self::REPAYMENT_FREQUENCY_ANNUALLY => ucfirst('annually'),
         ];
     }
 

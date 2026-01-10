@@ -74,7 +74,7 @@ class AuthController extends \yii\web\Controller
              }
              else
              {
-                return $this->redirect(['/home/dashboard']); 
+                return $this->redirect(['/loans/dashboard']); 
              }
        }
       $model = new LoginForm();
@@ -89,7 +89,7 @@ class AuthController extends \yii\web\Controller
              }
              else
              {
-                return $this->redirect(['/home/dashboard']); 
+                return $this->redirect(['/loans/dashboard']); 
              }
      }
 

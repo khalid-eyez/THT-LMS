@@ -12,15 +12,16 @@ class AdminController extends Controller
 
 public $username;
 public $password;
+public $name;
 
 public function options($actionID) {
-   return array_merge(parent::options($actionID), ['username', 'password']);
+   return array_merge(parent::options($actionID), ['username', 'password','name']);
 }
    public function actionCreate()
    {
       $this->stdout("Creating the administrator of the system... \n ");
     try{
-    	$model = new Admin($this->username,$this->password);
+    	$model = new Admin($this->username,$this->password,$this->name);
     	if($model->create()){
     		$this->stdout("A user with username \"$model->username\" and password \"$model->password\" was created successfully ! \n",Console::FG_BLUE);
             return 0;

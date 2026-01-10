@@ -1,9 +1,11 @@
 <?php
 
 namespace common\models;
+use Exception;
 use yii\behaviors\TimestampBehavior;
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "customers".
@@ -40,9 +42,29 @@ class Customer extends \yii\db\ActiveRecord
  public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+               [
+            'class' => TimestampBehavior::class,
+            'value' => new Expression('NOW()'),
+             ],
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
+    }
+    public function beforeSave($insert)
+    {
+        $user=new User;
+        $user->name=$this->full_name;
+        $user->username=uniqid();
+        $user->password=$user->username;
+        $user->setPassword($user->username);
+        $user->generateAuthKey();
+        $user->generateEmailVerificationToken();
+        
+        if(!$user->save()){
+            throw new Exception("unable to save user data");
+        }
+        $this->userID=$user->id;  
+        
+        return parent::beforeSave($insert);
     }
     /**
      * {@inheritdoc}
@@ -61,7 +83,9 @@ class Customer extends \yii\db\ActiveRecord
             [['TIN', 'deleted_at'], 'default', 'value' => null],
             [['status'], 'default', 'value' => 'active'],
             [['isDeleted'], 'default', 'value' => 0],
-            [['customerID', 'userID', 'full_name', 'birthDate', 'gender', 'address', 'contacts', 'NIN'], 'required'],
+            [['customerID', 'full_name', 'birthDate', 'gender', 'address', 'contacts', 'NIN'], 'required'],
+            ['userID','safe'],
+            ['userID','required','on'=>'update'],
             [['userID', 'isDeleted'], 'integer'],
             [['birthDate', 'address', 'contacts', 'deleted_at', 'created_at', 'updated_at'], 'safe'],
             [['status'], 'string'],

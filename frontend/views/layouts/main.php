@@ -57,7 +57,7 @@ JSLoggingAsset::register($this);
   min-height:1100px;
   overflow: auto;
 }
-.help-block-error{
+.help-block-error .help-block{
     color: red;
 }
 
