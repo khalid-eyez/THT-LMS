@@ -2,6 +2,7 @@
 
 namespace common\models;
 use Exception;
+use yii\base\UserException;
 use yii\behaviors\TimestampBehavior;
 
 use Yii;
@@ -53,14 +54,13 @@ class Customer extends \yii\db\ActiveRecord
     {
         $user=new User;
         $user->name=$this->full_name;
-        $user->username=uniqid();
-        $user->password=$user->username;
+        $user->username=$this->customerID;
         $user->setPassword($user->username);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
         
         if(!$user->save()){
-            throw new Exception("unable to save user data");
+            throw new UserException("unable to save user data");
         }
         $this->userID=$user->id;  
         

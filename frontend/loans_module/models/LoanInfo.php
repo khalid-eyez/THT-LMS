@@ -7,7 +7,7 @@ use yii;
 
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
-
+use yii\base\UserException;
 class LoanInfo extends Model
 { 
     public $loan_amount;
@@ -35,6 +35,9 @@ class LoanInfo extends Model
     }
     public function save($customerID)
     {
+        if(!$this->validate()){
+            throw new UserException('Could not validate your data submission!');
+        }
         $loan=new CustomerLoan();
         $loan->loan_amount=$this->loan_amount;
         $loan->repayment_frequency=$this->repayment_frequency;
@@ -43,17 +46,25 @@ class LoanInfo extends Model
         $loan->customerID=$customerID;
         $loan->status="new";
         $loan->initializedby=yii::$app->user->identity->id;
-        $loan->processing_fee_rate=0;
-        $loan->processing_fee=0;
-        $loan->interest_rate=0;
-        $loan->penalty_rate=0; 
-        $loan->topup_rate=0;
+        // loan type information
+        $loanType=LoanType::findOne($this->loan_type_ID);
+        $processing_fee_rate=$loanType->processing_fee_rate;
+        $processing_fee=round(($this->loan_amount*$processing_fee_rate)/100,2);
+        $interest_rate=$loanType->interest_rate;
+        $penalty_rate=$loanType->penalty_rate;
+        $topup_rate=$loanType->topup_rate;
+        $loan->penalty_grace_days=$loanType->penalty_grace_days;
+        $loan->processing_fee_rate= $processing_fee_rate;
+        $loan->processing_fee=$processing_fee;
+        $loan->interest_rate=$interest_rate;
+        $loan->penalty_rate=$penalty_rate;
+        $loan->topup_rate=$topup_rate;
         $loan->topup_amount=0;
-        $loan->deposit_amount=0;
+        $loan->deposit_amount=$this->loan_amount-$processing_fee;
 
         if(!$loan->save())
         {
-           throw new Exception(json_encode($loan->getErrors()));  
+           throw new UserException("Unable to save loan details");
         }
         return $loan;
        

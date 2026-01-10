@@ -1,9 +1,10 @@
 <?php
 
 namespace frontend\loans_module\models;
+use yii\base\UserException;
 use yii\base\Model;
 use common\models\Customer;
-use common\models\User;
+use common\helpers\UniqueCodeHelper;
 
 use Yii;
 
@@ -25,13 +26,16 @@ class CustomerInfo extends Model
             [['birthDate', 'address', 'contacts'], 'safe'],
             [['full_name', 'NIN', 'TIN'], 'string', 'max' => 50],
             [['gender'], 'string', 'max' => 8],
-            [['NIN'], 'unique'],
+            [['NIN'], 'unique', 'targetClass' => Customer::class, 'targetAttribute' => 'NIN'],
             [['TIN'], 'default', 'value' => null],
             
         ];
     }
     public function save()
     {
+        if(!$this->validate()){
+           throw new UserException('Could not validate your data submission!');
+        }
       $customer=new Customer();
       $customer->full_name=$this->full_name;
       $customer->birthDate=$this->birthDate;
@@ -40,9 +44,9 @@ class CustomerInfo extends Model
       $customer->address=$this->address;
       $customer->NIN=$this->NIN;
       $customer->TIN=$this->TIN;
-      $customer->customerID=uniqid();
+      $customer->customerID=UniqueCodeHelper::generate('HTHC',5);
       if (!$customer->save()) {
-       throw new \Exception(json_encode($customer->errors));
+       throw new UserException("Unable to save Customer info");
       }
 
 

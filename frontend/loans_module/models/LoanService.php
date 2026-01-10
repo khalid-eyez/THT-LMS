@@ -1,12 +1,11 @@
 <?php
 namespace frontend\loans_module\models;
 
-use common\models\Customer;
 use Exception;
-use frontend\loans_module\models\CustomerInfo;
 use yii\web\Request;
 use yii\web\UploadedFile;
 use common\models\LoanAttachment;
+use yii\base\UserException;
 
 use yii\base\Model;
 use yii;
@@ -39,6 +38,13 @@ class LoanService extends Model
    $attachmentmodel->loanID=$loaninfo->id;
    $attachmentmodel->saveAttachments($uploadedAttachments);
    $transaction->commit();
+   return true;
+   }
+   catch(UserException $w)
+   {
+       $transaction->rollBack();
+       throw $w;
+
    }
    catch(Exception $r)
    {

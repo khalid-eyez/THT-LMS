@@ -42,6 +42,44 @@
   <?= $this->render("@frontend/views/includes/mobilemenu") ?>
   <?= $this->render("@frontend/views/includes/mainmenu") ?>
   <div class="content">
+      <div class="row">
+          <div class="col-md-12">
+              <?php if(Yii::$app->session->hasFlash('success')): ?>
+
+                  <div class="col-md-12">
+                      <div class="alert alert-success alert-dismissible">
+                          <a class="close" data-dismiss="alert">&times;</a>
+                          <strong><?= Yii::$app->session->getFlash('success') ?></strong>
+                      </div>
+                  </div>
+
+              <?php endif ?>
+              <?php if(Yii::$app->session->hasFlash('error')): ?>
+                  <div class="col-md-12">
+                      <div class="alert alert-danger alert-dismissible">
+
+                          <span class="close" data-dismiss="alert">&times;</span>
+
+                          <strong><?= Yii::$app->session->getFlash('error') ?></strong>
+                      </div>
+                  </div>
+
+              <?php endif ?>
+              <?php if(Yii::$app->session->hasFlash('info')): ?>
+                  <div class="col-md-12">
+                      <div class="alert alert-info alert-dismissible">
+                          <button class="close" data-dismiss="alert">
+                              <span>&times;</span>
+                          </button>
+                          <strong><?= Yii::$app->session->getFlash('info') ?></strong>
+                      </div>
+                  </div>
+              <?php endif ?>
+
+          </div></div>
+      <div class="preloader flex-column justify-content-center align-items-center">
+          <img class="animation__shake rounded" src="<?php echo Yii::getAlias('@web/img/logo.png'); ?>" alt="LOGO" height="60" width="60">
+      </div>
     <div id="global-loader" class="data-table-area" style="display: none; position: absolute; z-index:10; top:51%;left:43%; width:150px;height:150px"><img src="/img/spinner.gif" /></div>
   <?= $content ?>
   </div>
@@ -62,7 +100,9 @@
                      $('body').on('click','.notika-main-menu-dropdown li a',function(e){
                         e.preventDefault();
                         let url=$(this).attr('href');
-                        $('.content').load(url)
+                        $('.content').load(url, function () {
+                        history.pushState({ url: url }, '', url);
+                        });
                      })
                 
                         

@@ -24,11 +24,12 @@ $this->title="New Loan";
 <?=   FormWizard::widget([
      "forceBsVersion"=>true,
      'enablePreview'=>true,
+        //'enableAjaxValidation' => true,
       'formOptions' => [
        'id' => 'loanform',
        'options' => ['enctype' => 'multipart/form-data'],
-        //'enableClientValidation' => false, // disable client validation for multi-files
-        //'enableAjaxValidation' => false,
+//        'enableClientValidation' => true, // disable client validation for multi-files
+//        'enableAjaxValidation' => true,
     
 
      ],

@@ -31,15 +31,9 @@ class LoansController extends Controller
             try{
                   if((new LoanService(yii::$app->request))->saveLoan())
                   {
-                    yii::$app->session->setFlash("created successfully");
+                    yii::$app->session->setFlash('success',"created successfully");
                     return $this->redirect(yii::$app->request->referrer);
                   }
-
-
-                
-                    
-                
-               
 
             }
             catch(\Exception $e)
@@ -47,11 +41,22 @@ class LoansController extends Controller
                throw $e;
             }
         }
-        return $this->renderAjax('loancreate2',[
-            'customerinfo'=>new CustomerInfo(),
-            'loaninfo'=>new LoanInfo(),
-            'attachments'=>new Attachments()
-        ]);
+        if(yii::$app->request->isAjax){
+            return $this->renderAjax('loancreate2',[
+                'customerinfo'=>new CustomerInfo(),
+                'loaninfo'=>new LoanInfo(),
+                'attachments'=>new Attachments()
+            ]);
+        }
+        else
+        {
+            return $this->render('loancreate2',[
+                'customerinfo'=>new CustomerInfo(),
+                'loaninfo'=>new LoanInfo(),
+                'attachments'=>new Attachments()
+            ]);
+        }
+
     }
 
 }
