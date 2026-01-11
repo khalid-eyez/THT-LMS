@@ -12,7 +12,11 @@ use yii\filters\VerbFilter;
  * ShareholderController implements the CRUD actions for Shareholder model.
  */
 class ShareholderController extends Controller
-{  //public $layout="user_dashboard";
+{  
+    //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
+    public $sharevalue;
+    
+    //public $layout="user_dashboard";
     /**
      * @inheritDoc
      */
@@ -68,11 +72,14 @@ class ShareholderController extends Controller
 public function actionCreate()
 {
     $model = new Shareholder();
-
     if ($this->request->isPost) {
+       // Load POST data
 
-        // Load POST data
         $model->load($this->request->post());
+
+        //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
+        $sharevalue = 1000;
+        $model->shares=$model->initialCapital/ $sharevalue;
 
         // Attempt to save
         if ($model->save()) {
@@ -143,7 +150,13 @@ public function actionCreate()
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+        if($this->request->isPost){
+                  
+        //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
+        $sharevalue = 1000;
+        $model->shares=$model->initialCapital/ $sharevalue;
+        
+        if ($model->load($this->request->post()) && $model->save()) {
              $searchModel = new ShareholderSearch();
              $dataProvider = $searchModel->search($this->request->queryParams);
             return $this->render('index', [
@@ -151,7 +164,7 @@ public function actionCreate()
             'dataProvider' => $dataProvider,
         ]);
         }
-
+        }
         return $this->render('update', [
             'model' => $model,
         ]);
