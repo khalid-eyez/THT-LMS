@@ -53,7 +53,7 @@ class Shareholder extends \yii\db\ActiveRecord
             [['memberID'], 'string', 'max' => 20],
             [['customerID'], 'unique'],
             [['memberID'], 'unique'],
-            [['customerID'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customerID' => 'id']],
+            [['customerID'], 'exist','skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customerID' => 'id']],
         ];
     }
 
