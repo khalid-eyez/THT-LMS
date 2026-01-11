@@ -11,6 +11,7 @@ use common\models\Shareholder;
  */
 class ShareholderSearch extends Shareholder
 {
+    public $customerFullName;
     /**
      * {@inheritdoc}
      */
@@ -20,6 +21,7 @@ class ShareholderSearch extends Shareholder
             [['id', 'customerID', 'shares', 'isDeleted'], 'integer'],
             [['memberID', 'deleted_at'], 'safe'],
             [['initialCapital'], 'number'],
+            [['customerFullName'], 'safe'],
         ];
     }
 
@@ -58,6 +60,15 @@ class ShareholderSearch extends Shareholder
             return $dataProvider;
         }
 
+         //new try
+
+            $query->joinWith(['customer']);
+            $dataProvider->sort->attributes['customerFullName'] = [
+            'asc' => ['customers.full_name' => SORT_ASC],
+            'desc' => ['customers.full_name' => SORT_DESC],
+        ];
+             $query->andFilterWhere(['like', 'customers.full_name', $this->customerFullName]);
+        
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,

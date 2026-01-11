@@ -20,15 +20,15 @@ $user=yii::$app->user;
   <?php } ?>
   <!-- SHAREHOLDERS MODULE TESTING-->
   <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/shareholder/create']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-university" aria-hidden="true"></i><span class="mn"> New Shareholder</span></a>
+  <a href="<?= Url::toRoute(['/shareholder/shareholder/create']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-university" aria-hidden="true"></i>&nbsp;<span class="mn"> New Shareholder</span></a>
   <?php } ?>
   <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/shareholder/index']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-users" aria-hidden="true"></i><span class="mn"> Manage Shareholders</span></a>
+  <a href="<?= Url::toRoute(['/shareholder/shareholder/index']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-users" aria-hidden="true"></i>&nbsp;<span class="mn"> Manage Shareholders</span></a>
   <?php } ?>
   <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/shareholder/claims']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-money-bill-wave" aria-hidden="true"></i><span class="mn">Shareholder Claims</span></a>
+  <a href="<?= Url::toRoute(['/shareholder/shareholder/claims']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-money-bill-wave" aria-hidden="true"></i>&nbsp;<span class="mn">Monthly Deposits</span></a>
   <?php } ?>
   <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/shareholder/claims2']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-tasks" aria-hidden="true"></i><span class="mn">Claims Progress</span></a>
+  <a href="<?= Url::toRoute(['/shareholder/shareholder/claims2']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-tasks" aria-hidden="true"></i>&nbsp;<span class="mn">Shareholders Claims</span></a>
   <?php } ?>
   </div>

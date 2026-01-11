@@ -1,6 +1,7 @@
 <?php
 
 use common\models\Shareholder;
+use common\models\CustomerShareholderForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -8,6 +9,7 @@ use yii\grid\GridView;
 
 /** @var yii\web\View $this */
 /** @var common\models\ShareholderSearch $searchModel */
+/** @var common\models\CustomerShareholderForm $sCustomerShareholderForm */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 //$this->title = 'Shareholders';
@@ -17,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-   <div class="d-flex justify-content-end mb-3">
+   <div class="d-flex justify-content-end">
     <?= Html::a('+ New Shareholder', ['create'], ['class' => 'btn btn-primary']) ?>
   </div>
 
@@ -40,6 +42,14 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
 
         'customerID',
+        [
+    'attribute' => 'customerFullName',
+    'label' => 'Full Name',
+    'value' => function($model) {
+        return $model->customer ? $model->customer->full_name : '(not set)';
+        }
+      ],
+
         'memberID',
         [
             'attribute' => 'initialCapital',
