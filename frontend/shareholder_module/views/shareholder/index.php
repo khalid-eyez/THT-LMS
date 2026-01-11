@@ -23,27 +23,68 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+<?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'filterModel' => $searchModel,
+    'tableOptions' => [
+        'class' => 'table table-striped table-hover table-bordered align-middle', // Bootstrap 5 styling
+    ],
+    'headerRowOptions' => [
+        'class' => 'table-primary text-center', // Blue header, centered text
+    ],
+    'columns' => [
+        ['class' => 'yii\grid\SerialColumn',
+         'header' => 'No',
+         'headerOptions' => ['class' => 'text-primary text-center'],
+         'contentOptions' => ['class' => 'text-center'],
+        ],
 
-            'id',
-            'customerID',
-            'memberID',
-            'initialCapital',
-            'shares',
-            //'isDeleted',
-            //'deleted_at',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Shareholder $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+        'customerID',
+        'memberID',
+        [
+            'attribute' => 'initialCapital',
+            'format' => ['decimal', 2],
+            'contentOptions' => ['class' => 'text-end'], // align numbers right
+        ],
+        [
+            'attribute' => 'shares',
+            'contentOptions' => ['class' => 'text-center'],
+        ],
+
+        [
+            'class' => ActionColumn::class,
+            'header' => 'Action',
+            'headerOptions' => ['class' => 'text-primary text-center'],
+            'contentOptions' => ['class' => 'text-center'],
+            'template' => '{view} {update} {delete}', // buttons you want
+            'buttons' => [
+                'view' => function($url, $model, $key) {
+                    return Html::a('<i class="fa fa-eye"></i>', $url, [
+                        'class' => 'btn btn-sm btn-info me-1',
+                        'title' => 'View'
+                    ]);
+                },
+                'update' => function($url, $model, $key) {
+                    return Html::a('<i class="fa fa-edit"></i>', $url, [
+                        'class' => 'btn btn-sm btn-warning me-1',
+                        'title' => 'Update'
+                    ]);
+                },
+                'delete' => function($url, $model, $key) {
+                    return Html::a('<i class="fa fa-trash"></i>', $url, [
+                        'class' => 'btn btn-sm btn-danger',
+                        'title' => 'Delete',
+                        'data' => [
+                            'confirm' => 'Are you sure you want to delete this shareholder?',
+                            'method' => 'post',
+                        ],
+                    ]);
+                },
             ],
         ],
-    ]); ?>
+    ],
+]); ?>
+
 
 
 </div>

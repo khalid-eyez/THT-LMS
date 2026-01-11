@@ -18,7 +18,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'initialCapital')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'shares')->textInput() ?>
+    <?php //echo $form->field($model, 'shares')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save details', ['class' => 'btn btn-primary']) ?>
