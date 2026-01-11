@@ -42,8 +42,7 @@
                                 </li>
                                 <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Customer</a>
                                 </li>
-                               
-                            </ul>
+                           </ul>
                         </div>
                         <div id="Interface" class="tab-pane notika-tab-menu-bg animated flipInX">
                             <ul class="notika-main-menu-dropdown">
@@ -83,11 +82,13 @@
                         </div>
                         <div id="Forms" class="tab-pane notika-tab-menu-bg animated flipInX">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="form-elements.html">Form Elements</a>
+                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/create']) ?>">New Shareholder</a>
                                 </li>
-                                <li><a href="form-components.html">Form Components</a>
+                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/index']) ?>">Manage Shareholder</a>
                                 </li>
-                                <li><a href="form-examples.html">Form Examples</a>
+                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/claims']) ?>">Shareholder Claims</a>
+                                </li>
+                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/claims2']) ?>">Claims progress</a>
                                 </li>
                             </ul>
                         </div>
