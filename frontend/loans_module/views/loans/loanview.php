@@ -43,25 +43,31 @@
                     <div class="wizard-wrap-int">
                      <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item">
-        <a class="nav-link active" data-toggle="tab" href="#tab1" role="tab">Tab 1</a>
+        <a class="nav-link active" data-toggle="tab" href="#tab1" role="tab">Loan Info</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#tab2" role="tab">Tab 2</a>
+        <a class="nav-link" data-toggle="tab" href="#tab2" role="tab">Customer Info</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#tab3" role="tab">Tab 3</a>
+        <a class="nav-link" data-toggle="tab" href="#tab3" role="tab">Repayment Schedule</a>
+    </li>
+     <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#tab3" role="tab">Repayment Statement</a>
     </li>
 </ul>
 
 <div class="tab-content mt-3">
-    <div class="tab-pane show active" id="tab1" role="tabpanel">
-        Content for Tab 1
+    <div class="tab-pane active" id="tab1" role="tabpanel">
+        Loan
     </div>
     <div class="tab-pane fade" id="tab2" role="tabpanel">
-        Content for Tab 2
+        Customer
     </div>
     <div class="tab-pane fade" id="tab3" role="tabpanel">
-        Content for Tab 3
+        schedule
+    </div>
+     <div class="tab-pane fade" id="tab3" role="tabpanel">
+        statement
     </div>
 </div>
                            
