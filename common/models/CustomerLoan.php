@@ -11,6 +11,7 @@ use Yii;
  * @property int $id
  * @property int $customerID
  * @property int $loan_type_ID
+ * @property string $loanID
  * @property float $loan_amount
  * @property float $topup_amount
  * @property float $deposit_amount
@@ -88,7 +89,7 @@ class CustomerLoan extends \yii\db\ActiveRecord
             [['repayment_frequency', 'deposit_account', 'deposit_account_names', 'approvedby', 'paidby', 'approved_at', 'deleted_at'], 'default', 'value' => null],
             [['topup_amount'], 'default', 'value' => 0.00],
             [['isDeleted'], 'default', 'value' => 0],
-            [['customerID', 'loan_type_ID', 'loan_amount', 'deposit_amount', 'loan_duration_units', 'processing_fee_rate', 'processing_fee', 'status', 'interest_rate', 'penalty_rate', 'topup_rate', 'initializedby','penalty_grace_days'], 'required'],
+            [['customerID', 'loan_type_ID', 'loan_amount', 'deposit_amount', 'loan_duration_units', 'processing_fee_rate', 'processing_fee', 'status', 'interest_rate', 'penalty_rate', 'topup_rate', 'initializedby','penalty_grace_days','loanID'], 'required'],
             [['customerID', 'loan_type_ID', 'loan_duration_units', 'duration_extended', 'approvedby', 'initializedby', 'paidby', 'isDeleted'], 'integer'],
             [['loan_amount', 'topup_amount', 'deposit_amount', 'processing_fee_rate', 'processing_fee', 'interest_rate', 'penalty_rate', 'topup_rate'], 'number'],
             [['repayment_frequency', 'status'], 'string'],

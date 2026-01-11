@@ -38,7 +38,7 @@ class LoanService extends Model
    $attachmentmodel->loanID=$loaninfo->id;
    $attachmentmodel->saveAttachments($uploadedAttachments);
    $transaction->commit();
-   return true;
+   return $loaninfo;
    }
    catch(UserException $w)
    {

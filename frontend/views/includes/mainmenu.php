@@ -2,13 +2,13 @@
      use yii\helpers\Url;
   ?>
   <style>
-    .nav-tabs > li.active > a{
+    .notika-menu-wrap > li.active > a{
         color:rgba(5, 125, 176)!important;
     }
-    .nav-tabs > li>a{
+    .notika-menu-wrap > li>a{
         color:white!important
     }
-      .nav-tabs > li:hover a{
+      .notika-menu-wrap > li:hover a{
         color:rgba(5, 125, 176)!important
     }
   </style>

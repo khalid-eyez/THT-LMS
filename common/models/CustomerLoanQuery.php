@@ -3,7 +3,7 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[CustomerLoan]].
+ * This is the ActiveQuery class for [[CustomerLoans]].
  *
  * @see CustomerLoan
  */

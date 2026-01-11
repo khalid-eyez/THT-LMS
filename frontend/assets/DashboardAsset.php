@@ -26,7 +26,8 @@ class DashboardAsset extends AssetBundle
     "css/wave/button.css",
     "css/main.css",
     "css/style.css",
-    "css/responsive.css"
+    "css/responsive.css",
+        'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css',
    
         
       
@@ -58,6 +59,8 @@ class DashboardAsset extends AssetBundle
     "js/wave/wave-active.js",
     "js/plugins.js",
     "js/main.js",
+        'https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js'
+        //'js/adminlte.js',
  
       
         

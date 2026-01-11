@@ -27,9 +27,26 @@
 		============================================ -->
     
     <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+
     <style>
       body{
   background-color: rgba(5, 125, 176)!important;
+}
+      .toast-center {
+          top: 55% !important;
+          left: 50% !important;
+          transform: translate(-50%, -50%);
+          position: fixed;
+          z-index: 1080;
+      }
+      .tooltip .tooltip-inner {
+    background-color: #0f6eb1 !important; /* green background */
+    color: #fff;                           /* white text */
+}
+
+/* Tooltip arrow to match background */
+.tooltip.bs-tooltip-left .arrow::before {
+    border-left-color: #046cbc !important;
 }
     </style>
     <?php $this->head() ?>
@@ -42,45 +59,31 @@
   <?= $this->render("@frontend/views/includes/mobilemenu") ?>
   <?= $this->render("@frontend/views/includes/mainmenu") ?>
   <div class="content">
-      <div class="row">
+      <div class="row" style="border:none">
           <div class="col-md-12">
-              <?php if(Yii::$app->session->hasFlash('success')): ?>
+            <?php
+            $session = Yii::$app->session;
+            $this->registerJs("
+            toastr.options = {
+            positionClass: 'toast-center',
+            closeButton: true,
+            progressBar: true,
+            timeOut: 5000
+            };
+            ");
 
-                  <div class="col-md-12">
-                      <div class="alert alert-success alert-dismissible">
-                          <a class="close" data-dismiss="alert">&times;</a>
-                          <strong><?= Yii::$app->session->getFlash('success') ?></strong>
-                      </div>
-                  </div>
-
-              <?php endif ?>
-              <?php if(Yii::$app->session->hasFlash('error')): ?>
-                  <div class="col-md-12">
-                      <div class="alert alert-danger alert-dismissible">
-
-                          <span class="close" data-dismiss="alert">&times;</span>
-
-                          <strong><?= Yii::$app->session->getFlash('error') ?></strong>
-                      </div>
-                  </div>
-
-              <?php endif ?>
-              <?php if(Yii::$app->session->hasFlash('info')): ?>
-                  <div class="col-md-12">
-                      <div class="alert alert-info alert-dismissible">
-                          <button class="close" data-dismiss="alert">
-                              <span>&times;</span>
-                          </button>
-                          <strong><?= Yii::$app->session->getFlash('info') ?></strong>
-                      </div>
-                  </div>
-              <?php endif ?>
+            foreach (['success', 'error', 'info'] as $type) {
+            if ($session->hasFlash($type)) {
+            $msg = addslashes($session->getFlash($type));
+            $this->registerJs("toastr.$type('$msg');");
+            }
+            }
+            ?>
 
           </div></div>
-      <div class="preloader flex-column justify-content-center align-items-center">
-          <img class="animation__shake rounded" src="<?php echo Yii::getAlias('@web/img/logo.png'); ?>" alt="LOGO" height="60" width="60">
-      </div>
+
     <div id="global-loader" class="data-table-area" style="display: none; position: absolute; z-index:10; top:51%;left:43%; width:150px;height:150px"><img src="/img/spinner.gif" /></div>
+
   <?= $content ?>
   </div>
 	
@@ -92,6 +95,7 @@
    <?php $this->registerJs("
                     
                     $('document').ready(function(){
+                      
                       $(document).ajaxStart(function () {
                       $('#global-loader').show();
                       }).ajaxStop(function () {
@@ -103,6 +107,7 @@
                         $('.content').load(url, function () {
                         history.pushState({ url: url }, '', url);
                         });
+                        
                      })
                 
                         
