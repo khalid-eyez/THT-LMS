@@ -76,7 +76,12 @@ public function actionCreate()
 
         // Attempt to save
         if ($model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+             $searchModel = new ShareholderSearch();
+             $dataProvider = $searchModel->search($this->request->queryParams);
+            return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
         } else {
             // SAVE FAILED - show validation errors
             var_dump($model->errors); 

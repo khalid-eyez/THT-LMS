@@ -17,9 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Shareholder', ['create'], ['class' => 'btn btn-primary']) ?>
-    </p>
+   <div class="d-flex justify-content-end mb-3">
+    <?= Html::a('+ New Shareholder', ['create'], ['class' => 'btn btn-primary']) ?>
+  </div>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
@@ -84,6 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ],
 ]); ?>
+
 
 
 
