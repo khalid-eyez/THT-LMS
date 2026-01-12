@@ -6,6 +6,14 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+//from deposit
+//
+use common\models\Deposit;
+use common\models\DepositSearch;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+
 
 /** @var yii\web\View $this */
 /** @var common\models\ShareholderSearch $searchModel */
@@ -66,37 +74,37 @@ $this->params['breadcrumbs'][] = $this->title;
             'header' => 'Action',
             'headerOptions' => ['class' => 'text-primary text-center'],
             'contentOptions' => ['class' => 'text-center'],
-            'template' => '{view} {update} {delete}', 
+            'template' => '{update} {view} {delete}', 
             'buttons' => [
-                'view' => function($url, $model, $key) {
-                    return Html::a('<i class="fa fa-book-open"></i>', $url, [
-                        'class' => 'btn btn-sm btn-info me-1',
-                        'title' => 'History'
-                    ]);
-                },
-                'update' => function($url, $model, $key) {
-                    return Html::a('<i class="fa fa-coins"></i>'
-, $url, [
+
+                  'update' => function($url, $model, $key) {
+                    return Html::a('<i class="fa fa-coins"></i>', 
+                    Url::to(['/shareholder/deposit/create','shareholder_id' => $model->id]),
+                    [
                         'class' => 'btn btn-sm btn-success me-1',
                         'title' => 'Deposit'
                     ]);
                 },
+                'view' => function($url, $model, $key) {
+                    return Html::a('<i class="fa fa-book-open"></i>', 
+                     Url::to(['/shareholder/deposit/create','shareholder_id' => $model->id]),
+                    [
+                        'class' => 'btn btn-sm btn-warning me-1',
+                        'title' => 'View History'
+                    ]);
+                },
+              
                 'delete' => function($url, $model, $key) {
-                    return Html::a('<i class="fa fa-download"></i>', $url, [
+                    return Html::a('<i class="fa fa-download"></i>',
+                    Url::to(['/shareholder/deposit/create','shareholder_id' => $model->id]),
+                     [
                         'class' => 'btn btn-sm btn-primary',
                         'title' => 'Download History',
-                        'data' => [
-                            'confirm' => 'Are you sure you want to delete this shareholder?',
-                            'method' => 'post',
-                        ],
                     ]);
                 },
             ],
         ],
     ],
 ]); ?>
-
-
-
 
 </div></div></div></div></div>

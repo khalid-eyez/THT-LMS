@@ -15,12 +15,10 @@ use yii\grid\GridView;
 //$this->title = 'Shareholders';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<!-- ################## add this for any pages############################-->
  <div class="breadcomb-area" style="margin-top:0px!important">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-<!--#########################################################-->
 <div class="shareholder-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -35,10 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
     'tableOptions' => [
-        'class' => 'table table-striped table-hover table-bordered align-middle', // Bootstrap 5 styling
+        'class' => 'table table-striped table-hover table-bordered align-middle', 
     ],
     'headerRowOptions' => [
-        'class' => 'table-primary text-center', // Blue header, centered text
+        'class' => 'table-primary text-center', 
     ],
     'columns' => [
         ['class' => 'yii\grid\SerialColumn',
@@ -58,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'attribute' => 'initialCapital',
             'format' => ['decimal', 2],
-            'contentOptions' => ['class' => 'text-end'], // align numbers right
+            'contentOptions' => ['class' => 'text-end'], 
         ],
         [
             'attribute' => 'shares',
@@ -70,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'header' => 'Action',
             'headerOptions' => ['class' => 'text-primary text-center'],
             'contentOptions' => ['class' => 'text-center'],
-            'template' => '{view} {update} {delete}', // buttons you want
+            'template' => '{view} {update} {delete}',
             'buttons' => [
                 'view' => function($url, $model, $key) {
                     return Html::a('<i class="fa fa-eye"></i>', $url, [

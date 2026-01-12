@@ -3,6 +3,7 @@
 namespace frontend\shareholder_module\controllers;
 //from shareholder
 use Yii;
+use common\models\ShareholderDepositForm;
 use common\models\CustomerShareholderForm;
 use common\helpers\UniqueCodeHelper;
 use common\models\Shareholder;
@@ -42,23 +43,13 @@ class DepositController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
-        $searchModel = new DepositSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-     public function actionIndexsh()
+  
+     public function actionIndex()
     {
         $searchModel = new ShareholderSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        return $this->render('indexsh', [
+        return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -82,22 +73,21 @@ class DepositController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
+
     public function actionCreate()
     {
-        $model = new Deposit();
+        $model = new ShareholderDepositForm();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'depositID' => $model->depositID]);
-            }
-        } else {
-            $model->loadDefaultValues();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Deposit recorded successfully');
+            return $this->redirect(['index']);
         }
 
         return $this->render('create', [
             'model' => $model,
         ]);
     }
+
 
     /**
      * Updates an existing Deposit model.

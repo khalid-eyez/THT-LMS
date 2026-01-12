@@ -26,7 +26,7 @@ $user=yii::$app->user;
   <a href="<?= Url::toRoute(['/shareholder/shareholder/index']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-users" aria-hidden="true"></i>&nbsp;<span class="mn"> Manage Shareholders</span></a>
   <?php } ?>
   <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/deposit/indexsh']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-money-bill-wave" aria-hidden="true"></i>&nbsp;<span class="mn">Monthly Deposits</span></a>
+  <a href="<?= Url::toRoute(['/shareholder/deposit/index']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-money-bill-wave" aria-hidden="true"></i>&nbsp;<span class="mn">Shareholder Deposits</span></a>
   <?php } ?>
   <?php if(!Yii::$app->user->isGuest){ ?>
   <a href="<?= Url::toRoute(['/shareholder/shareholder/claims']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-tasks" aria-hidden="true"></i>&nbsp;<span class="mn">Shareholders Claims</span></a>
