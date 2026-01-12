@@ -24,12 +24,7 @@ class Shareholder extends \yii\db\ActiveRecord
 public function behaviors()
 {
     return [
-        [
-            'class' => TimestampBehavior::class,
-            'createdAtAttribute' => 'created_at',
-            'updatedAtAttribute' => 'updated_at',
-            'value' => new Expression('NOW()'), // uses MySQL NOW() function
-        ],
+     
         'auditBehaviour' => 'bedezign\yii2\audit\AuditTrailBehavior',
     ];
 }

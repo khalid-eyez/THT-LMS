@@ -27,7 +27,7 @@ class CustomerShareholderForm extends Model
     {
         return [
             [['customerID','full_name','birthDate','gender','address','contacts','NIN'], 'required'],
-            [['memberID','initialCapital'], 'required'],
+            [['initialCapital'], 'required'],
             [['initialCapital'], 'number'],
             [['shares'], 'integer'],
         ];
@@ -72,7 +72,7 @@ public function loadExisting($shareholderId): bool
             /* ---------- SAVE CUSTOMER ---------- */
             $customer = new Customer();
             // HAPA NATENGENEZA CUSTOMER ID KUPITIA GENERATOR YA KHALID YA KWENYE HELPERS
-            $customer->customerID = UniqueCodeHelper::generate('CUST', 6);
+            $customer->customerID = UniqueCodeHelper::generate('THTC', 5);
            // $customer->customerID = $this->customerID;
             $customer->full_name  = $this->full_name;
             $customer->birthDate  = $this->birthDate;
@@ -89,7 +89,7 @@ public function loadExisting($shareholderId): bool
             /* ---------- SAVE SHAREHOLDER ---------- */
             $shareholder = new Shareholder();
             $shareholder->customerID     = $customer->id;
-            $shareholder->memberID       = $this->memberID;
+            $shareholder->memberID       =UniqueCodeHelper::generate('SH', 5);;
             $shareholder->initialCapital = $this->initialCapital;
             $shareholder->shares         = $this->shares;
 
@@ -102,6 +102,7 @@ public function loadExisting($shareholderId): bool
 
         } catch (\Throwable $e) {
             $transaction->rollBack();
+            throw $e;
             $this->addError('customerID', $e->getMessage());
             return false;
         }

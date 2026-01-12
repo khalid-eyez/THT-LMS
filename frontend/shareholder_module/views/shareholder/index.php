@@ -46,8 +46,6 @@ $this->params['breadcrumbs'][] = $this->title;
          'headerOptions' => ['class' => 'text-primary text-center'],
          'contentOptions' => ['class' => 'text-center'],
         ],
-
-        'customerID',
         [
     'attribute' => 'customerFullName',
     'label' => 'Full Name',
