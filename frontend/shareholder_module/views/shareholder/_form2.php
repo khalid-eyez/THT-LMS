@@ -18,22 +18,22 @@ use common\models\Shareholder;
 
     <?php //echo $form->field($model, 'customerID')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'full_name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model->customer, 'full_name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'birthDate')->input('date') ?>
+    <?= $form->field($model->customer, 'birthDate')->input('date') ?>
 
-    <?= $form->field($model, 'gender')->dropDownList([
+    <?= $form->field($model->customer, 'gender')->dropDownList([
         'male' => 'Male',
         'female' => 'Female',
     ], ['prompt' => 'Select Gender']) ?>
 
-    <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model->customer, 'address')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'contacts')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model->customer, 'contacts')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'NIN')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model->customer, 'NIN')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'TIN')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model->customer, 'TIN')->textInput(['maxlength' => true]) ?>
 
 
     <h4 class="mt-4 text-primary">Shareholder Information</h4>
@@ -48,7 +48,7 @@ use common\models\Shareholder;
 
     <div class="form-group mt-3 ">
         <?= Html::submitButton(
-            'Register Shareholder',
+            'Save Changes',
             ['class' => 'btn btn-primary']
         ) ?>
     </div>

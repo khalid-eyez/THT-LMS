@@ -1,7 +1,9 @@
 <?php
 
 namespace frontend\shareholder_module\controllers;
-
+use Yii;
+use common\models\CustomerShareholderForm;
+use common\helpers\UniqueCodeHelper;
 use common\models\Shareholder;
 use common\models\ShareholderSearch;
 use yii\web\Controller;
@@ -12,7 +14,11 @@ use yii\filters\VerbFilter;
  * ShareholderController implements the CRUD actions for Shareholder model.
  */
 class ShareholderController extends Controller
-{  //public $layout="user_dashboard";
+{  
+    //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
+    public $sharevalue;
+    
+    //public $layout="user_dashboard";
     /**
      * @inheritDoc
      */
@@ -54,7 +60,7 @@ class ShareholderController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
-    {
+    {   
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -67,16 +73,27 @@ class ShareholderController extends Controller
      */
 public function actionCreate()
 {
-    $model = new Shareholder();
-
+    $model = new CustomerShareholderForm();
     if ($this->request->isPost) {
+       // Load POST data
 
-        // Load POST data
         $model->load($this->request->post());
 
+        //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
+        $sharevalue = 1000;
+        $shares= $model->initialCapital/$sharevalue;
+        $model->shares=(int)$shares;
+        // HAPA NATENGENEZA CUSTOMER ID KUPITIA GENERATOR YA KHALID YA KWENYE HELPERS
+        //$model->customerID = UniqueCodeHelper::generate('CUST', 6);
         // Attempt to save
         if ($model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+             $searchModel = new ShareholderSearch();
+             $dataProvider = $searchModel->search($this->request->queryParams);
+             Yii::$app->session->setFlash('success', 'Shareholder registered successfully');
+             return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
         } else {
             // SAVE FAILED - show validation errors
             var_dump($model->errors); 
@@ -85,7 +102,7 @@ public function actionCreate()
 
     } else {
         // GET request - first time, just show form
-        $model->loadDefaultValues();
+        //$model->loadDefaultValues();
     }
 
     return $this->render('create', [
@@ -134,14 +151,28 @@ public function actionCreate()
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
+
+
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if($this->request->isPost){
+                  
+        //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
+        $sharevalue = 1000;
+        $shares= $model->initialCapital/$sharevalue;
+        $model->shares=(int)$shares;
+        
+        if ($model->load($this->request->post()) && $model->save()) {
+             $searchModel = new ShareholderSearch();
+             $dataProvider = $searchModel->search($this->request->queryParams);
+            return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
         }
-
+        }
         return $this->render('update', [
             'model' => $model,
         ]);

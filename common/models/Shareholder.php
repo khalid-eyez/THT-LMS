@@ -2,7 +2,7 @@
 
 namespace common\models;
 use yii\behaviors\TimestampBehavior;
-
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -21,13 +21,18 @@ use Yii;
  */
 class Shareholder extends \yii\db\ActiveRecord
 {
-     public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-             'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
-        ];
-    }
+public function behaviors()
+{
+    return [
+        [
+            'class' => TimestampBehavior::class,
+            'createdAtAttribute' => 'created_at',
+            'updatedAtAttribute' => 'updated_at',
+            'value' => new Expression('NOW()'), // uses MySQL NOW() function
+        ],
+        'auditBehaviour' => 'bedezign\yii2\audit\AuditTrailBehavior',
+    ];
+}
 
 
     /**
