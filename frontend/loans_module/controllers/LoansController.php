@@ -21,7 +21,8 @@ class LoansController extends Controller
     public $layout="user_dashboard";
     public function actionDashboard()
     {
-       return $this->render('loansdashboard');
+       $loans=CustomerLoan::find()->all();
+       return $this->render('loansdashboard',['loans'=>$loans]);
     }
     public function actionLoans()
     {
@@ -93,6 +94,18 @@ class LoansController extends Controller
     public function actionLoanFail()
     {
         return $this->render('loanfail');
+    }
+    public function actionApprove($loanID)
+    {
+        $loan=CustomerLoan::findOne($loanID);
+        $loan->status="approved";
+        $loan->approved_at = date('Y-m-d H:i:s');
+
+        if($loan->save()){
+            yii::$app->session->setFlash('success','<i class="fa fa-check-circle"></i> Loan status updated successfully!');
+            return $this->redirect(yii::$app->request->referrer);
+        }
+
     }
 
 }

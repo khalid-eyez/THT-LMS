@@ -35,7 +35,7 @@ use Yii;
  * @property string $updated_at
  * @property int|null $isDeleted
  * @property string|null $deleted_at
- *
+ * 
  * @property User $approvedby0
  * @property Customer $customer
  * @property User $initializedby0
@@ -58,6 +58,7 @@ class CustomerLoan extends \yii\db\ActiveRecord
     const REPAYMENT_FREQUENCY_ANNUALLY = 'annually';
     const STATUS_NEW = 'new';
     const STATUS_APPROVED = 'approved';
+    const STATUS_DISAPPROVED = 'rejected';
     const STATUS_ACTIVE = 'active';
     const STATUS_FINISHED = 'finished';
 
@@ -245,6 +246,7 @@ class CustomerLoan extends \yii\db\ActiveRecord
         return [
             self::STATUS_NEW => 'new',
             self::STATUS_APPROVED => 'approved',
+            self::STATUS_DISAPPROVED => 'rejected',
             self::STATUS_ACTIVE => 'active',
             self::STATUS_FINISHED => 'finished',
         ];
@@ -394,5 +396,9 @@ class CustomerLoan extends \yii\db\ActiveRecord
     public function setStatusToFinished()
     {
         $this->status = self::STATUS_FINISHED;
+    }
+     public function setStatusToDisapproved()
+    {
+        $this->status = self::STATUS_DISAPPROVED;
     }
 }

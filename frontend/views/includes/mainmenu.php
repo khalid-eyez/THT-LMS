@@ -40,7 +40,7 @@
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="/loans">List</a>
                                 </li>
-                                <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Customer</a>
+                                <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Loan</a>
                                 </li>
                            </ul>
                         </div>

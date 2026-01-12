@@ -1,4 +1,10 @@
+<?php
+use yii\helpers\Url;
+?>
+
+
 <div class="breadcomb-area">
+
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -25,7 +31,8 @@
 							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
 								<div class="breadcomb-report" >
                                     <a data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="left" title="Pay" class="btn btn-primary"><i class="fa fa-bank"></i></a>
-									<a data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="Approve" class="btn btn-primary"><i class="fa fa-check-circle"></i></a>
+									<a href="<?=Url::toRoute(['/loans/loans/approve','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="Approve" class="btn btn-primary"><i class="fa fa-check-circle"></i></a>
+                                    <a href="<?=Url::toRoute(['/loans/loans/disapprove','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="disapprove" class="btn btn-primary"><i class="fa fa-times-circle"></i></a>
 								</div>
 							</div>
 						</div>
