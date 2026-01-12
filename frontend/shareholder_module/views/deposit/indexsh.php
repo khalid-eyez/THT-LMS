@@ -69,19 +69,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'template' => '{view} {update} {delete}', 
             'buttons' => [
                 'view' => function($url, $model, $key) {
-                    return Html::a('<i class="fa fa-eye"></i>', $url, [
+                    return Html::a('<i class="fa fa-book-open"></i>', $url, [
                         'class' => 'btn btn-sm btn-info me-1',
-                        'title' => 'View'
+                        'title' => 'History'
                     ]);
                 },
                 'update' => function($url, $model, $key) {
-                    return Html::a('<i class="fa fa-edit"></i>', $url, [
-                        'class' => 'btn btn-sm btn-warning me-1',
-                        'title' => 'Update'
+                    return Html::a('<i class="fa fa-coins"></i>'
+, $url, [
+                        'class' => 'btn btn-sm btn-success me-1',
+                        'title' => 'Deposit'
                     ]);
                 },
                 'delete' => function($url, $model, $key) {
-                    return Html::a('<i class="fa fa-trash"></i>', $url, [
+                    return Html::a('<i class="fa fa-download"></i>', $url, [
                         'class' => 'btn btn-sm btn-primary',
                         'title' => 'Download History',
                         'data' => [
