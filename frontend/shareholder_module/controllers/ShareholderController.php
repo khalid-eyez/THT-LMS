@@ -110,37 +110,38 @@ public function actionCreate()
     ]);
 }
 
-    /** HAPA NI ACTION YA CLAIMS */
-     public function actionClaims()
+
+      /** HAPA NI ACTION YA DEPOSIT */
+     public function actionDeposit()
     {
-        $model = new Shareholder();
+         $model = new CustomerShareholderForm();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
-            $model->loadDefaultValues();
+          //  $model->loadDefaultValues();
         }
 
-        return $this->render('claims', [
+        return $this->render('deposit', [
             'model' => $model,
         ]);
     }
-      /** HAPA NI ACTION YA CLAIMS PROGRESS */
-     public function actionClaims2()
+    /** HAPA NI ACTION YA CLAIMS */
+     public function actionClaims()
     {
-        $model = new Shareholder();
+         $model = new CustomerShareholderForm();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
-            $model->loadDefaultValues();
+            //$model->loadDefaultValues();
         }
 
-        return $this->render('claims2', [
+        return $this->render('claims', [
             'model' => $model,
         ]);
     }

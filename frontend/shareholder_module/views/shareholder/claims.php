@@ -1,50 +1,23 @@
 <?php
-use buttflattery\formwizard\FormWizard;
-use frontend\assets\FormWizardAsset;
+
+use yii\helpers\Html;
+use common\models\CustomerShareholderForm;
+use common\models\Shareholder;
+/** @var yii\web\View $this */
+/** @var common\models\CustomerShareholderForm $model */
+
+$this->title = 'Update Shareholder';
+$this->params['breadcrumbs'][] = ['label' => 'Shareholders', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
+<div class="customer-shareholder-update">
 
-<style>
-    .step-content{
-        width:65%;
+   <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
-        margin: auto !important;
-    }
-    label{
-        color:gray
-    }
+    <!-- Render the same _form.php but with $model pre-filled -->
+    <?= $this->render('_form', [
+        'model' => $model,
+    ]) ?>
 
-[class*="step"] h4,
-[class*="step"] span {
-    display: none !important;
-}
-</style>
-
- <div class="data-table-area" style="margin-top:0px!important;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    
-<?=   FormWizard::widget([
-       "forceBsVersion"=>true,
-       'enablePreview'=>true,
-       'formOptions' => [
-       'id' => 'loanform',
-       'options' => ['enctype' => 'multipart/form-data'],
-
-     ],
-    'steps'=>[
-        [
-          'model' => $model,
-            //'isSkipable'=>true,
-            'title'=>'Shareholder Claims',
-            'description'=>'Add claims details',
-        ],
-     
-    ]
-]);
-
-?>
-          </div>
-       </div>
-    </div>
 </div>
+
