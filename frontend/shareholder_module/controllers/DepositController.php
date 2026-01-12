@@ -8,8 +8,7 @@ use common\models\CustomerShareholderForm;
 use common\helpers\UniqueCodeHelper;
 use common\models\Shareholder;
 use common\models\ShareholderSearch;
-//
-use common\models\Deposit;
+
 use common\models\DepositSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -86,16 +85,13 @@ class DepositController extends Controller
 
             if ($model->load(Yii::$app->request->post())) {
 
-                $model->payment_document = UploadedFile::getInstance($model, 'payment_document');
-
+               $model->payment_document = UploadedFile::getInstance($model, 'payment_document');
+              
                 if ($model->save()) {
                     Yii::$app->session->setFlash('success', 'Deposit recorded successfully');
                     return $this->redirect(['index']);
                 }
-
-                // Debug validation
-               // var_dump($model->errors);
-              //  exit;
+    
             }
 
             return $this->render('create', [

@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var common\models\Deposit $model */
+/** @var common\models\ShareholderDepositForm $model */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
@@ -25,8 +25,6 @@ use yii\widgets\ActiveForm;
       <hr>
 
       <?= $form->field($model, 'payment_document')->fileInput() ?>
-
-      <p class="text-danger">Allowed Extensions => pdf, jpg, jpeg and png</p>
 
     <div   class="form-group">
         <?= Html::submitButton('Record Deposit', ['class' => 'btn btn-primary']) ?>

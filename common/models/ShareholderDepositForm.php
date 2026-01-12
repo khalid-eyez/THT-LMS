@@ -41,12 +41,16 @@ class ShareholderDepositForm extends Model
      */
     public function save()
     {
-      $this->interest_rate = 10;
 
-        if (!$this->validate()) {
-            return false;
-        }
-
+        $this->interest_rate = 10;
+    
+        if(!$this->validate()) {
+        Yii::error($this->errors, 'form_validation');
+        return false;
+       }
+       if ($this->validate()) {
+        print("HII BWANA KHALID ATASOLVE MIMI LIMENISHINDA,maana naona apa imevalidate");
+       }
         $transaction = Yii::$app->db->beginTransaction();
 
         try {
@@ -73,6 +77,8 @@ class ShareholderDepositForm extends Model
             $deposit->deposit_date = $this->deposit_date;
 
             if (!$deposit->save()) {
+                  var_dump($deposit->shareholderID);
+                  exit;
                 throw new \Exception(json_encode($deposit->errors));
             }
 
@@ -86,8 +92,13 @@ class ShareholderDepositForm extends Model
             $cashbook->credit = $this->amount;
             $cashbook->balance = $this->getNewBalance($this->amount);
             $cashbook->payment_document = $fileName;
-
+              // var_dump($fileName);
+               //var_dump($cashbook->payment_document);
+              // exit;
             if (!$cashbook->save()) {
+                //  var_dump($fileName);
+                 // var_dump($cashbook->payment_document);
+                //  exit;
                 throw new \Exception(json_encode($cashbook->errors));
             }
 
@@ -95,12 +106,18 @@ class ShareholderDepositForm extends Model
             return true;
 
         } catch (\Throwable $e) {
-            $transaction->rollBack();
-            Yii::error($e->getMessage(), __METHOD__);
-            return false;
-        }
-    }
 
+        $transaction->rollBack();
+
+        // Remove uploaded file if DB fails
+        if (isset($fileFullPath) && file_exists($fileFullPath)) {
+            unlink($fileFullPath);
+        }
+
+        Yii::error($e->getMessage(), __METHOD__);
+        return false;
+    }
+    }
 
     /**
      * Calculate new balance
