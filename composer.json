@@ -23,6 +23,12 @@
         "kartik-v/yii2-validators": "@dev",
         "bizley/migration": "^4.3.1",
         "bedezign/yii2-audit": "1.2.8",
+        "mpdf/mpdf": "^8.0",
+        "kartik-v/yii2-grid": "@dev",
+        "kartik-v/yii2-krajee-base": "@dev",
+        "kartik-v/yii2-widgets":"@dev",
+        "kartik-v/yii2-export": "@dev",
+        "phpoffice/phpspreadsheet": "^1.18",
         "sandritsch91/yii2-widget-form-wizard": "^1.2",
         "buttflattery/yii2-formwizard": "1.7.9"
     },

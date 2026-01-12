@@ -63,6 +63,9 @@ return [
             'class' => 'yii\debug\Module'
             
         ],
+           'gridview' =>  [
+            'class' => 'kartik\grid\Module'
+        ],
         'shareholder' => [ 'class' => 'frontend\shareholder_module\Shareholder'],
         'loans' => [ 'class' => 'frontend\loans_module\Loan' ],
         'cashbook' => [ 'class' => 'frontend\cashbook_module\Cashbook'],

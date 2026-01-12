@@ -16,7 +16,7 @@
 									</div>
 									<div class="breadcomb-ctn">
 										<h2><?=$loan->loanID ?></h2>
-										 <span class="bread-ntd"><?=$loan->loan_amount ?></span>
+										 <span class="bread-ntd"><?=Yii::$app->formatter->asDecimal($loan->loan_amount) ?></span>
                                          <span class="bread-ntd badge badge-info"><?=$loan->status ?></span><br>
                                          <span class="bread-ntd"><?=$loan->customer->customerID ?> [<?=$loan->customer->full_name ?>]</span>
 									</div>
@@ -58,10 +58,10 @@
 
 <div class="tab-content mt-3">
     <div class="tab-pane active" id="tab1" role="tabpanel">
-        Loan
+        <?=$this->render('loaninfo',['model'=>$loan]) ?>
     </div>
     <div class="tab-pane fade" id="tab2" role="tabpanel">
-        Customer
+       <?=$this->render('customerinfo',['model'=>$loan->customer]) ?>
     </div>
     <div class="tab-pane fade" id="tab3" role="tabpanel">
         schedule

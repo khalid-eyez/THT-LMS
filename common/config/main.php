@@ -84,7 +84,8 @@ return [
                 '/users/reset-password'=>'/admin/users/reset-password',
                 '/loans'=>'/loans/loans/loans',
                 '/loans/create-loan'=>'/loans/loans/create-loan',
-                '/loans/dashboard'=>'/loans/loans/dashboard'
+                '/loans/dashboard'=>'/loans/loans/dashboard',
+                '/loans/loan-view'=>'/loans/loans/loan-view'
 
                  
             ],

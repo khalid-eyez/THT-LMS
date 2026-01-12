@@ -13,6 +13,12 @@ use yii\grid\GridView;
 //$this->title = 'Shareholders';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<!-- ################## add this for any pages############################-->
+ <div class="breadcomb-area" style="margin-top:0px!important">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<!--#########################################################-->
 <div class="shareholder-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -46,4 +52,4 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 
-</div>
+</div></div></div></div></div>

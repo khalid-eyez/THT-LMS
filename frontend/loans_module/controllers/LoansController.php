@@ -10,6 +10,7 @@ use frontend\loans_module\models\CustomerInfo;
 use frontend\loans_module\models\LoanInfo;
 use common\models\Customer;
 use common\models\CustomerLoan;
+use frontend\loans_module\models\CustomerLoanSearch;
 
 use common\models\LoanAttachment;
 use yii\web\UploadedFile;
@@ -26,10 +27,24 @@ class LoansController extends Controller
     {
         if(yii::$app->request->isAjax)
             {
-             return $this->renderAjax("loans"); 
+              $this->layout="user_dashboard";
+        $searchModel = new CustomerLoanSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        return $this->renderAjax('/loans_crud/index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
             }
             else{
-                return $this->render("loans"); 
+                 $this->layout="user_dashboard";
+        $searchModel = new CustomerLoanSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        return $this->render('/loans_crud/index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]); 
             }
        
     }

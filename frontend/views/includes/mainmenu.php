@@ -38,7 +38,7 @@
                        
                         <div id="mailbox" class="tab-pane notika-tab-menu-bg animated flipInX">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="/loans/create-loan">List</a>
+                                <li><a href="/loans">List</a>
                                 </li>
                                 <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Customer</a>
                                 </li>
