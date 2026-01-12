@@ -6,8 +6,6 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
-//from deposit
-//
 use common\models\Deposit;
 use common\models\DepositSearch;
 use yii\web\Controller;

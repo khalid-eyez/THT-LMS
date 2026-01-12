@@ -4,6 +4,8 @@ namespace common\models;
 use Yii;
 use yii\base\Model;
 use common\helpers\UniqueCodeHelper;
+use yii\web\UploadedFile;
+
 class ShareholderDepositForm extends Model
 {
     /* -------- Deposit fields -------- */
@@ -18,24 +20,29 @@ class ShareholderDepositForm extends Model
     public $reference_no;
     public $payment_document;
 
-    public function rules()
-    {
-        return [
-            [['shareholderID', 'amount', 'interest_rate', 'deposit_date'], 'required'],
-            [['amount', 'interest_rate'], 'number'],
-            [['shareholderID', 'customerID'], 'integer'],
-            [['type', 'reference_no', 'payment_document'], 'string', 'max' => 255],
-            [['deposit_date'], 'safe'],
-        ];
-    }
+        public function rules()
+        {
+            return [
+                [['shareholderID', 'amount', 'interest_rate', 'deposit_date'], 'required'],
+                [['amount', 'interest_rate'], 'number'],
+                [['shareholderID', 'customerID'], 'integer'],
+                [['type'], 'string'],
+                [['deposit_date'], 'safe'],
+                [['payment_document'], 'file',
+                    'skipOnEmpty' => false,
+                    'extensions' => 'pdf,jpg,jpeg,png',
+                    'maxSize' => 10 * 1024 * 1024 // HIZI NI 10 MB
+                ],
+            ];
+        }
 
     /**
      * Save both Deposit and Cashbook in one DB transaction
      */
     public function save()
     {
-        //BAADAE TUTAKUJA KUFANYA DYNAMIC INTEREST RATES
-        $interest_rate=10;
+      $this->interest_rate = 10;
+
         if (!$this->validate()) {
             return false;
         }
@@ -43,19 +50,33 @@ class ShareholderDepositForm extends Model
         $transaction = Yii::$app->db->beginTransaction();
 
         try {
-            /* -------- 1. Save Deposit -------- */
+            /* ---------- Upload file ---------- */
+            $uploadPath = Yii::getAlias('@frontend/web/uploads/deposits/');
+
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+
+            $fileName = 'DEP_' . time() . '.' . $this->payment_document->extension;
+            $fileFullPath = $uploadPath . $fileName;
+
+            if (!$this->payment_document->saveAs($fileFullPath)) {
+                throw new \Exception('File upload failed');
+            }
+
+            /* ---------- Save Deposit ---------- */
             $deposit = new Deposit();
             $deposit->shareholderID = $this->shareholderID;
             $deposit->amount = $this->amount;
-            $deposit->interest_rate = $interest_rate; //KWA MUDA FOR DEVELOPMENT PURPOSE
+            $deposit->interest_rate = $this->interest_rate ;
             $deposit->type = $this->type;
             $deposit->deposit_date = $this->deposit_date;
 
             if (!$deposit->save()) {
-                throw new \Exception('Failed to save deposit');
+                throw new \Exception(json_encode($deposit->errors));
             }
 
-            /* -------- 2. Save Cashbook -------- */
+            /* ---------- Save Cashbook ---------- */
             $cashbook = new Cashbook();
             $cashbook->customerID = $this->customerID;
             $cashbook->reference_no = UniqueCodeHelper::generate('DEP-REF', 5);
@@ -64,10 +85,10 @@ class ShareholderDepositForm extends Model
             $cashbook->debit = 0;
             $cashbook->credit = $this->amount;
             $cashbook->balance = $this->getNewBalance($this->amount);
-            $cashbook->payment_document = $this->payment_document;
+            $cashbook->payment_document = $fileName;
 
             if (!$cashbook->save()) {
-                throw new \Exception('Failed to save cashbook');
+                throw new \Exception(json_encode($cashbook->errors));
             }
 
             $transaction->commit();
@@ -80,8 +101,9 @@ class ShareholderDepositForm extends Model
         }
     }
 
+
     /**
-     * Calculate new balance (example logic)
+     * Calculate new balance
      */
     private function getNewBalance($credit)
     {

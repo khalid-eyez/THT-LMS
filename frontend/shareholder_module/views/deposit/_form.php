@@ -10,27 +10,28 @@ use yii\widgets\ActiveForm;
 
 <div class="deposit-form">
 
-    <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'shareholderID')->textInput() ?>
+    <?php $form = ActiveForm::begin([
+    'options' => ['enctype' => 'multipart/form-data']
+]); ?>
     
-    <?= $form->field($model, 'amount')->textInput() ?>
+    <?=   $form->field($model, 'amount')->textInput() ?>
     
-    <?= $form->field($model, 'type')->dropDownList([
+    <?=   $form->field($model, 'type')->dropDownList([
         'capital' => 'Capital',
         'monthly' => 'Monthly',
     ]) ?>
    
-   <?= $form->field($model, 'deposit_date')->input('date') ?>
-   
-   <hr>
-   
-   <?= $form->field($model, 'payment_document')->textInput() ?>
+   <?=    $form->field($model, 'deposit_date')->input('date') ?>
+      <hr>
 
-    <div class="form-group">
+      <?= $form->field($model, 'payment_document')->fileInput() ?>
+
+      <p class="text-danger">Allowed Extensions => pdf, jpg, jpeg and png</p>
+
+    <div   class="form-group">
         <?= Html::submitButton('Record Deposit', ['class' => 'btn btn-primary']) ?>
     </div>
 
-    <?php ActiveForm::end(); ?>
+    <?php  ActiveForm::end(); ?>
 
 </div>
