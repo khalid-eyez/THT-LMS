@@ -98,7 +98,7 @@ class LoanController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->render('/loans_crud/update', [
             'model' => $model,
         ]);
     }

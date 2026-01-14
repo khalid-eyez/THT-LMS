@@ -11,6 +11,7 @@ use common\models\CustomerLoan;
  */
 class CustomerLoanSearch extends CustomerLoan
 {
+     public $loanTypeName; 
     /**
      * {@inheritdoc}
      */
@@ -19,6 +20,7 @@ class CustomerLoanSearch extends CustomerLoan
         return [
             [['id', 'customerID', 'loan_type_ID', 'loan_duration_units', 'duration_extended', 'penalty_grace_days', 'approvedby', 'initializedby', 'paidby', 'isDeleted'], 'integer'],
             [['loan_amount', 'topup_amount', 'deposit_amount', 'processing_fee_rate', 'processing_fee', 'interest_rate', 'penalty_rate', 'topup_rate'], 'number'],
+            [['loanTypeName'], 'safe'],
             [['repayment_frequency', 'deposit_account', 'deposit_account_names', 'status', 'approved_at', 'created_at', 'updated_at', 'deleted_at', 'loanID'], 'safe'],
         ];
     }
@@ -43,6 +45,7 @@ class CustomerLoanSearch extends CustomerLoan
     public function search($params, $formName = null)
     {
         $query = CustomerLoan::find();
+        $query->joinWith(['loanType']);
 
         // add conditions that should always apply here
 
@@ -89,6 +92,7 @@ class CustomerLoanSearch extends CustomerLoan
             ->andFilterWhere(['like', 'deposit_account_names', $this->deposit_account_names])
             ->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'loanID', $this->loanID]);
+        $query->andFilterWhere(['like', 'loan_types.type', $this->loanTypeName]);
 
         return $dataProvider;
     }

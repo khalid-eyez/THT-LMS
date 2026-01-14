@@ -28,8 +28,9 @@ class Attachments extends Model
         $uploaded=[];
         foreach($this->files as $file)
         {
-            $filename= Yii::getAlias('@webroot/uploads/'). uniqid() . '.' . $file->extension;
-            if($file->saveAs($filename))
+            $filename='/uploads/'.uniqid() . '.' . $file->extension;
+            $path= Yii::getAlias('@webroot').$filename;
+            if($file->saveAs($path))
             {
                 array_push($uploaded,$filename);
             }

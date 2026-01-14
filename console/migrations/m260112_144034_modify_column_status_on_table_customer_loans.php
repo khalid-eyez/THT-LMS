@@ -10,7 +10,7 @@ class m260112_144034_modify_column_status_on_table_customer_loans extends Migrat
     public function safeUp()
     {
            $this->execute("
-            ALTER TABLE your_table_name
+            ALTER TABLE customer_loans
             MODIFY COLUMN status ENUM(
                 'new',
                 'approved',
@@ -27,7 +27,7 @@ class m260112_144034_modify_column_status_on_table_customer_loans extends Migrat
     public function safeDown()
     {
          $this->execute("
-            ALTER TABLE your_table_name
+            ALTER TABLE customer_loans
             MODIFY COLUMN status ENUM(
                 'new',
                 'approved',

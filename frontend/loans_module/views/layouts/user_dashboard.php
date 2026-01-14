@@ -101,13 +101,14 @@
                       }).ajaxStop(function () {
                       $('#global-loader').hide();
                       });
-                     $('body').on('click','.notika-main-menu-dropdown li a',function(e){
+                     $('body').on('click','.pay, .notika-main-menu-dropdown li a',function(e){
                         e.preventDefault();
                          $('#global-loader').show();
                         let url=$(this).attr('href');
                         $('.content').load(url, function () {
                         history.pushState({ url: url }, '', url);
                         $('#global-loader').hide();
+                        
                         });
                         
                         

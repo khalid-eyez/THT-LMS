@@ -78,7 +78,7 @@
 
         <tr>
             <th>Approved By</th>
-            <td><?= $model->approvedby0->username ?? '-' ?></td>
+            <td><?=$model->approvedby0->name ?? '-' ?> [<?= $model->approvedby0->username ?? '-' ?>]</td>
         </tr>
 
         <tr>

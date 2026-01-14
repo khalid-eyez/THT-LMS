@@ -14,6 +14,10 @@ use yii\widgets\Pjax;
 <style> 
     table , .summary{
          background-color: white!important;
+
+    }
+    .kv-grid-table th {
+    color: #058aba !important;
     }
 </style>
 <div class="breadcomb-area bg-white">
@@ -29,7 +33,13 @@ use yii\widgets\Pjax;
     $gridcolumns= [
             ['class' => 'yii\grid\SerialColumn'],
             'loanID',
-            //'loan_type_ID',
+              [
+                'attribute' => 'loanTypeName',
+                'label' => 'Loan Type',
+                'value' => function ($model) {
+                return $model->loanType->type ?? '';
+                },
+              ],
             'loan_amount',
             //'topup_amount',
             //'deposit_amount',
@@ -45,7 +55,7 @@ use yii\widgets\Pjax;
             //'penalty_rate',
             //'penalty_grace_days',
             //'topup_rate',
-            'approvedby',
+            //'approvedby',
             //'initializedby',
             //'paidby',
             //'approved_at',
@@ -56,13 +66,14 @@ use yii\widgets\Pjax;
             //'loanID',
            [
           'class' => 'yii\grid\ActionColumn',
-          'template' => '{view}{update}{reset}{block}{delete_stud}',  // the default buttons + your custom button
+          'template' => '{view}',  // the default buttons + your custom button
           'buttons' => [
-              'update' => function($url, $model, $key) { 
+              'view' => function($url, $model, $key) { 
                   
-                  return Html::a('<i class="fas fa-edit"></i>', ['/loans/loan-view','loanID'=>$model->id], ['data-pjax' => '0','class'=>'ml-1','data-toggle'=>'tooltip','data-title'=>'Update User']);// render your custom button
+                  return Html::a('<i class="fa fa-eye"></i>', ['/loans/loan-view','loanID'=>$model->id], ['data-pjax' => '0','class'=>'ml-1','data-toggle'=>'tooltip','data-title'=>'Update User']);// render your custom button
                  
               },
+              
           ]
            ]
         ]; 

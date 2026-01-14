@@ -18,6 +18,7 @@ class Loan extends \yii\base\Module
     public function init()
     {
         parent::init();
+        \Yii::$app->errorHandler->errorAction = '/loans/loans/error';
 
         // custom initialization code goes here
     }
