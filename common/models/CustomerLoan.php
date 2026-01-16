@@ -401,4 +401,8 @@ class CustomerLoan extends \yii\db\ActiveRecord
     {
         $this->status = self::STATUS_DISAPPROVED;
     }
+    public function getLastRepayment()
+    {
+        
+    }
 }

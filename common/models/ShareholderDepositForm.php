@@ -49,7 +49,7 @@ class ShareholderDepositForm extends Model
         return false;
        }
        if ($this->validate()) {
-        print("HII BWANA KHALID ATASOLVE MIMI LIMENISHINDA,maana naona apa imevalidate");
+        //print("HII BWANA KHALID ATASOLVE MIMI LIMENISHINDA,maana naona apa imevalidate");
        }
         $transaction = Yii::$app->db->beginTransaction();
 
@@ -77,14 +77,12 @@ class ShareholderDepositForm extends Model
             $deposit->deposit_date = $this->deposit_date;
 
             if (!$deposit->save()) {
-                  var_dump($deposit->shareholderID);
-                  exit;
-                throw new \Exception(json_encode($deposit->errors));
+                throw new \Exception(json_encode($deposit->geErrors()));
             }
 
             /* ---------- Save Cashbook ---------- */
             $cashbook = new Cashbook();
-            $cashbook->customerID = $this->customerID;
+            //$cashbook->customerID = $this->customerID;
             $cashbook->reference_no = UniqueCodeHelper::generate('DEP-REF', 5);
             $cashbook->description = 'Shareholder Deposit';
             $cashbook->category = 'Deposit';
@@ -99,7 +97,7 @@ class ShareholderDepositForm extends Model
                 //  var_dump($fileName);
                  // var_dump($cashbook->payment_document);
                 //  exit;
-                throw new \Exception(json_encode($cashbook->errors));
+                throw new \Exception(json_encode($cashbook->getErrors()));
             }
 
             $transaction->commit();
@@ -108,6 +106,7 @@ class ShareholderDepositForm extends Model
         } catch (\Throwable $e) {
 
         $transaction->rollBack();
+        throw $e;
 
         // Remove uploaded file if DB fails
         if (isset($fileFullPath) && file_exists($fileFullPath)) {

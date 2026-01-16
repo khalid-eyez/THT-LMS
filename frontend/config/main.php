@@ -63,7 +63,11 @@ return [
             'class' => 'yii\debug\Module'
             
         ],
-           'gridview' =>  [
+        'dynagrid'=>[
+        'class'=>'\kartik\dynagrid\Module',
+
+        ],
+     'gridview' =>  [
             'class' => 'kartik\grid\Module'
         ],
         'shareholder' => [ 'class' => 'frontend\shareholder_module\Shareholder'],
@@ -102,7 +106,7 @@ return [
             // ],
         ],
     ],
-
+    
     'defaultRoute' => 'auth',
     'params' => $params,
 ];

@@ -7,6 +7,9 @@ use kartik\grid\ActionColumn;
 use kartik\export\ExportMenu;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
+use kartik\dynagrid\DynaGrid;
+use kartik\mpdf\Pdf;
+use kartik\daterange\DateRangePicker;
 
 
 
@@ -31,7 +34,7 @@ use yii\widgets\Pjax;
     
 
     $gridcolumns= [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class'=>'kartik\grid\SerialColumn'],
             'loanID',
               [
                 'attribute' => 'loanTypeName',
@@ -43,8 +46,16 @@ use yii\widgets\Pjax;
             'loan_amount',
             //'topup_amount',
             //'deposit_amount',
-            'repayment_frequency',
-            'loan_duration_units',
+            [
+              'attribute'=>'repayment_frequency',
+              'label'=>'Repayment',
+             
+            ],
+            [
+              'attribute'=>'loan_duration_units',
+              'label'=>'Duration',
+              
+            ],
             //'duration_extended',
             //'deposit_account',
             //'deposit_account_names',
@@ -60,6 +71,35 @@ use yii\widgets\Pjax;
             //'paidby',
             //'approved_at',
             //'created_at',
+            [
+            'attribute'=>'created_at',
+            'label'=>'Loan Date',
+            'value' => function ($model) {
+                return Yii::$app->formatter->asDate($model->created_at, 'php:d M Y');
+                },
+            //'filterType'=>GridView::FILTER_DATE,
+            'filter'=> DateRangePicker::widget([
+        'model' => $searchModel,
+        'attribute' => 'date_range',
+        'convertFormat' => true,
+        'pluginOptions' => [
+            'locale' => [
+                'format' => 'Y-m-d',
+                'separator' => ' - ',
+            ],
+            'opens' => 'left',
+        ],
+        'options' => [
+            'class' => 'form-control',
+            'placeholder' => 'Select date range',
+        ],
+    ]),
+            'format'=>'raw',
+            //'width'=>'170px',
+            'filterWidgetOptions'=>[
+            //'pluginOptions'=>['format'=>'yyyy-mm-dd']
+            ],
+            ],
             //'updated_at',
             //'isDeleted',
             //'deleted_at',
@@ -70,7 +110,7 @@ use yii\widgets\Pjax;
           'buttons' => [
               'view' => function($url, $model, $key) { 
                   
-                  return Html::a('<i class="fa fa-eye"></i>', ['/loans/loan-view','loanID'=>$model->id], ['data-pjax' => '0','class'=>'ml-1','data-toggle'=>'tooltip','data-title'=>'Update User']);// render your custom button
+                  return Html::a('<i class="fa fa-eye"></i>', ['/loans/loan-view','loanID'=>$model->id], ['data-pjax' => '0','class'=>'ml-1','data-toggle'=>'tooltip','data-title'=>'View Loan']);// render your custom button
                  
               },
               
@@ -78,46 +118,53 @@ use yii\widgets\Pjax;
            ]
         ]; 
     ?>
-      <?= ExportMenu::widget([
-    'dataProvider' => $dataProvider,
-    'columns' => $gridcolumns,
-    'pjax' => false,
-    'showConfirmAlert'=>false,
-    'container'=>['class'=>'btn-group float-right mb-2', 'role'=>'group'],
-    'dropdownOptions'=>[
-      'icon'=>"<i class='fas fa-file-export'></i>",
-      'label'=>"Export List",
-      'class' => 'btn btn-outline-secondary btn-default'
-    ],
-    'columnSelectorOptions'=>[
-      'icon'=>"<i class='fa fa-list'></i>",
-      'label'=>'Select Columns'
-    ],
-    'timeout'=>240,
-    'fontAwesome'=>true,
-    'exportConfig'=>[
-      'Html'=>false,
-      'Txt'=>false,
-      'Xls'=>false,
-      'Xlsx'=>[
-        'label' =>'Excel',
-        'icon'=>'fa fa-file-excel-o ml-2'
-      ],
-      'Pdf'=>[
-        'icon'=>'fa fa-file-pdf-o ml-2'
-      ],
-      'Csv'=>[
-        'icon'=>'fa fa-file ml-2'
-      ]
-      
-      ],
-      'filename'=>'Loans'
-])."\n"; ?>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' =>$gridcolumns 
-    ]); ?>
+<?php
+    echo DynaGrid::widget([
+    'columns'=>$gridcolumns,
+    'storage'=>DynaGrid::TYPE_COOKIE,
+    'theme'=>'panel-info',
+    'gridOptions'=>[
+        'dataProvider'=>$dataProvider,
+        'filterModel'=>$searchModel,
+        'pjax'=> true,
+          'export' => [
+            'fontAwesome' => true,
+            'showConfirmAlert' => false, // no confirmation
+        ],
+          'exportConfig' => [
+            GridView::PDF => [
+                'label' => 'PDF',
+                'filename' => 'Customer_Loans',
+                'contentBefore' => '',
+                'contentAfter' => '',
+                'pdfConfig' => [
+                    'mode' => Pdf::MODE_CORE,
+                    'destination' => Pdf::DEST_DOWNLOAD,
+                    'methods' => [
+                        'SetHeader' => [''], 
+                        'SetFooter' => [''], 
+                    ],
+                    'options' => ['title' => 'Customer Loans'],
+                ],
+            ],
+            GridView::EXCEL => [
+                'label' => 'Excel',
+                'filename' => 'Customer_Loans',
+                'contentBefore' => '',
+                'contentAfter' => '',
+            ],
+            GridView::CSV => [
+                'label' => 'CSV',
+                'filename' => 'Customer_Loans',
+                'contentBefore' => '',
+                'contentAfter' => '',
+            ],
+        ],
+        'panel'=>['heading'=>'<h3 class="panel-title">Loans</h3>'],
+    ],  
+    'options'=>['id'=>'dynagrid-1'] // a unique identifier is important
+]);
+?>
     <?php Pjax::end(); ?>
 
 </div></div></div></div>

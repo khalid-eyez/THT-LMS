@@ -4,6 +4,7 @@ namespace frontend\loans_module\controllers;
 use common\models\Cashbook;
 use common\models\RepaymentSchedule;
 use Exception;
+use frontend\loans_module\models\TopUp;
 use yii\base\UserException;
 use common\models\CustomerInfo as ModelsCustomerInfo;
 use yii\web\Controller;
@@ -236,6 +237,10 @@ class LoansController extends Controller
         $content=$this->renderPartial("/loans/docs/loansummarypdf",['loan'=>$loan]);
         PdfHelper::download($content,$loan->loanID);
 
+    }
+    public function actionTopUp($loanID)
+    {
+       return $this->render("topup_form",['model'=>new TopUp()]);
     }
 
 }

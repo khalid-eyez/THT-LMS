@@ -31,8 +31,9 @@ use yii\helpers\Url;
 							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
 								<div class="breadcomb-report" >
                                     <a href="<?=Url::toRoute(['/loans/loans/pay','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="left" title="Disbursement" class="btn btn-primary pay"><i class="fa fa-bank"></i></a>
-									<a href="<?=Url::toRoute(['/loans/loans/approve','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="Approve" class="btn btn-primary"><i class="fa fa-check-circle"></i></a>
-                                    <a href="<?=Url::toRoute(['/loans/loans/disapprove','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="Disapprove" class="btn btn-primary"><i class="fa fa-times-circle"></i></a>
+                                    <a href="<?=Url::toRoute(['/loans/loans/top-up','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Top Up" class="btn btn-primary"><i class="fa fa-check-circle"></i></a>
+									<a href="<?=Url::toRoute(['/loans/loans/approve','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Approve" class="btn btn-primary"><i class="fa fa-check-circle"></i></a>
+                                    <a href="<?=Url::toRoute(['/loans/loans/disapprove','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Disapprove" class="btn btn-primary"><i class="fa fa-times-circle"></i></a>
                                     <a href="<?=Url::toRoute(['/loans/loans/download-summary','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="Download Summary" class="btn btn-primary"><i class="fa fa-file-pdf-o"></i></a>
 								</div>
 							</div>

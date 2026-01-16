@@ -2,6 +2,7 @@
 
 namespace frontend\shareholder_module\controllers;
 //from shareholder
+use Exception;
 use Yii;
 use common\models\ShareholderDepositForm;
 use common\models\CustomerShareholderForm;
@@ -84,6 +85,7 @@ class DepositController extends Controller
             $model->shareholderID = $shareholder_id;
 
             if ($model->load(Yii::$app->request->post())) {
+                //print_r($model); return null;
 
                $model->payment_document = UploadedFile::getInstance($model, 'payment_document');
               
@@ -91,6 +93,7 @@ class DepositController extends Controller
                     Yii::$app->session->setFlash('success', 'Deposit recorded successfully');
                     return $this->redirect(['index']);
                 }
+                throw new Exception(json_encode($model->getErrors()));
     
             }
 

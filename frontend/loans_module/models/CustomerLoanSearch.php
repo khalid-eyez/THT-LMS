@@ -12,6 +12,7 @@ use common\models\CustomerLoan;
 class CustomerLoanSearch extends CustomerLoan
 {
      public $loanTypeName; 
+    public $date_range;
     /**
      * {@inheritdoc}
      */
@@ -20,7 +21,7 @@ class CustomerLoanSearch extends CustomerLoan
         return [
             [['id', 'customerID', 'loan_type_ID', 'loan_duration_units', 'duration_extended', 'penalty_grace_days', 'approvedby', 'initializedby', 'paidby', 'isDeleted'], 'integer'],
             [['loan_amount', 'topup_amount', 'deposit_amount', 'processing_fee_rate', 'processing_fee', 'interest_rate', 'penalty_rate', 'topup_rate'], 'number'],
-            [['loanTypeName'], 'safe'],
+            [['loanTypeName','date_range'], 'safe'],
             [['repayment_frequency', 'deposit_account', 'deposit_account_names', 'status', 'approved_at', 'created_at', 'updated_at', 'deleted_at', 'loanID'], 'safe'],
         ];
     }
@@ -81,7 +82,7 @@ class CustomerLoanSearch extends CustomerLoan
             'initializedby' => $this->initializedby,
             'paidby' => $this->paidby,
             'approved_at' => $this->approved_at,
-            'created_at' => $this->created_at,
+            'customer_loans.created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'isDeleted' => $this->isDeleted,
             'deleted_at' => $this->deleted_at,
@@ -93,6 +94,10 @@ class CustomerLoanSearch extends CustomerLoan
             ->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'loanID', $this->loanID]);
         $query->andFilterWhere(['like', 'loan_types.type', $this->loanTypeName]);
+            if (!empty($this->date_range)) {
+            [$start, $end] = explode(' - ', $this->date_range);
+            $query->andFilterWhere(['between', 'DATE(customer_loans.created_at)', $start, $end]);
+            }
 
         return $dataProvider;
     }

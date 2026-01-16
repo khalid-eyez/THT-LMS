@@ -30,7 +30,11 @@
         "kartik-v/yii2-export": "@dev",
         "phpoffice/phpspreadsheet": "^1.18",
         "sandritsch91/yii2-widget-form-wizard": "^1.2",
-        "buttflattery/yii2-formwizard": "1.7.9"
+        "buttflattery/yii2-formwizard": "1.7.9",
+        "kartik-v/yii2-dynagrid": "@dev",
+        "kartik-v/yii2-date-range": "^1.7@dev",
+        "2amigos/yii2-chartjs-widget": "~2.0",
+        "bower-asset/chart.js": "2.9"
     },
     "replace": {
     "bower-asset/datatables": "self.version"
