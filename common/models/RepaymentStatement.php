@@ -2,6 +2,7 @@
 
 namespace common\models;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 use Yii;
 
@@ -29,7 +30,10 @@ class RepaymentStatement extends \yii\db\ActiveRecord
  public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+             [
+            'class' => TimestampBehavior::class,
+            'value' => new Expression('NOW()'),
+             ],
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }
@@ -51,7 +55,7 @@ class RepaymentStatement extends \yii\db\ActiveRecord
             [['prepayment'], 'default', 'value' => 0.00],
             [['scheduleID'], 'integer'],
             [['payment_date', 'loan_amount', 'principal_amount', 'interest_amount', 'installment'], 'required'],
-            [['payment_date'], 'safe'],
+            [['payment_date','created_at', 'updated_at'], 'safe'],
             [['loan_amount', 'principal_amount', 'interest_amount', 'installment', 'paid_amount', 'unpaid_amount', 'penalty_amount', 'prepayment', 'balance'], 'number'],
             [['scheduleID'], 'exist', 'skipOnError' => true, 'targetClass' => RepaymentSchedule::class, 'targetAttribute' => ['scheduleID' => 'id']],
         ];

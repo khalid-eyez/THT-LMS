@@ -185,4 +185,25 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     {
         $this->status = self::STATUS_DELAYED;
     }
+    public function isDue($payment_date)
+    {
+        if($this->isStatusPaid() || $this->isStatusDelayed()){ return false;}
+        $dueTs   = strtotime($this->repayment_date);
+        $todayTs = strtotime($payment_date);
+
+        if($dueTs<=$todayTs){
+          return true;
+        }
+
+     return false;
+    }
+    public function isDelayed($payment_date)
+    {
+        $gracedays=$this->loan->penalty_grace_days;
+        $due=new \DateTimeImmutable($this->repayment_date);
+        $due=$due->add(new \DateInterval("P{$gracedays}D"));
+        $payment_date=new \DateTimeImmutable($payment_date);
+        return $payment_date > $due;
+
+    }
 }
