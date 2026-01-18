@@ -11,6 +11,7 @@ use Yii;
  *
  * @property int $id
  * @property int|null $scheduleID
+ * @property int $loanID;
  * @property string $payment_date
  * @property float $loan_amount
  * @property float $principal_amount
@@ -53,8 +54,8 @@ class RepaymentStatement extends \yii\db\ActiveRecord
         return [
             [['scheduleID', 'balance'], 'default', 'value' => null],
             [['prepayment'], 'default', 'value' => 0.00],
-            [['scheduleID'], 'integer'],
-            [['payment_date', 'loan_amount', 'principal_amount', 'interest_amount', 'installment'], 'required'],
+            [['scheduleID','loanID'], 'integer'],
+            [['payment_date', 'loan_amount', 'principal_amount', 'interest_amount', 'installment','loanID'], 'required'],
             [['payment_date','created_at', 'updated_at'], 'safe'],
             [['loan_amount', 'principal_amount', 'interest_amount', 'installment', 'paid_amount', 'unpaid_amount', 'penalty_amount', 'prepayment', 'balance'], 'number'],
             [['scheduleID'], 'exist', 'skipOnError' => true, 'targetClass' => RepaymentSchedule::class, 'targetAttribute' => ['scheduleID' => 'id']],
@@ -99,6 +100,10 @@ class RepaymentStatement extends \yii\db\ActiveRecord
     public static function find()
     {
         return new RepaymentStatementQuery(get_called_class());
+    }
+    public function getLoan()
+    {
+        return $this->hasOne(CustomerLoan::class, ['id' => 'loanID']);
     }
 
 }

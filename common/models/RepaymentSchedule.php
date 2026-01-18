@@ -2,9 +2,11 @@
 
 namespace common\models;
 use yii\behaviors\TimestampBehavior;
+use frontend\cashbook_module\models\Cashbook as Book;
 
 use Yii;
 use yii\db\Expression;
+use yii\base\UserException;
 
 /**
  * This is the model class for table "repayment_schedule".
@@ -188,22 +190,239 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     public function isDue($payment_date)
     {
         if($this->isStatusPaid() || $this->isStatusDelayed()){ return false;}
-        $dueTs   = strtotime($this->repayment_date);
-        $todayTs = strtotime($payment_date);
+        $dueTs   = (new \DateTimeImmutable($this->repayment_date))->setTime(0, 0,0);
+        $todayTs = (new \DateTimeImmutable($payment_date))->setTime(0, 0,0);
 
         if($dueTs<=$todayTs){
           return true;
         }
-
      return false;
     }
     public function isDelayed($payment_date)
     {
-        $gracedays=$this->loan->penalty_grace_days;
+        $loan=$this->loan;
+        $repayment_frequency=$loan->repayment_frequency;
+        $gracedays=0;
+        switch($repayment_frequency)
+        {
+            case $loan::REPAYMENT_FREQUENCY_MONTHLY:{
+                 $gracedays=$loan->penalty_grace_days;
+                break;
+            }
+             case $loan::REPAYMENT_FREQUENCY_QUARTERLY:{
+                $gracedays=$loan->penalty_grace_days*3;
+                break;
+            }
+              case $loan::REPAYMENT_FREQUENCY_SEMI_ANNUALLY:{
+                $gracedays=$loan->penalty_grace_days*6;
+                break;
+            }
+               case $loan::REPAYMENT_FREQUENCY_ANNUALLY:{
+                $gracedays=$loan->penalty_grace_days*12;
+                break;
+            }
+               case $loan::REPAYMENT_FREQUENCY_WEEKLY:{
+                $gracedays=round(($loan->penalty_grace_days/30)*7);
+                break;
+            }
+                case $loan::REPAYMENT_FREQUENCY_DAILY:{
+                    $gracedays=round($loan->penalty_grace_days/30);
+                break;
+            }
+        }
         $due=new \DateTimeImmutable($this->repayment_date);
         $due=$due->add(new \DateInterval("P{$gracedays}D"));
         $payment_date=new \DateTimeImmutable($payment_date);
-        return $payment_date > $due;
+        if($payment_date > $due)
+            {
+                return true;
+            }
+            return false;
 
     }
+    public function pay($payment_date,$paid_amount=0,$paymentdoc=null)
+    {
+            try{
+            $transaction=yii::$app->db->beginTransaction();
+            $isdelayed=$this->isDelayed($payment_date);
+      
+            $statement=new RepaymentStatement();
+            $lastRepayment=$this->loan->getLastRepayment();
+
+            $statement->scheduleID=$this->id;
+            $statement->payment_date=$payment_date;
+            $statement->loan_amount=$lastRepayment?->balance??$this->loan->totalRepayment(); // handle balance for the first repayment
+            $statement->principal_amount=$this->principle_amount;
+            $statement->interest_amount=$this->interest_amount;
+            $statement->installment=$this->installment_amount;
+            $statement->paid_amount=$paid_amount;
+
+            $overdues=$this->loan->overdues();
+
+            
+            $paid_installment=min($this->installment_amount,$paid_amount);
+            $paid_amount-=$paid_installment;
+
+
+            //clearing the unpaid
+
+            $unpaidPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_unpaid'] > 0) {
+            $unpaidPaid = min($paid_amount, $overdues['total_unpaid']);
+            $paid_amount -= $unpaidPaid;
+            }
+
+            //clearing the penalties
+
+            $penaltyPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_penalties'] > 0) {
+            $penaltyPaid = min($paid_amount, $overdues['total_penalties']);
+            $paid_amount -= $penaltyPaid;
+            }
+
+
+           //prepayment
+           $prepayment = max(0, $paid_amount);
+
+
+            //resolving the unpaid amount
+            $statement->unpaid_amount  =
+            $this->installment_amount - ($paid_installment+$unpaidPaid);
+
+            $penalty_rate=$this->loan->penalty_rate;
+            $penalty_rate=$penalty_rate/100;
+            $penalty=round(($statement->unpaid_amount*$penalty_rate),2);
+            $statement->penalty_amount=($isdelayed)?$penalty:0;
+
+            $statement->penalty_amount-=$penaltyPaid;
+            $statement->prepayment=$prepayment;
+            $balance=($isdelayed)?$statement->loan_amount:($statement->loan_amount-($statement->paid_amount-$penaltyPaid));
+            if($balance<=-1)
+                {
+                  throw new UserException('Overpayment detected !');
+                }
+            $statement->balance=$balance;
+            $statement->loanID=$this->loan->id;
+
+            //persistence
+
+            if(!$statement->save()){
+                throw new UserException("could not update loan statement".json_encode($statement->getErrors()));
+            }
+            $this->status=($isdelayed)?"delayed":"paid";
+
+            if(!$this->save()){
+                throw new UserException("could not update repayment schedule");
+            }
+
+            //now time for the cashbook record
+            $bookrecord=null;
+         if($statement->paid_amount!=0)
+            {
+            $cashbook_record=[
+                'credit'=>0,
+                'debit'=>$statement->paid_amount,
+                'description'=>'['.$this->loan->loanID.'] Repayment',
+                'payment_doc'=>$paymentdoc,
+                'category'=>'Repayment'
+                
+            ];
+            $book=new Book($cashbook_record);
+            $bookrecord=$book->save('RP',$this->loan->id);
+            }
+
+             $transaction->commit();
+              return [
+                'statement'=>$statement,
+                'reference'=>$bookrecord?->reference_no
+              ];
+            }
+            catch(UserException $u)
+            {
+             $transaction->rollBack();
+             throw $u;
+            }
+            catch(\Exception $e)
+            {
+             $transaction->rollBack();
+             throw $e;
+            }
+
+            
+        }
+        public function pay_dry_run($payment_date,$paid_amount=0,$paymentdoc=null)
+        {
+           
+            $isdelayed=$this->isDelayed($payment_date);
+      
+            $statement=new RepaymentStatement();
+            $lastRepayment=$this->loan->getLastRepayment();
+
+            $statement->scheduleID=$this->id;
+            $statement->payment_date=$payment_date;
+            $statement->loan_amount=$lastRepayment?->balance??$this->loan->totalRepayment(); // handle balance for the first repayment
+            $statement->principal_amount=$this->principle_amount;
+            $statement->interest_amount=$this->interest_amount;
+            $statement->installment=$this->installment_amount;
+            $statement->paid_amount=$paid_amount;
+
+            $overdues=$this->loan->overdues();
+
+            
+            $paid_installment=min($this->installment_amount,$paid_amount);
+            $paid_amount-=$paid_installment;
+
+
+            //clearing the unpaid
+
+            $unpaidPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_unpaid'] > 0) {
+            $unpaidPaid = min($paid_amount, $overdues['total_unpaid']);
+            $paid_amount -= $unpaidPaid;
+            }
+
+            //clearing the penalties
+
+            $penaltyPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_penalties'] > 0) {
+            $penaltyPaid = min($paid_amount, $overdues['total_penalties']);
+            $paid_amount -= $penaltyPaid;
+            }
+
+
+           //prepayment
+           $prepayment = max(0, $paid_amount);
+
+
+            //resolving the unpaid amount
+            $statement->unpaid_amount  =
+            $this->installment_amount - ($paid_installment+$unpaidPaid);
+
+            $penalty_rate=$this->loan->penalty_rate;
+            $penalty_rate=$penalty_rate/100;
+            $penalty=round(($statement->unpaid_amount*$penalty_rate),2);
+            $statement->penalty_amount=($isdelayed)?$penalty:0;
+
+            $statement->penalty_amount-=$penaltyPaid;
+            $statement->prepayment=$prepayment;
+            $balance=($isdelayed)?$statement->loan_amount:($statement->loan_amount-($statement->paid_amount-$penaltyPaid));
+            if($balance<=-1)
+                {
+                  throw new UserException('Overpayment detected !');
+                }
+            $statement->balance=$balance;
+            $statement->loanID=$this->loan->id;
+            $this->status=($isdelayed)?"delayed":"paid";
+
+
+            return [
+                'statement'=>$statement,
+                'repayment_due'=>$this,
+                'payment_doc'=>$paymentdoc
+            ];
+           
+        }
+    
+
+       
 }

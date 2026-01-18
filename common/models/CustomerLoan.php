@@ -1,6 +1,7 @@
 <?php
 
 namespace common\models;
+use yii\base\UserException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use Yii;
@@ -43,6 +44,7 @@ use Yii;
  * @property LoanType $loanType
  * @property User $paidby0
  * @property RepaymentSchedule[] $repaymentSchedules
+ * @property RepaymentStatement[] $repaymentStatements
  */
 class CustomerLoan extends \yii\db\ActiveRecord
 {
@@ -403,6 +405,49 @@ class CustomerLoan extends \yii\db\ActiveRecord
     }
     public function getLastRepayment()
     {
+        $lastStatement = $this->getRepaymentStatements()
+        ->orderBy(['id' => SORT_DESC])
+        ->one(); 
         
+        return $lastStatement;
+    }
+    public function getRepaymentStatements()
+    {
+        return $this->hasMany(RepaymentStatement::class, ['loanID' => 'id']);
+    }
+    public function overdues()
+    {
+        return [
+            'total_unpaid'=>$this->getRepaymentStatements()->sum('unpaid_amount'),
+            'total_penalties'=>$this->getRepaymentStatements()->sum('penalty_amount'),
+
+        ];
+
+    }
+    public function totalRepayment()
+    {
+        return $this->getRepaymentSchedules()->sum('installment_amount');
+    }
+    public function computeOverdues($payment_date)
+    {
+       $dues=$this->repaymentSchedules;
+
+       foreach($dues as $due)
+        {
+              if(!$due->isDue($payment_date)){ continue; }
+              if($due->isDelayed($payment_date))
+                {
+                    $due->pay($payment_date);
+                    continue;
+                }
+                $overdues=$this->overdues();
+                $overdues['installment']=$due->installment_amount;
+                $overdues['total_repayment']=$overdues['installment']+$overdues['total_penalties']+$overdues['total_unpaid'];
+                $overdues['due']=$due;
+                return $overdues;
+        }
+
+        throw new UserException("No repayment dues found for ".$payment_date);
+
     }
 }

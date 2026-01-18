@@ -23,6 +23,7 @@ use yii\web\ErrorAction;
 use common\models\LoanAttachment;
 use yii\web\UploadedFile;
 use common\helpers\UniqueCodeHelper;
+use frontend\loans_module\models\LoanRepayment;
 use yii;
 
 class LoansController extends Controller
@@ -241,6 +242,35 @@ class LoansController extends Controller
     public function actionTopUp($loanID)
     {
        return $this->render("topup_form",['model'=>new TopUp()]);
+    }
+
+    public function actionRepay($loanID)
+    {
+         $repayment_model=new LoanRepayment();
+         if(yii::$app->request->isPost)
+            {
+              $repayment_model->load(yii::$app->request->post());
+              $uploaded=UploadedFile::getInstance($repayment_model,'payment_doc');
+              $repayment_model->payment_doc=$uploaded;
+              return $this->renderAjax('repayment_receipt',['payment_details'=>$repayment_model->pay_dry_run($loanID)]);
+            }
+         return $this->renderAjax('loanRepayment',['model'=>$repayment_model]);
+    }
+    public function actionRepaymentOverdues($loanID,$payment_date)
+    {
+        $loan=CustomerLoan::findOne($loanID);
+        return $this->renderAjax('total_repayment',['overdues'=>$loan->computeOverdues($payment_date)]);
+        
+    }
+    public function actionRepaymentConfirm($scheduleID, $paid_amount,$payment_date,$payment_doc){
+        $schedule=RepaymentSchedule::findOne($scheduleID);
+        $paid=$schedule->pay($payment_date,$paid_amount,$payment_doc);
+
+        PdfHelper::download($this->renderPartial('/loans/docs/repayment_receipt_pdf',['paid'=>$paid]),'payment_receipt_'.$paid['reference']);
+
+        //return $this->render('/loans/docs/repayment_receipt_pdf',['paid'=>$paid]);
+
+
     }
 
 }
