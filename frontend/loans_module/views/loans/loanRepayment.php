@@ -67,12 +67,15 @@ $(document).ready(function(){
         }
             console.log(payment_date+' '+loanID);
         // Load content via AJAX into .ovedues
-        $.get('/loans/loans/repayment-overdues', {
-        payment_date: payment_date,
-        loanID: loanID
-        }, function(html){
-        $('.overdues').html(html);
-        });
+            $.get('/loans/loans/repayment-overdues', {
+            payment_date: payment_date,
+            loanID: loanID
+            }).done(function (html) {
+                $('.overdues').html(html);
+                })
+                .fail(function (xhr) {
+                $('.overdues').html(xhr.responseText);
+                });
     });
 
     // Trigger change on page load to load default date
@@ -110,7 +113,7 @@ $(document).ready(function () {
                 $('.wizard-wrap-int.payme').html(response);
             },
             error: function (xhr) {
-                alert('Submission failed: ' + xhr.status + ' ' + xhr.statusText);
+                alert('Submission failed: ' + xhr.responseText);
             },
             complete: function () {
                 $('#global-loader').hide();

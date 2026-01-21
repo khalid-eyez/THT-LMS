@@ -1,10 +1,12 @@
 <?php
 
 namespace common\models;
+use frontend\loans_module\models\LoanCalculator;
 use yii\base\UserException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use Yii;
+use common\helpers\UniqueCodeHelper;
 
 /**
  * This is the model class for table "customer_loans".
@@ -93,7 +95,9 @@ class CustomerLoan extends \yii\db\ActiveRecord
             [['topup_amount'], 'default', 'value' => 0.00],
             [['isDeleted'], 'default', 'value' => 0],
             [['customerID', 'loan_type_ID', 'loan_amount', 'deposit_amount', 'loan_duration_units', 'processing_fee_rate', 'processing_fee', 'status', 'interest_rate', 'penalty_rate', 'topup_rate', 'initializedby','penalty_grace_days','loanID'], 'required'],
-            [['customerID', 'loan_type_ID', 'loan_duration_units', 'duration_extended', 'approvedby', 'initializedby', 'paidby', 'isDeleted'], 'integer'],
+            [['customerID', 'loan_type_ID', 'loan_duration_units', 'approvedby', 'initializedby', 'paidby', 'isDeleted'], 'integer'],
+             [['duration_extended'], 'default', 'value' => false],
+             [['duration_extended'], 'boolean'],
             [['loan_amount', 'topup_amount', 'deposit_amount', 'processing_fee_rate', 'processing_fee', 'interest_rate', 'penalty_rate', 'topup_rate'], 'number'],
             [['repayment_frequency', 'status'], 'string'],
             [['approved_at', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
@@ -449,5 +453,185 @@ class CustomerLoan extends \yii\db\ActiveRecord
 
         throw new UserException("No repayment dues found for ".$payment_date);
 
+    }
+    public function overduesSync($payment_date)
+    {
+       $dues=$this->repaymentSchedules;
+
+       foreach($dues as $due)
+        {
+              if(!$due->isDue($payment_date)){ continue; }
+              if($due->isDelayed($payment_date))
+                {
+                    $due->pay($payment_date);
+                    continue;
+                }
+           
+        }
+
+    }
+    public function isTopupAllowed()
+    {
+        $topup_rate=$this->topup_rate/100;
+        $paid_installments=$this->getRepaymentSchedules()
+    ->andWhere(['status' => 'paid'])
+    ->count();
+
+        $total_installments=$this->loan_duration_units;
+
+        $repayment_rate=round((($paid_installments*100)/$total_installments),2);
+
+        //checking and updating  overdues
+
+        $this->overduesSync(date("Y-m-d H:i:s"));
+
+        //fetching the up to date overdues
+
+        $total_penalties=$this->overdues()['total_penalties'];
+        $total_unpaid=$this->overdues()['total_unpaid'];
+
+        return ($repayment_rate>=$topup_rate && $total_penalties==0 && $total_unpaid==0);
+
+
+    }
+    public function topUp($topup_amount,$mode,$extension_periods,$document)
+    {
+        if(!$this->isTopupAllowed())
+            {
+                 throw new UserException("Customer has not reached the repayment rate of ".$this->topup_rate." % or has overdues");
+            }
+        //update the loan itself
+
+        $this->duration_extended=true;
+        $this->loan_duration_units+=$extension_periods;
+        $this->topup_amount+=$topup_amount;
+
+        if(!$this->save())
+            {
+                throw new UserException("Could not update loan details!".json_encode($this->getErrors()));
+            }
+
+        //update the schedule
+
+        $this->topup_schedule_update($topup_amount,$mode,$extension_periods);
+
+        //update the loan statement
+
+        $this->updateRepaymentStatement($topup_amount);
+
+        //update the cashbook
+
+        $cashbook=new Cashbook();
+        $cashbook->credit=$topup_amount;
+        $cashbook->reference_no=UniqueCodeHelper::generate("TU").'-'.$this->id.date("Y");
+        $cashbook->description="[$this->loanID] Loan Topping up";
+        $cashbook->payment_document=$document;
+        $cashbook->category="disbursement";
+        $cashbook->balance=$cashbook->updatedBalance();
+
+        if(!$cashbook->save())
+            {
+                throw new UserException("Could not update the cashbook !");
+            }
+
+            
+
+
+    }
+    public function topup_schedule_update($topup_amount,$mode,$extension_periods=0)
+    {
+      
+      if($mode=="tenure_retention")
+        {
+            $this->pruneActiveScheduleDue();
+            $lastDue=$this->getLastDue();
+            $loan_duration=$this->loan_duration_units-count($this->repaymentSchedules);
+
+        }
+        else{
+             $lastDue=$this->getLastDue();
+             $loan_duration=$extension_periods;
+        }
+        
+
+        $loan_amount=$lastDue->loan_balance+$topup_amount;
+
+        //updating the latest due
+
+        $lastDue->loan_balance=$loan_amount;
+
+        if(!$lastDue->save())
+            {
+             throw new UserException("Could not update the repayment schedule !");
+            }
+
+        $schedules=(new LoanCalculator())->generateRepaymentSchedule($loan_amount,$this->interest_rate, $this->repayment_frequency,$loan_duration,$lastDue->repayment_date);
+
+         foreach($schedules as $record)
+                    {
+                       $repaymodel=new RepaymentSchedule();
+                       $repaymodel->loanID=$this->id;
+                       $repaymodel->loan_amount=$record['loan_amount'];
+                       $repaymodel->interest_amount=$record['interest'];
+                       $repaymodel->installment_amount=$record['installment'];
+                       $repaymodel->loan_balance=$record['balance'];
+                       $repaymodel->principle_amount=$record['principal'];
+                       $repaymodel->repayment_date=$record['payment_date'];
+                       $repaymodel->status="active";
+                       if(!$repaymodel->save())
+                        {
+                            throw new UserException("Could not update the repayment schedule !");
+                        }
+
+                    }
+
+    }
+
+    public function updateRepaymentStatement($topup_amount)
+    {
+         $lastrepayment=$this->getLastRepayment();
+         $latest_balance=($lastrepayment)?($lastrepayment->balance+$topup_amount):$this->totalRepayment(); 
+
+         $statement=new RepaymentStatement();
+         $statement->loanID=$this->id;
+         $statement->loan_amount=$latest_balance;
+         $statement->installment=0;
+         $statement->balance=$latest_balance;
+         $statement->unpaid_amount=0;
+         $statement->paid_amount=0;
+         $statement->interest_amount=0;
+         $statement->prepayment=0;
+         $statement->penalty_amount=0;
+         $statement->principal_amount=0;
+         $statement->topup_amount=$topup_amount;
+         $statement->payment_date=date("Y-m-d H:i:s");
+
+         if(!$statement->save())
+            {
+                throw new UserException("Could not update the loan statement !".json_encode($statement->getErrors()));
+            }
+    }
+    public function getLastDue()
+    {
+        $lastDue = $this->getRepaymentSchedules()
+        ->orderBy(['id' => SORT_DESC])
+        ->one(); 
+        
+        return $lastDue;
+    }
+    public function pruneActiveScheduleDue()
+    {
+        $scheduleDues=$this->repaymentSchedules;
+
+        foreach($scheduleDues as $scheduleDue)
+            {
+                if($scheduleDue->isStatusPaid() || $scheduleDue->isStatusDelayed()){
+                   continue;
+                }
+                $deleted = RepaymentSchedule::deleteAll(['id' => $scheduleDue->id]);
+                if (!$deleted) {
+                throw new UserException("Could not delete schedule: ".$scheduleDue->id);
+                }
+            }
     }
 }

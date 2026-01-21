@@ -21,6 +21,7 @@ use Yii;
  * @property float $unpaid_amount
  * @property float $penalty_amount
  * @property float $prepayment
+ * @property float $topup_amount
  * @property float|null $balance
  *
  * @property RepaymentSchedule $schedule
@@ -53,11 +54,11 @@ class RepaymentStatement extends \yii\db\ActiveRecord
     {
         return [
             [['scheduleID', 'balance'], 'default', 'value' => null],
-            [['prepayment'], 'default', 'value' => 0.00],
+            [['prepayment','topup_amount'], 'default', 'value' => 0.00],
             [['scheduleID','loanID'], 'integer'],
             [['payment_date', 'loan_amount', 'principal_amount', 'interest_amount', 'installment','loanID'], 'required'],
             [['payment_date','created_at', 'updated_at'], 'safe'],
-            [['loan_amount', 'principal_amount', 'interest_amount', 'installment', 'paid_amount', 'unpaid_amount', 'penalty_amount', 'prepayment', 'balance'], 'number'],
+            [['loan_amount', 'principal_amount', 'interest_amount', 'installment', 'paid_amount', 'unpaid_amount', 'penalty_amount', 'prepayment', 'balance','topup_amount'], 'number'],
             [['scheduleID'], 'exist', 'skipOnError' => true, 'targetClass' => RepaymentSchedule::class, 'targetAttribute' => ['scheduleID' => 'id']],
         ];
     }

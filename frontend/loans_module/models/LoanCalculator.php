@@ -6,11 +6,11 @@ use yii;
 
 class LoanCalculator extends Model
 {
-   public function generateRepaymentSchedule(float $deposit_amount,float $interest_rate, string $repayment_frequency,int $loan_duration, string $starting_date,$schedule=[])
+   public function generateRepaymentSchedule(float $loan_amount,float $interest_rate, string $repayment_frequency,int $loan_duration, string $starting_date,$schedule=[])
    {
       $duedate=$this->incrementDateByFrequency($this->stringtodate($starting_date),$repayment_frequency);
       $scheduleUpdated=$schedule;
-      $amortized=$this->amortize($deposit_amount,$interest_rate,$loan_duration);
+      $amortized=$this->amortize($loan_amount,$interest_rate,$loan_duration);
       $amortized['payment_date']=$duedate;
       array_push($scheduleUpdated,$amortized);
       $rounds=$loan_duration-1;

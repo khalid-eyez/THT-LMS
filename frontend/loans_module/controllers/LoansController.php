@@ -241,7 +241,12 @@ class LoansController extends Controller
     }
     public function actionTopUp($loanID)
     {
-       return $this->render("topup_form",['model'=>new TopUp()]);
+        if(yii::$app->request->isPost)
+            {
+                $loan=(new TopUp)->topUp($loanID,yii::$app->request);
+                return $this->render("/loans/docs/loansummaryview",['loan'=>$loan]);
+            }
+       return $this->renderAjax("topup_form",['model'=>new TopUp()]);
     }
 
     public function actionRepay($loanID)
@@ -271,6 +276,16 @@ class LoansController extends Controller
         //return $this->render('/loans/docs/repayment_receipt_pdf',['paid'=>$paid]);
 
 
+    }
+    public function actionCancelRepayment($file)
+    {
+        $filePath = Yii::getAlias('@webroot'.$file);
+
+        if (file_exists($filePath)) {
+         unlink($filePath);
+        }
+        yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Repayment Cancelled');
+        return $this->redirect('dashboard');
     }
 
 }

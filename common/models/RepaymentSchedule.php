@@ -3,6 +3,7 @@
 namespace common\models;
 use yii\behaviors\TimestampBehavior;
 use frontend\cashbook_module\models\Cashbook as Book;
+use frontend\loans_module\models\LoanCalculator;
 
 use Yii;
 use yii\db\Expression;

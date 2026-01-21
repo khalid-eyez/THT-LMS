@@ -25,7 +25,12 @@ use yii\helpers\Html;
     ],
     ['prompt' => 'Select Top-up Mode']
 )->label(false)  ?>
-
+<div id="loan-duration-wrapper" style="display:none;">
+    <?= $form->field($model, 'extension_periods')->input('number', [
+        'min' => 1,
+        'placeholder' => 'Enter Extension periods',
+    ])->label(false) ?>
+</div>
 <!-- Top-up Amount -->
 <?= $form->field($model, 'topup_amount')->input('number', [
     'step' => '0.01',
@@ -46,3 +51,30 @@ use yii\helpers\Html;
 
 <?php ActiveForm::end(); ?>
 </div></div></div></div></div>
+<?php
+$topupModeId    = Html::getInputId($model, 'topup_mode');
+$loanDurationId = Html::getInputId($model, 'extension_periods');
+
+$this->registerJs(<<<JS
+$(function () {
+    const topupMode = $('#{$topupModeId}');
+    const durationWrapper = $('#loan-duration-wrapper');
+    const loanDuration = $('#{$loanDurationId}');
+
+    function toggleLoanDuration() {
+        if (topupMode.val() === 'tenure_extension') {
+            durationWrapper.show();
+        } else {
+            durationWrapper.hide();
+            loanDuration.val('');
+        }
+    }
+
+    toggleLoanDuration();
+    topupMode.on('change', toggleLoanDuration);
+});
+JS);
+
+
+
+?>
