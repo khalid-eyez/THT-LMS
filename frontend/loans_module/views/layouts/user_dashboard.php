@@ -92,7 +92,7 @@
   
    <?php $this->endBody() ?>
 
-   <?php $this->registerJs("
+   <?php $this->registerJs(<<<JS
                     
                     $('document').ready(function(){
                       
@@ -113,11 +113,20 @@
                         
                         
                      })
+                          function cleanupFloatingWidgets() {
+                          $('.daterangepicker').remove();
+                          }
+
+
+                          $(document).on('pjax:beforeReplace', cleanupFloatingWidgets);
+
+
+                          // For manual AJAX
+                          $(document).ajaxStart(cleanupFloatingWidgets);
                 
                         
                     })
-                    "
-                    );
+                    JS);
                 ?>
 </body>
 

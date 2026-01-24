@@ -100,5 +100,11 @@ class Cashbook extends \yii\db\ActiveRecord
         $last+=$debit;
         return $last;
     }
+    public function openingBalance()
+    {
+        $prev=$this->find()->where(['<','id',$this->id])->orderBy(['id'=>SORT_DESC])->one();
+
+        return ($prev==null)?0:$prev->balance;
+    }
 
 }

@@ -407,6 +407,10 @@ class CustomerLoan extends \yii\db\ActiveRecord
     {
         $this->status = self::STATUS_DISAPPROVED;
     }
+    public function isToppedUp()
+    {
+        return $this->topup_amount!=0;
+    }
     public function getLastRepayment()
     {
         $lastStatement = $this->getRepaymentStatements()
@@ -431,6 +435,10 @@ class CustomerLoan extends \yii\db\ActiveRecord
     public function totalRepayment()
     {
         return $this->getRepaymentSchedules()->sum('installment_amount');
+    }
+     public function totalInterest()
+    {
+        return $this->getRepaymentSchedules()->sum('interest_amount');
     }
     public function computeOverdues($payment_date)
     {
@@ -472,6 +480,9 @@ class CustomerLoan extends \yii\db\ActiveRecord
     }
     public function isTopupAllowed()
     {
+        if($this->isToppedUp()){
+            throw new UserException("Loan top-up is allowed only once !");
+        }
         $topup_rate=$this->topup_rate/100;
         $paid_installments=$this->getRepaymentSchedules()
     ->andWhere(['status' => 'paid'])
@@ -511,13 +522,29 @@ class CustomerLoan extends \yii\db\ActiveRecord
                 throw new UserException("Could not update loan details!".json_encode($this->getErrors()));
             }
 
+        $total_interest=$this->totalInterest(); //interest for the original schedule
+
         //update the schedule
 
         $this->topup_schedule_update($topup_amount,$mode,$extension_periods);
+        $this->populateRelation('repaymentSchedules', $this->getRepaymentSchedules()->all());
+        
+        $total_loan=$this->topup_amount + $this->loan_amount;
+        $extended_duration=$this->loan_duration_units;
 
+        if($mode=='tenure_retention')
+            {
+              $topup_interest=$this->totalInterest()-$total_interest;
+            }
+            else
+                {
+                  $topup_interest=$this->totalInterest()-$this->interestb4extension($extended_duration,$total_loan);
+                }
+
+        $repayment_topup=$topup_amount+$topup_interest;
         //update the loan statement
 
-        $this->updateRepaymentStatement($topup_amount);
+        $this->updateRepaymentStatement($repayment_topup);
 
         //update the cashbook
 
@@ -535,6 +562,7 @@ class CustomerLoan extends \yii\db\ActiveRecord
             }
 
             
+        $this->populateRelation('repaymentSchedules', $this->getRepaymentSchedules()->all());
 
 
     }
@@ -594,7 +622,7 @@ class CustomerLoan extends \yii\db\ActiveRecord
 
          $statement=new RepaymentStatement();
          $statement->loanID=$this->id;
-         $statement->loan_amount=$latest_balance;
+         $statement->loan_amount=($lastrepayment)?$lastrepayment->balance:$this->totalRepayment();
          $statement->installment=0;
          $statement->balance=$latest_balance;
          $statement->unpaid_amount=0;
@@ -633,5 +661,16 @@ class CustomerLoan extends \yii\db\ActiveRecord
                 throw new UserException("Could not delete schedule: ".$scheduleDue->id);
                 }
             }
+            $this->populateRelation('repaymentSchedules', $this->getRepaymentSchedules()->all());
+
+    }
+    public function interestb4extension($duration,$loan_amount)
+    {
+        $schedules=(new LoanCalculator())->generateRepaymentSchedule($loan_amount,$this->interest_rate, $this->repayment_frequency,$duration,date('Y-m-d H:i:s'));
+        $totalInterest = array_sum(array_column($schedules, 'interest_amount'));
+
+        return $totalInterest;
+
+
     }
 }

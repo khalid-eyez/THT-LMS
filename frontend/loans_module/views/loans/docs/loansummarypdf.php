@@ -6,8 +6,18 @@ use yii\helpers\Html;
 <head>
 <meta charset="utf-8">
 <title>Loan Summary</title>
+
 </head>
 <body>
+    <style> 
+        body{
+            font-size:12px;
+        }
+        .schedule tr, .schedule td, .schedule th{
+            text-align: left;
+        }
+    </style>
+   
 <p align="center"><img src="<?= Yii::getAlias('@webroot/img/logo.png') ?>" style="width:120px;height:90px"></img></p>
 <h3 style="text-align: center;margin-top:30px;margin-bottom:3px">Loan Summary</h3>
 <hr style="margin-bottom: 50px; margin-top:0px">
@@ -105,7 +115,7 @@ use yii\helpers\Html;
 
 <!-- Repayment Schedule -->
 <h4 style="background-color: #0a6ab3; color: #fff; padding: 4px; margin-top: 15px;">Repayment Schedule</h4>
-<table width="100%" cellspacing="2" cellpadding="4">
+<table width="100%" cellspacing="2" cellpadding="4" class="schedule">
     <tr>
         <th style="white-space: nowrap;">#</th>
         <th style="white-space: nowrap;">Date</th>
@@ -115,7 +125,19 @@ use yii\helpers\Html;
         <th>Installment</th>
         <th>Balance</th>
     </tr>
-    <?php $count = 1; foreach ($loan->repaymentSchedules as $due): ?>
+    <?php 
+    $count = 1; 
+    $principal=0;
+    $interest=0;
+    $installment=0;
+    $loan_balance=0;
+    foreach ($loan->repaymentSchedules as $due){
+        
+        $principal+=$due->principle_amount;
+        $interest+=$due->interest_amount;
+        $installment+=$due->installment_amount;
+        $loan_balance=$due->loan_balance;
+    ?>
     <tr>
         <td style="white-space: nowrap;"><?= $count++ ?></td>
         <td style="white-space: nowrap;"><?= Yii::$app->formatter->asDate($due->repayment_date, 'php:d M Y') ?></td>
@@ -125,14 +147,23 @@ use yii\helpers\Html;
         <td><?= Yii::$app->formatter->asDecimal($due->installment_amount, 2) ?></td>
         <td><?= Yii::$app->formatter->asDecimal($due->loan_balance, 2) ?></td>
     </tr>
-    <?php endforeach; ?>
+    <?php } ?>
+       <tr>
+        <th></th>
+        <th>TOTALS</th>
+        <th><?= Yii::$app->formatter->asDecimal($loan_balance,2) ?></th>
+        <th><?= Yii::$app->formatter->asDecimal($principal,2) ?></th>
+        <th><?= Yii::$app->formatter->asDecimal($interest,2) ?></th>
+        <th><?= Yii::$app->formatter->asDecimal($installment,2) ?></th>
+        <th><?= Yii::$app->formatter->asDecimal($loan_balance,2) ?></th>
+    </tr>
 </table>
 
 
 <table width="100%" style="margin-top: 150px;text-align:left">
     <tr>
         <th style="text-align: left;">Approved By</th>
-        <td><?= Html::encode($loan->approvedby0->name ?? '________________') ?></td>
+        <td><?= Html::encode($loan->approvedby0->name ?? '_____________________________________________') ?></td>
     </tr>
     <tr>
         <th style="text-align: left;">Date</th>
@@ -145,14 +176,19 @@ use yii\helpers\Html;
 </table>
 
 <table width="100%" style="margin-top: 40px">
-    <tr>
-        <th style="text-align: left;">Customer Signature</th>
-        <td>________________________________________</td>
+       <tr>
+        <th style="text-align: left;">Customer Name</th>
+        <td><?=ucfirst($loan->customer->full_name) ?></td>
     </tr>
-    <tr>
+      <tr>
         <th style="text-align: left;">Date</th>
         <td><?= $loan->approved_at ? Yii::$app->formatter->asDate($loan->approved_at) : '________________' ?></td>
     </tr>
+    <tr>
+        <th style="text-align: left;">Signature</th>
+        <td>________________________________________</td>
+    </tr>
+  
  
 </table>
 

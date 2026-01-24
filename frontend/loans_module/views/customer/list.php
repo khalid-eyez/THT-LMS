@@ -1,8 +1,7 @@
 <?php
 /** @var yii\web\View $this */
-
 ?>
-<h1>loans/loans</h1>
+<h1>customer/list</h1>
 
 <p>
     You may change the content of this page by modifying

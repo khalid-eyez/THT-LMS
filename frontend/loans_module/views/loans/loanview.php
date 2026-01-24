@@ -77,7 +77,7 @@ use yii\helpers\Url;
         <?=$this->render("/loans/docs/repaymentschedule",['loan'=>$loan]); ?>
     </div>
      <div class="tab-pane fade" id="tab4" role="tabpanel">
-        statement
+        <?=$this->render("/loans/docs/repaymentstatement",['loan'=>$loan]); ?>
     </div>
 </div>
                            

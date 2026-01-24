@@ -6,25 +6,23 @@ use common\models\RepaymentSchedule;
 use Exception;
 use frontend\loans_module\models\TopUp;
 use yii\base\UserException;
-use common\models\CustomerInfo as ModelsCustomerInfo;
 use yii\web\Controller;
 use frontend\loans_module\models\LoanService;
 use frontend\loans_module\models\Attachments;
 use frontend\loans_module\models\Attachment;
 use frontend\loans_module\models\CustomerInfo;
 use frontend\loans_module\models\LoanInfo;
-use common\models\Customer;
 use common\models\CustomerLoan;
 use frontend\loans_module\models\CustomerLoanSearch;
 use frontend\loans_module\models\LoanCalculator;
 use common\helpers\PdfHelper;
 use yii\web\ErrorAction;
-
-use common\models\LoanAttachment;
+use frontend\loans_module\models\LoanSearch;
 use yii\web\UploadedFile;
 use common\helpers\UniqueCodeHelper;
 use frontend\loans_module\models\LoanRepayment;
 use yii;
+use frontend\loans_module\models\ExcelReports;
 
 class LoansController extends Controller
 {
@@ -287,5 +285,62 @@ class LoansController extends Controller
         yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Repayment Cancelled');
         return $this->redirect('dashboard');
     }
+    public function actionRepaymentStatement($loanID)
+    {
+        $loan=CustomerLoan::findOne($loanID);
+
+        return $this->render('/docs/repaymentstatement',['loan'=>$loan]);
+    }
+
+    public function actionLoanSearch()
+    {
+        $searchmodel=new LoanSearch;
+        if(yii::$app->request->isPost)
+            {
+               $searchmodel->load(yii::$app->request->post());
+               $loans=$searchmodel->searchLoans(); 
+               
+               return $this->renderAjax('loansearchresult',['loans'=>$loans]);
+            }
+        return $this->renderAjax('loanssearch',['model'=>$searchmodel]);
+    }
+     public function actionDownloadScheduleReportPdf($loanID)
+    {
+        $loan=CustomerLoan::findOne($loanID);
+        $content=$this->renderPartial("/loans/docs/repaymentschedulereportpdf",['loan'=>$loan]);
+        PdfHelper::download($content,$loan->loanID);
+
+    }
+    public function actionDownloadScheduleReportExcel($loanID)
+    {
+        $loan=CustomerLoan::findOne($loanID);
+        (new ExcelReports())->ExcelSchedule($loan);
+    }
+
+     public function actionLoanSearchTwo()
+    {
+        $searchmodel=new LoanSearch;
+        if(yii::$app->request->isPost)
+            {
+               $searchmodel->load(yii::$app->request->post());
+               $loans=$searchmodel->searchLoans(); 
+               
+               return $this->renderAjax('loansearchresulttwo',['loans'=>$loans]);
+            }
+        return $this->renderAjax('loanssearchtwo',['model'=>$searchmodel]);
+    }
+    public function actionDownloadRepaymentStatementReportPdf($loanID)
+    {
+        $loan=CustomerLoan::findOne($loanID);
+        $content=$this->renderPartial("/loans/docs/repaymentstatementreportpdf",['loan'=>$loan]);
+        PdfHelper::download($content,$loan->loanID,['orientation'=>'L']);
+
+    }
+    public function actionDownloadRepaymentStatementReportExcel($loanID)
+    {
+        $loan=CustomerLoan::findOne($loanID);
+        (new ExcelReports())->excelStatement($loan);
+    }
+    
 
 }

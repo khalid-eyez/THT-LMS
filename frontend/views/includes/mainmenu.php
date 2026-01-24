@@ -62,11 +62,11 @@
                         </div>
                         <div id="Charts" class="tab-pane notika-tab-menu-bg animated flipInX">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="flot-charts.html">Cashbook</a>
+                                <li><a href="/cashbook/cashbook/cashbook-reporter">Cashbook</a>
                                 </li>
-                                <li><a href="bar-charts.html">Repayment Schedule</a>
+                                <li><a href="/loans/loans/loan-search" class="">Repayment Schedule</a>
                                 </li>
-                                <li><a href="line-charts.html">Repayment Statement</a>
+                                <li><a href="/loans/loans/loan-search-two">Repayment Statement</a>
                                 </li>
                                 <li><a href="area-charts.html">Excutive Summary</a>
                                 </li>
