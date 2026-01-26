@@ -74,9 +74,9 @@
                         </div>
                         <div id="Tables" class="tab-pane notika-tab-menu-bg animated flipInX">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="normal-table.html">Normal Table</a>
+                                <li><a href="/loans/customer/index">List</a>
                                 </li>
-                                <li><a href="data-table.html">Data Table</a>
+                                <li><a href="data-table.html"></a>
                                 </li>
                             </ul>
                         </div>

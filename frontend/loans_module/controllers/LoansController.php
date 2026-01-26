@@ -23,6 +23,12 @@ use common\helpers\UniqueCodeHelper;
 use frontend\loans_module\models\LoanRepayment;
 use yii;
 use frontend\loans_module\models\ExcelReports;
+use common\models\RepaymentStatement;
+use yii\db\Expression;
+use common\models\Customer;
+use common\models\LoanType;
+use common\models\Shareholder;
+
 
 class LoansController extends Controller
 {
@@ -38,8 +44,375 @@ class LoansController extends Controller
     }
     public function actionDashboard()
     {
-       $loans=CustomerLoan::find()->all();
-       return $this->render('loansdashboard',['loans'=>$loans]);
+           // ====== CARDS ======
+
+    // ---------- helpers ----------
+    $db = Yii::$app->db;
+
+    $hasColumn = function(string $table, string $column) use ($db): bool {
+        $schema = $db->schema->getTableSchema($table, true);
+        return $schema && isset($schema->columns[$column]);
+    };
+
+    // last 12 months labels
+    $labels12 = [];
+    $monthStarts = [];
+    $dt = new \DateTimeImmutable('first day of this month 00:00:00');
+    for ($i = 11; $i >= 0; $i--) {
+        $m = $dt->sub(new \DateInterval("P{$i}M"));
+        $labels12[] = $m->format('M Y');
+        $monthStarts[] = $m->format('Y-m-01');
+    }
+    $start12 = $monthStarts[0] . ' 00:00:00';
+
+    // this week (Mon-Sun)
+    $today = new \DateTimeImmutable('now');
+    $weekStart = $today->modify('monday this week')->setTime(0,0,0);
+    $weekEnd   = $today->modify('sunday this week')->setTime(23,59,59);
+
+    // ---------- KPI: totals (all-time) ----------
+    $totalCustomers = (int) Customer::find()->where(['isDeleted' => 0])->count();
+
+    $totalShareholders = (int) Shareholder::find()->where(['isDeleted' => 0])->count();
+
+    $totalLoans = (int) CustomerLoan::find()->where(['isDeleted' => 0])->count();
+
+    $activeLoans = (int) CustomerLoan::find()
+        ->where(['isDeleted' => 0, 'status' => CustomerLoan::STATUS_ACTIVE])
+        ->count();
+
+    $finishedLoans = (int) CustomerLoan::find()
+        ->where(['isDeleted' => 0, 'status' => CustomerLoan::STATUS_FINISHED])
+        ->count();
+
+    $totalDisbursed = (float) CustomerLoan::find()
+        ->where(['isDeleted' => 0])
+        ->sum(new Expression('COALESCE(loan_amount,0) + COALESCE(topup_amount,0)'));
+
+    $totalProcessingFees = (float) CustomerLoan::find()
+        ->where(['isDeleted' => 0])
+        ->sum('processing_fee');
+
+    // Outstanding balance = SUM(latest repayment_statement.balance per loan)
+    $latestBalanceSubquery = (new \yii\db\Query())
+        ->select([
+            'loanID',
+            'max_id' => new Expression('MAX(id)')
+        ])
+        ->from('repayment_statement')
+        ->groupBy('loanID');
+
+    $totalOutstanding = (float) (new \yii\db\Query())
+        ->from(['rs' => 'repayment_statement'])
+        ->innerJoin(['mx' => $latestBalanceSubquery], 'mx.max_id = rs.id')
+        ->sum(new Expression('COALESCE(rs.balance,0)'));
+
+    // Overdues totals
+    $totalOverdueUnpaid = (float) RepaymentStatement::find()->sum('unpaid_amount');
+    $totalPenalties     = (float) RepaymentStatement::find()->sum('penalty_amount');
+
+    // Total repayment (paid) + principal paid + paid interest
+    $totalRepaymentPaid = (float) RepaymentStatement::find()->sum(new Expression('COALESCE(paid_amount,0)'));
+    $totalPrincipalPaid = (float) RepaymentStatement::find()->sum(new Expression('COALESCE(principal_amount,0)'));
+    $totalPaidInterest  = (float) RepaymentStatement::find()->sum(new Expression('COALESCE(interest_amount,0)'));
+
+    // Accrued interest (expected interest from schedules)
+    $totalAccruedInterest = (float) RepaymentSchedule::find()->sum(new Expression('COALESCE(interest_amount,0)'));
+
+    // Expected repayment this week (active dues whose repayment_date falls in this week)
+    $totalExpectedThisWeek = (float) RepaymentSchedule::find()
+        ->where(['status' => RepaymentSchedule::STATUS_ACTIVE, 'isDeleted' => 0])
+        ->andWhere(['between', 'repayment_date', $weekStart->format('Y-m-d H:i:s'), $weekEnd->format('Y-m-d H:i:s')])
+        ->sum(new Expression('COALESCE(installment_amount,0)'));
+
+    // ---------- KPI: last 12 months totals for hints ----------
+    $customersLast12 = (float) Customer::find()
+        ->where(['isDeleted' => 0])
+        ->andWhere(['>=', 'created_at', $start12])
+        ->count();
+
+    $shareholdersLast12 = null;
+    if ($hasColumn('shareholders', 'created_at')) {
+        $shareholdersLast12 = (float) Shareholder::find()
+            ->where(['isDeleted' => 0])
+            ->andWhere(['>=', 'created_at', $start12])
+            ->count();
+    }
+
+    $disbursedLast12 = (float) CustomerLoan::find()
+        ->where(['isDeleted' => 0])
+        ->andWhere(['>=', 'created_at', $start12])
+        ->sum(new Expression('COALESCE(loan_amount,0) + COALESCE(topup_amount,0)'));
+
+    $processingLast12 = (float) CustomerLoan::find()
+        ->where(['isDeleted' => 0])
+        ->andWhere(['>=', 'created_at', $start12])
+        ->sum(new Expression('COALESCE(processing_fee,0)'));
+
+    $repaymentPaidLast12 = (float) RepaymentStatement::find()
+        ->andWhere(['>=', 'payment_date', $start12])
+        ->sum(new Expression('COALESCE(paid_amount,0)'));
+
+    $paidInterestLast12 = (float) RepaymentStatement::find()
+        ->andWhere(['>=', 'payment_date', $start12])
+        ->sum(new Expression('COALESCE(interest_amount,0)'));
+
+    $accruedInterestLast12 = (float) RepaymentSchedule::find()
+        ->andWhere(['>=', 'repayment_date', $start12])
+        ->sum(new Expression('COALESCE(interest_amount,0)'));
+
+    // Outstanding balance (last 12 months) – interpret as loans created in last 12 months
+    $latestBalanceLast12Sub = (new \yii\db\Query())
+        ->select(['rs.loanID', 'max_id' => new Expression('MAX(rs.id)')])
+        ->from(['rs' => 'repayment_statement'])
+        ->innerJoin(['cl' => CustomerLoan::tableName()], 'cl.id = rs.loanID')
+        ->where(['cl.isDeleted' => 0])
+        ->andWhere(['>=', 'cl.created_at', $start12])
+        ->groupBy('rs.loanID');
+
+    $outstandingLast12 = (float) (new \yii\db\Query())
+        ->from(['rs' => 'repayment_statement'])
+        ->innerJoin(['mx' => $latestBalanceLast12Sub], 'mx.max_id = rs.id')
+        ->sum(new Expression('COALESCE(rs.balance,0)'));
+
+    // ---------- CHARTS ----------
+
+    // (A) Loans by status (force include finished)
+    $statusRows = CustomerLoan::find()
+        ->select(['status', 'cnt' => new Expression('COUNT(*)')])
+        ->where(['isDeleted' => 0])
+        ->groupBy('status')
+        ->asArray()
+        ->all();
+
+    $statusMap = [];
+    foreach ($statusRows as $r) {
+        $statusMap[$r['status']] = (int)$r['cnt'];
+    }
+
+    $statusOrder = [
+        CustomerLoan::STATUS_NEW,
+        CustomerLoan::STATUS_APPROVED,
+        CustomerLoan::STATUS_ACTIVE,
+        CustomerLoan::STATUS_FINISHED,
+        CustomerLoan::STATUS_DISAPPROVED,
+    ];
+
+    $statusLabels = $statusOrder;
+    $statusCounts = array_map(fn($s) => $statusMap[$s] ?? 0, $statusOrder);
+
+    // (B) Disbursements by month (bar/line feed)
+    $disburseRows = CustomerLoan::find()
+        ->select([
+            'ym'  => new Expression("DATE_FORMAT(created_at, '%Y-%m')"),
+            'amt' => new Expression("SUM(COALESCE(loan_amount,0) + COALESCE(topup_amount,0))")
+        ])
+        ->where(['isDeleted' => 0])
+        ->andWhere(['>=', 'created_at', $start12])
+        ->groupBy(new Expression("DATE_FORMAT(created_at, '%Y-%m')"))
+        ->orderBy(['ym' => SORT_ASC])
+        ->asArray()
+        ->all();
+
+    $disburseMap = [];
+    foreach ($disburseRows as $r) $disburseMap[$r['ym']] = (float)$r['amt'];
+
+    $disburseSeries = [];
+    foreach ($monthStarts as $ms) {
+        $ym = substr($ms, 0, 7);
+        $disburseSeries[] = $disburseMap[$ym] ?? 0.0;
+    }
+
+    // (C) Repayments by month (line) sum(paid_amount)
+    $repayRows = RepaymentStatement::find()
+        ->select([
+            'ym'  => new Expression("DATE_FORMAT(payment_date, '%Y-%m')"),
+            'amt' => new Expression("SUM(COALESCE(paid_amount,0))")
+        ])
+        ->andWhere(['>=', 'payment_date', $start12])
+        ->groupBy(new Expression("DATE_FORMAT(payment_date, '%Y-%m')"))
+        ->orderBy(['ym' => SORT_ASC])
+        ->asArray()
+        ->all();
+
+    $repayMap = [];
+    foreach ($repayRows as $r) $repayMap[$r['ym']] = (float)$r['amt'];
+
+    $repaySeries = [];
+    foreach ($monthStarts as $ms) {
+        $ym = substr($ms, 0, 7);
+        $repaySeries[] = $repayMap[$ym] ?? 0.0;
+    }
+
+    // (D) Overdues trend by month (unpaid + penalties)
+    $overRows = RepaymentStatement::find()
+        ->select([
+            'ym'      => new Expression("DATE_FORMAT(payment_date, '%Y-%m')"),
+            'unpaid'  => new Expression("SUM(COALESCE(unpaid_amount,0))"),
+            'penalty' => new Expression("SUM(COALESCE(penalty_amount,0))")
+        ])
+        ->andWhere(['>=', 'payment_date', $start12])
+        ->groupBy(new Expression("DATE_FORMAT(payment_date, '%Y-%m')"))
+        ->orderBy(['ym' => SORT_ASC])
+        ->asArray()
+        ->all();
+
+    $unpaidMap = [];
+    $penaltyMap = [];
+    foreach ($overRows as $r) {
+        $unpaidMap[$r['ym']]  = (float)$r['unpaid'];
+        $penaltyMap[$r['ym']] = (float)$r['penalty'];
+    }
+
+    $unpaidSeries = [];
+    $penaltySeries = [];
+    foreach ($monthStarts as $ms) {
+        $ym = substr($ms, 0, 7);
+        $unpaidSeries[]  = $unpaidMap[$ym] ?? 0.0;
+        $penaltySeries[] = $penaltyMap[$ym] ?? 0.0;
+    }
+
+    // (E) Top loan types (count)
+    $topTypes = CustomerLoan::find()
+        ->select(['t.type', 'cnt' => new Expression('COUNT(cl.id)')])
+        ->alias('cl')
+        ->innerJoin(['t' => LoanType::tableName()], 't.id = cl.loan_type_ID')
+        ->where(['cl.isDeleted' => 0])
+        ->groupBy(['t.type'])
+        ->orderBy(['cnt' => SORT_DESC])
+        ->limit(7)
+        ->asArray()
+        ->all();
+
+    $typeLabels = array_map(fn($r) => $r['type'], $topTypes);
+    $typeCounts = array_map(fn($r) => (int)$r['cnt'], $topTypes);
+
+    // (F) Accrued vs Paid interest by month (last 12)
+    $accruedRows = RepaymentSchedule::find()
+        ->select([
+            'ym'  => new Expression("DATE_FORMAT(repayment_date, '%Y-%m')"),
+            'amt' => new Expression("SUM(COALESCE(interest_amount,0))")
+        ])
+        ->andWhere(['>=', 'repayment_date', $start12])
+        ->groupBy(new Expression("DATE_FORMAT(repayment_date, '%Y-%m')"))
+        ->orderBy(['ym' => SORT_ASC])
+        ->asArray()
+        ->all();
+
+    $accruedMap = [];
+    foreach ($accruedRows as $r) $accruedMap[$r['ym']] = (float)$r['amt'];
+
+    $accruedSeries = [];
+    foreach ($monthStarts as $ms) {
+        $ym = substr($ms, 0, 7);
+        $accruedSeries[] = $accruedMap[$ym] ?? 0.0;
+    }
+
+    $paidInterestRows = RepaymentStatement::find()
+        ->select([
+            'ym'  => new Expression("DATE_FORMAT(payment_date, '%Y-%m')"),
+            'amt' => new Expression("SUM(COALESCE(interest_amount,0))")
+        ])
+        ->andWhere(['>=', 'payment_date', $start12])
+        ->groupBy(new Expression("DATE_FORMAT(payment_date, '%Y-%m')"))
+        ->orderBy(['ym' => SORT_ASC])
+        ->asArray()
+        ->all();
+
+    $paidInterestMap = [];
+    foreach ($paidInterestRows as $r) $paidInterestMap[$r['ym']] = (float)$r['amt'];
+
+    $paidInterestSeries = [];
+    foreach ($monthStarts as $ms) {
+        $ym = substr($ms, 0, 7);
+        $paidInterestSeries[] = $paidInterestMap[$ym] ?? 0.0;
+    }
+
+    // (G) Loan types per disbursement (sum loan_amount + topup_amount)
+    $typeDisbRows = CustomerLoan::find()
+        ->select([
+            't.type',
+            'amt' => new Expression("SUM(COALESCE(cl.loan_amount,0) + COALESCE(cl.topup_amount,0))")
+        ])
+        ->alias('cl')
+        ->innerJoin(['t' => LoanType::tableName()], 't.id = cl.loan_type_ID')
+        ->where(['cl.isDeleted' => 0])
+        ->groupBy(['t.type'])
+        ->orderBy(['amt' => SORT_DESC])
+        ->limit(10)
+        ->asArray()
+        ->all();
+
+    $typeDisbLabels = array_map(fn($r) => $r['type'], $typeDisbRows);
+    $typeDisbAmounts = array_map(fn($r) => (float)$r['amt'], $typeDisbRows);
+
+    // (H) Interest per type (pie) from schedules joined to loan -> type
+    $interestTypeRows = (new \yii\db\Query())
+        ->select([
+            't.type',
+            'amt' => new Expression("SUM(COALESCE(s.interest_amount,0))")
+        ])
+        ->from(['s' => RepaymentSchedule::tableName()])
+        ->innerJoin(['cl' => CustomerLoan::tableName()], 'cl.id = s.loanID')
+        ->innerJoin(['t' => LoanType::tableName()], 't.id = cl.loan_type_ID')
+        ->where(['cl.isDeleted' => 0])
+        ->groupBy(['t.type'])
+        ->orderBy(['amt' => SORT_DESC])
+        ->limit(10)
+        ->all();
+
+    $interestTypeLabels  = array_map(fn($r) => $r['type'], $interestTypeRows);
+    $interestTypeAmounts = array_map(fn($r) => (float)$r['amt'], $interestTypeRows);
+
+    return $this->render('loansdashboard', [
+        // KPI totals
+        'totalCustomers' => $totalCustomers,
+        'totalShareholders' => $totalShareholders,
+        'totalLoans' => $totalLoans,
+        'activeLoans' => $activeLoans,
+        'finishedLoans' => $finishedLoans,
+        'totalDisbursed' => $totalDisbursed,
+        'totalProcessingFees' => $totalProcessingFees,
+        'totalOutstanding' => $totalOutstanding,
+        'totalOverdueUnpaid' => $totalOverdueUnpaid,
+        'totalPenalties' => $totalPenalties,
+        'totalRepaymentPaid' => $totalRepaymentPaid,
+        'totalPrincipalPaid' => $totalPrincipalPaid,
+        'totalAccruedInterest' => $totalAccruedInterest,
+        'totalPaidInterest' => $totalPaidInterest,
+        'totalExpectedThisWeek' => $totalExpectedThisWeek,
+
+        // KPI last 12 months for hints
+        'customersLast12' => $customersLast12,
+        'shareholdersLast12' => $shareholdersLast12,
+        'disbursedLast12' => $disbursedLast12,
+        'processingLast12' => $processingLast12,
+        'outstandingLast12' => $outstandingLast12,
+        'repaymentPaidLast12' => $repaymentPaidLast12,
+        'accruedInterestLast12' => $accruedInterestLast12,
+        'paidInterestLast12' => $paidInterestLast12,
+
+        // charts
+        'labels12' => $labels12,
+        'statusLabels' => $statusLabels,
+        'statusCounts' => $statusCounts,
+        'disburseSeries' => $disburseSeries,
+        'repaySeries' => $repaySeries,
+        'unpaidSeries' => $unpaidSeries,
+        'penaltySeries' => $penaltySeries,
+        'typeLabels' => $typeLabels,
+        'typeCounts' => $typeCounts,
+
+        'accruedSeries' => $accruedSeries,
+        'paidInterestSeries' => $paidInterestSeries,
+
+        'typeDisbLabels' => $typeDisbLabels,
+        'typeDisbAmounts' => $typeDisbAmounts,
+
+        'interestTypeLabels' => $interestTypeLabels,
+        'interestTypeAmounts' => $interestTypeAmounts,
+    ]);
+       
     }
     public function actionLoans()
     {
@@ -341,6 +714,8 @@ class LoansController extends Controller
         $loan=CustomerLoan::findOne($loanID);
         (new ExcelReports())->excelStatement($loan);
     }
+
+    //public function 
     
 
 }
