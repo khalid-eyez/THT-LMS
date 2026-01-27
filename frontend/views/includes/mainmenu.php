@@ -17,11 +17,11 @@
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <ul class="nav nav-tabs notika-menu-wrap menu-it-icon-pro " >
-                        <li class="active" ><a data-toggle="tab" href="#Home"><i class="notika-icon notika-app"></i> Dashboard</a>
+                        <li class="active" ><a href="/loans/dashboard"><i class="notika-icon notika-app"></i> Dashboard</a>
                         </li>
                         <li class="loans"><a  data-toggle="tab" href="#mailbox"><i class="notika-icon notika-house "></i> Loans</a>
                         </li>
-                        <li><a data-toggle="tab" href="#Interface"><i class="notika-icon notika-edit"></i> Repayments</a>
+                        
                         </li>
                         <li><a  data-toggle="tab" href="#Charts"><i class="notika-icon notika-bar-chart"></i> Reports</a>
                         </li>
@@ -41,6 +41,10 @@
                                 <li><a href="/loans">List</a>
                                 </li>
                                 <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Loan</a>
+                                </li>
+                                 <li><a href="<?=Url::toRoute(['/loans/loans/loan-calculator']) ?>">Loan Calculator</a>
+                                </li>
+                                 <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">Loan Categories</a>
                                 </li>
                            </ul>
                         </div>
@@ -68,7 +72,7 @@
                                 </li>
                                 <li><a href="/loans/loans/loan-search-two">Repayment Statement</a>
                                 </li>
-                                <li><a href="area-charts.html">Excutive Summary</a>
+                                <li><a href="/loans/loans/excutive-summary-reporter">Excutive Summary</a>
                                 </li>
                             </ul>
                         </div>

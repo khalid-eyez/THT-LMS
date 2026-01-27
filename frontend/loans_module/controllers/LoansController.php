@@ -2,8 +2,10 @@
 
 namespace frontend\loans_module\controllers;
 use common\models\Cashbook;
+use common\models\CustomerLoan;
 use common\models\RepaymentSchedule;
 use Exception;
+use frontend\loans_module\models\LoanCalculatorForm;
 use frontend\loans_module\models\TopUp;
 use yii\base\UserException;
 use yii\web\Controller;
@@ -12,7 +14,6 @@ use frontend\loans_module\models\Attachments;
 use frontend\loans_module\models\Attachment;
 use frontend\loans_module\models\CustomerInfo;
 use frontend\loans_module\models\LoanInfo;
-use common\models\CustomerLoan;
 use frontend\loans_module\models\CustomerLoanSearch;
 use frontend\loans_module\models\LoanCalculator;
 use common\helpers\PdfHelper;
@@ -28,6 +29,8 @@ use yii\db\Expression;
 use common\models\Customer;
 use common\models\LoanType;
 use common\models\Shareholder;
+use frontend\loans_module\models\ExcutiveSummary;
+//use frontend\loans_module\models\LoanCalculatorForm;
 
 
 class LoansController extends Controller
@@ -414,6 +417,29 @@ class LoansController extends Controller
     ]);
        
     }
+
+    public function actionExcutiveSummaryReporter(){
+        $model=new ExcutiveSummary();
+        if(yii::$app->request->isPost)
+            {
+              $model->load(yii::$app->request->post());
+              return $this->renderAjax('excutivesummaryview',['model'=>$model]); 
+            } 
+        return $this->renderAjax('excutivesummary_reporter',['model'=>$model]);
+       
+    }
+    public function actionExcutiveSummaryPdf()
+    {
+        $model=new ExcutiveSummary();
+        $model->load(yii::$app->request->post());
+        PdfHelper::download($this->renderPartial('excutivesummaryPDF',['model'=>$model]),'ExcutiveSummary',['orientation'=>'L']);
+    }
+     public function actionExcutiveSummaryExcel()
+    {
+        $model=new ExcutiveSummary();
+        $model->load(yii::$app->request->post());
+        $model->excutivesummaryExcel();
+    }
     public function actionLoans()
     {
         if(yii::$app->request->isAjax)
@@ -715,7 +741,26 @@ class LoansController extends Controller
         (new ExcelReports())->excelStatement($loan);
     }
 
-    //public function 
+    public function actionLoanCalculator()
+    {
+      $model=new LoanCalculatorForm();
+      if(yii::$app->request->isPost)
+        { 
+            $model->load(yii::$app->request->post());
+            return $this->renderAjax('/loans/docs/calculatedrepaymentschedule',['repaymentschedules'=>$model->calculate()]);
+        }
+      return $this->renderAjax('calculator',['model'=>$model]);
+    }
+     public function actionLoanCalculatorPdf()
+    {
+      $model=new LoanCalculatorForm();
+      if(yii::$app->request->isPost)
+        { 
+            $model->load(yii::$app->request->post());
+            $content=$this->renderPartial('/loans/docs/calculatedrepaymentschedule_pdf',['repaymentschedules'=>$model->calculate()]);
+            PdfHelper::download($content,'repayment_schedule');
+        }
+    }
     
 
 }

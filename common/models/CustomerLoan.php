@@ -673,4 +673,65 @@ class CustomerLoan extends \yii\db\ActiveRecord
 
 
     }
+    /**
+ * Executive summary from repayment statements.
+ * - Sums all numeric columns
+ * - Returns latest loan_amount and balance (not summed)
+ *
+ * @return array
+ */
+public function getRepaymentExecutiveSummary(): array
+{
+    $latest = $this->getRepaymentStatements()
+        ->orderBy(['id' => SORT_DESC])
+        ->one();
+
+    // No statements yet → return safe defaults
+    if (!$latest) {
+        return [
+            'customerID' => $this->customer->customerID,
+            'loanID' => $this->loanID,
+
+            'loan_amount' => 0,
+            'balance' => 0,
+
+            'installment_total' => 0,
+            'unpaid_amount_total' => 0,
+            'paid_amount_total' => 0,
+            'interest_amount_total' => 0,
+            'prepayment_total' => 0,
+            'penalty_amount_total' => 0,
+            'principal_amount_total' => 0,
+            'topup_amount_total' => 0,
+        ];
+    }
+
+    // Aggregate totals in a single query
+    $totals = $this->getRepaymentStatements()
+        ->select([
+            'installment_total'      => 'COALESCE(SUM(installment),0)',
+            'unpaid_amount_total'    => 'COALESCE(SUM(unpaid_amount),0)',
+            'paid_amount_total'      => 'COALESCE(SUM(paid_amount),0)',
+            'interest_amount_total'  => 'COALESCE(SUM(interest_amount),0)',
+            'prepayment_total'       => 'COALESCE(SUM(prepayment),0)',
+            'penalty_amount_total'   => 'COALESCE(SUM(penalty_amount),0)',
+            'principal_amount_total' => 'COALESCE(SUM(principal_amount),0)',
+            'topup_amount_total'     => 'COALESCE(SUM(topup_amount),0)',
+        ])
+        ->asArray()
+        ->one();
+
+    return array_merge(
+        [
+            'customerID' => $this->customer->customerID,
+            'loanID' => $this->loanID,
+
+            // latest values (not summed)
+            'loan_amount' => (float) $latest->loan_amount,
+            'balance' => (float) $latest->balance,
+        ],
+        array_map('floatval', $totals ?? [])
+    );
+}
+
 }

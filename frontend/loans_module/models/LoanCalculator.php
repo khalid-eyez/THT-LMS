@@ -56,7 +56,7 @@ class LoanCalculator extends Model
     'WEEKLY'         => 7,
     'MONTHLY'        => 30,
     'QUARTERLY'      => 90,
-    'SEMI_ANNUALLY'  => 180,
+    'SEMI-ANNUALLY'  => 180,
     'ANNUALLY'       => 360,
     ];
     $date->add(new \DateInterval('P' . $daysMap[$frequency] . 'D'));
