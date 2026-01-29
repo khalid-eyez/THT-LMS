@@ -53,6 +53,37 @@ class LoanService extends Model
    }
 
    }
+    public function saveLoanR($customerID){
+   try{
+   $transaction=yii::$app->db->beginTransaction();
+   $loanInfo=new LoanInfo();
+   $loanInfo->load($this->request->post());
+   $attachments=new Attachments();
+   $attachments->load($this->request->post());
+   $uploadedFiles=UploadedFile::getInstances($attachments,'files');
+   $attachments->files=$uploadedFiles;
+  
+   $uploadedAttachments=$attachments->saveFiles();
+   $loaninfo=$loanInfo->save($customerID);
+   $attachmentmodel=new LoanAttachment;
+   $attachmentmodel->loanID=$loaninfo->id;
+   $attachmentmodel->saveAttachments($uploadedAttachments);
+   $transaction->commit();
+   return $loaninfo;
+   }
+   catch(UserException $w)
+   {
+       $transaction->rollBack();
+       throw $w;
+
+   }
+   catch(Exception $r)
+   {
+    $transaction->rollback();
+    throw $r;
+   }
+
+   }
    public function calculate()
    {
       return (new LoanCalculator)->generateRepaymentSchedule(12000000,4,'monthly',12,date('Y-m-d H:i:s'));

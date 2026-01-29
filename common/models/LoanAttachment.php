@@ -5,6 +5,7 @@ use yii\behaviors\TimestampBehavior;
 
 use Yii;
 use yii\db\Expression;
+use yii\base\UserException;
 
 /**
  * This is the model class for table "loan_attachments".
@@ -94,11 +95,16 @@ class LoanAttachment extends \yii\db\ActiveRecord
     }
     public function saveAttachments($attachments)
     {
-        foreach($attachments as $attachment){
-            $this->uploaded_doc=$attachment;
-            $this->save();
-        }
-        return true;
+    foreach ($attachments as $attachment) {
+    $m = new self();         
+    $m->loanID = $this->loanID; 
+    $m->uploaded_doc = $attachment;
+
+    if (!$m->save()) {
+    throw new UserException("Failed to save attachment: " . json_encode($m->errors));
+    }
+    }
+    return true;
     }
 
 }

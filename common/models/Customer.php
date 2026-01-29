@@ -52,6 +52,8 @@ class Customer extends \yii\db\ActiveRecord
     }
     public function beforeSave($insert)
     {
+        if($insert)
+        {
         $user=new User;
         $user->name=$this->full_name;
         $user->username=$this->customerID;
@@ -63,6 +65,7 @@ class Customer extends \yii\db\ActiveRecord
             throw new UserException("unable to save user data");
         }
         $this->userID=$user->id;  
+        }
         
         return parent::beforeSave($insert);
     }
@@ -218,5 +221,22 @@ class Customer extends \yii\db\ActiveRecord
     public function setStatusToInactive()
     {
         $this->status = self::STATUS_INACTIVE;
+    }
+
+    public function hasActiveLoan()
+    {
+        $loans=$this->customerLoans;
+
+        if($loans==null){return false;}
+
+        foreach($loans as $loan)
+            {
+                if($loan->isStatusActive() || $loan->isStatusApproved())
+                    {
+                        return true;
+                    }
+            }
+
+            return false;
     }
 }

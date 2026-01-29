@@ -3,10 +3,12 @@
 namespace frontend\loans_module\controllers;
 
 use common\models\Customer;
+use Exception;
 use frontend\loans_module\models\CustomerSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
 
 /**
  * CustomerController implements the CRUD actions for Customer model.
@@ -25,7 +27,7 @@ class CustomerController extends Controller
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
-                        'delete' => ['POST'],
+                        //'update' => ['POST'],
                     ],
                 ],
             ]
@@ -93,15 +95,23 @@ class CustomerController extends Controller
      */
     public function actionUpdate($id)
     {
+       
+
         $model = $this->findModel($id);
-
+        try{
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
 
-        return $this->render('update', [
+            return $this->asJson(['success'=>'true','message'=>'Customer Updated successfully !']);
+        }
+        
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
+        }
+        catch(Exception $u)
+        {
+            throw new \Exception($u->getMessage()." ".Html::errorSummary($model));
+        }
     }
 
     /**
@@ -115,7 +125,7 @@ class CustomerController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->asJson(['success'=>true,'message'=>'Customer Deleted']);
     }
 
     /**

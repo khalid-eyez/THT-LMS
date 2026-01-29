@@ -146,7 +146,24 @@ class CustomerLoan extends \yii\db\ActiveRecord
             'deleted_at' => 'Deleted At',
         ];
     }
+public function beforeSave($insert)
+{
 
+            if($this?->customer->hasActiveLoan())
+            {
+            throw new UserException('Customer has another active loan !'); 
+            }
+    
+            if(!$insert)
+            {
+            if($this->isStatusActive())
+            {
+            throw new UserException('Not allowed to update an active loan !');
+            }
+ 
+    }
+    return parent::beforeSave($insert);
+}
     /**
      * Gets query for [[Approvedby0]].
      *
@@ -435,6 +452,17 @@ class CustomerLoan extends \yii\db\ActiveRecord
     public function totalRepayment()
     {
         return $this->getRepaymentSchedules()->sum('installment_amount');
+    }
+    public function total_paid()
+    {
+        return $this->getRepaymentStatements()->sum('paid_amount');
+    }
+    public function repayment_ratio(){
+     $total_repayment=$this->totalRepayment();
+     $total_paid=$this->total_paid();
+
+     return ($total_paid *100)/(($total_repayment==0)?1:$total_repayment);
+
     }
      public function totalInterest()
     {

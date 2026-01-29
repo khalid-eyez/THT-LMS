@@ -3,6 +3,7 @@
 namespace frontend\loans_module\controllers;
 use common\models\Cashbook;
 use common\models\CustomerLoan;
+use common\models\LoanCategory;
 use common\models\RepaymentSchedule;
 use Exception;
 use frontend\loans_module\models\LoanCalculatorForm;
@@ -30,6 +31,8 @@ use common\models\Customer;
 use common\models\LoanType;
 use common\models\Shareholder;
 use frontend\loans_module\models\ExcutiveSummary;
+use yii\helpers\Html;
+
 //use frontend\loans_module\models\LoanCalculatorForm;
 
 
@@ -480,18 +483,54 @@ class LoansController extends Controller
             catch(UserException $u)
             {
                 yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Customer loan application failed !'.$u->getMessage());
-                return $this->redirect(['loan-fail']);
+                throw $u;
             }
             catch(\Exception $e)
             {
                 yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> An unknown error occurred while submitting application!');
-                return $this->redirect(['loan-fail']);
+                throw $e;
 
             }
         }
         if(yii::$app->request->isAjax) {
             return $this->renderAjax('loancreate2', [
                 'customerinfo' => new CustomerInfo(),
+                'loaninfo' => new LoanInfo(),
+                'attachments' => new Attachments()
+            ]);
+        }
+        else{
+            return $this->redirect('/loans/dashboard');
+        }
+
+
+
+    }
+    public function actionCreateLoanReg($customerID){
+        if(yii::$app->request->isPost){
+            try{
+                  $loan=(new LoanService(yii::$app->request))->saveLoanR($customerID);
+                  if($loan!=null)
+                  {
+                    yii::$app->session->setFlash('success',"<i class='fa fa-check-circle'></i> Loan application successful!");
+                    return $this->redirect(['loan-view','loanID'=>$loan->id]);
+                  }
+
+            }
+            catch(UserException $u)
+            {
+                yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Customer loan application failed !'.$u->getMessage());
+                throw $u;
+            }
+            catch(\Exception $e)
+            {
+                yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> An unknown error occurred while submitting application!');
+                throw $e;
+
+            }
+        }
+        if(yii::$app->request->isAjax) {
+            return $this->renderAjax('loancreate1', [
                 'loaninfo' => new LoanInfo(),
                 'attachments' => new Attachments()
             ]);
@@ -761,6 +800,99 @@ class LoansController extends Controller
             PdfHelper::download($content,'repayment_schedule');
         }
     }
-    
+
+    public function actionCategories()
+    {
+        return $this->renderAjax('loan_categories');
+    }
+    public function actionAddCategory()
+    {
+        $category=new LoanCategory();
+        $category->load(yii::$app->request->post());
+
+        if($category->save())
+            {
+                return $this->asJson(['success'=>true,'message'=>'Loan Category added Successfully !']);
+            }
+            else
+                {
+                     return $this->asJson(['success'=>false,'error'=>'Loan Category Adding Failed ! '.Html::errorSummary($category)]);
+                }
+    }
+
+    public function actionCategoryUpdate()
+    {
+        $id=yii::$app->request->post('id');
+        $category=LoanCategory::findOne($id);
+        $category->load(yii::$app->request->post());
+
+           if($category->save())
+            {
+                return $this->asJson(['success'=>true,'message'=>'Loan Category Updated Successfully !']);
+            }
+            else
+                {
+                     return $this->asJson(['success'=>false,'error'=>'Loan Category Updating Failed ! '.Html::errorSummary($category)]);
+                }
+    }
+     public function actionLoantypeUpdate()
+    {
+        $id=yii::$app->request->post('id');
+        $type=LoanType::findOne($id);
+        $type->load(yii::$app->request->post());
+
+           if($type->save())
+            {
+                return $this->asJson(['success'=>true,'message'=>'Loan Type Updated Successfully !']);
+            }
+            else
+                {
+                     return $this->asJson(['success'=>false,'error'=>'Loan Type Updating Failed ! '.Html::errorSummary($type)]);
+                }
+    }
+    public function actionCategoryDelete()
+    {
+        $id=yii::$app->request->post('id');
+        $category=LoanCategory::findOne($id);
+        $category->load(yii::$app->request->post());
+
+           if($category->delete())
+            {
+                return $this->asJson(['success'=>true,'message'=>'Loan Category Deleted Successfully !']);
+            }
+            else
+                {
+                     return $this->asJson(['success'=>false,'error'=>'Loan Category Deleting Failed ! '.Html::errorSummary($category)]);
+                }
+    }
+    public function actionLoantypeDelete()
+    {
+        $id=yii::$app->request->post('id');
+        $type=LoanType::findOne($id);
+        $type->load(yii::$app->request->post());
+
+           if($type->delete())
+            {
+                return $this->asJson(['success'=>true,'message'=>'Loan Type Deleted Successfully !']);
+            }
+            else
+                {
+                     return $this->asJson(['success'=>false,'error'=>'Loan Type Deleting Failed ! '.Html::errorSummary($type)]);
+                }
+    }
+    public function actionLoantypeAdd()
+    {
+        $type=new LoanType();
+        $type->load(yii::$app->request->post());
+
+        if($type->save())
+            {
+                return $this->asJson(['success'=>true,'message'=>'Loan Type added Successfully !']);
+            }
+            else
+                {
+                     return $this->asJson(['success'=>false,'error'=>'Loan Type Adding Failed ! '.Html::errorSummary($type)]);
+                }
+    }
 
 }

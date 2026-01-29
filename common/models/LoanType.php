@@ -2,6 +2,7 @@
 
 namespace common\models;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 use Yii;
 
@@ -28,7 +29,10 @@ class LoanType extends \yii\db\ActiveRecord
  public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+               [
+            'class' => TimestampBehavior::class,
+            'value' => new Expression('NOW()'),
+             ],
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }

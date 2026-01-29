@@ -1,4 +1,4 @@
-<?php
+<?php 
 use yii\helpers\Url;
 ?>
 
@@ -15,7 +15,7 @@ use yii\helpers\Url;
 									<div class="breadcomb-icon">
 										 <div class="email-round-pro sm-res-ds-n lg-res-mg-bl">
                                     <div class="email-signle-gp">
-                                        <input type="text" class="knob" value="0" data-rel="45" data-linecap="round" data-width="90" data-bgcolor="#E4E4E4" data-fgcolor="#0784ad" data-thickness=".10" data-readonly="true" disabled>
+                                        <input type="text" class="knob" value="0" data-rel="<?= $loan->repayment_ratio() ?>" data-linecap="round" data-width="90" data-bgcolor="#E4E4E4" data-fgcolor="#0784ad" data-thickness=".10" data-readonly="true" disabled>
                                     </div>
                                   
                                 </div>
@@ -64,6 +64,11 @@ use yii\helpers\Url;
      <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#tab4" role="tab">Repayment Statement</a>
     </li>
+
+    <!-- ✅ TAB 5 (Attachments) -->
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#tab5" role="tab">Attachments</a>
+    </li>
 </ul>
 
 <div class="tab-content mt-3">
@@ -78,6 +83,11 @@ use yii\helpers\Url;
     </div>
      <div class="tab-pane fade" id="tab4" role="tabpanel">
         <?=$this->render("/loans/docs/repaymentstatement",['loan'=>$loan]); ?>
+    </div>
+
+    <!-- ✅ TAB 5 CONTENT -->
+    <div class="tab-pane fade" id="tab5" role="tabpanel">
+        <?=$this->render('loan_attachments',['model'=>$loan]) ?>
     </div>
 </div>
                            

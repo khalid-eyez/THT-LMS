@@ -301,7 +301,7 @@ $hintPaidInterest12   = "12m: " . $fmtMoney($paidInterestLast12);
 
 </style>
 
-<div class="wizard-area">
+<div class="wizard-area" >
     <!-- Floating PDF Export Button -->
 <div class="pdf-export-fab no-print">
   <button onclick="window.print()" title="Export dashboard to PDF">
@@ -310,10 +310,10 @@ $hintPaidInterest12   = "12m: " . $fmtMoney($paidInterestLast12);
   </button>
 </div>
 
-  <div class="container">
+  <div class="container" >
     <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="container-fluid">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+        <div class="container-fluid" >
 
           <!-- KPI CARDS (Row 1) -->
           <div class="row">

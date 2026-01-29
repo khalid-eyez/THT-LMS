@@ -65,7 +65,7 @@ if (!empty($schedules)) {
                         ?>
                             <div class="repay-meta-item <?= $isRight ? 'right' : '' ?>">
                                 <strong><?= Html::encode($label) ?>:</strong>
-                                <?= Html::encode($value) ?>
+                                <?= Html::encode(ucfirst($value)) ?>
                             </div>
                         <?php
                             $i++;
@@ -130,7 +130,7 @@ if (!empty($schedules)) {
                     <tr>
                         <th></th>
                         <th>TOTALS</th>
-                        <th><?= Yii::$app->formatter->asDecimal($startLoanAmount, 2) ?></th>
+                        <th><?= Yii::$app->formatter->asDecimal($lastBalance, 2) ?></th>
                         <th><?= Yii::$app->formatter->asDecimal($principalTotal, 2) ?></th>
                         <th><?= Yii::$app->formatter->asDecimal($interestTotal, 2) ?></th>
                         <th><?= Yii::$app->formatter->asDecimal($installmentTotal, 2) ?></th>

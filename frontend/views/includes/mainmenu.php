@@ -36,7 +36,7 @@
                     </ul>
                     <div class="tab-content custom-menu-content">
                        
-                        <div id="mailbox" class="tab-pane notika-tab-menu-bg animated flipInX">
+                        <div id="mailbox" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="/loans">List</a>
                                 </li>
@@ -44,11 +44,11 @@
                                 </li>
                                  <li><a href="<?=Url::toRoute(['/loans/loans/loan-calculator']) ?>">Loan Calculator</a>
                                 </li>
-                                 <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">Loan Categories</a>
+                                 <li><a href="<?=Url::toRoute(['/loans/loans/categories']) ?>">Loan Categories</a>
                                 </li>
                            </ul>
                         </div>
-                        <div id="Interface" class="tab-pane notika-tab-menu-bg animated flipInX">
+                        <div id="Interface" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="/loans/create-loan">Animations</a>
                                 </li>
@@ -64,7 +64,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div id="Charts" class="tab-pane notika-tab-menu-bg animated flipInX">
+                        <div id="Charts" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="/cashbook/cashbook/cashbook-reporter">Cashbook</a>
                                 </li>
@@ -76,7 +76,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div id="Tables" class="tab-pane notika-tab-menu-bg animated flipInX">
+                        <div id="Tables" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="/loans/customer/index">List</a>
                                 </li>
@@ -84,7 +84,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div id="Forms" class="tab-pane notika-tab-menu-bg animated flipInX">
+                        <div id="Forms" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/create']) ?>">New Shareholder</a>
                                 </li>
@@ -96,7 +96,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div id="Appviews" class="tab-pane notika-tab-menu-bg animated flipInX">
+                        <div id="Appviews" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="notification.html">Notifications</a>
                                 </li>
@@ -120,19 +120,11 @@
                                 </li>
                             </ul>
                         </div>
-                        <div id="Page" class="tab-pane notika-tab-menu-bg animated flipInX">
+                        <div id="Page" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="contact.html">Contact</a>
+                                <li><a href="/admin/auth/view-profile">Profile Info</a>
                                 </li>
-                                <li><a href="invoice.html">Invoice</a>
-                                </li>
-                                <li><a href="typography.html">Typography</a>
-                                </li>
-                                <li><a href="color.html">Color</a>
-                                </li>
-                                <li><a href="login-register.html">Login Register</a>
-                                </li>
-                                <li><a href="404.html">404 Page</a>
+                                <li><a href="invoice.html">Change Password</a>
                                 </li>
                             </ul>
                         </div>

@@ -24,7 +24,7 @@ class AuthController extends \yii\web\Controller
                         
                     ],
                     [
-                        'actions' => ['logout', 'error','changepassword','change-password-restrict'],
+                        'actions' => ['logout','view-profile', 'error','changepassword','change-password-restrict'],
                         'allow' => true,
                         'roles' =>['@']
                         
@@ -174,6 +174,10 @@ class AuthController extends \yii\web\Controller
         }
     
         return $this->render('changePasswordrestrict',['model' => $models]);  
+    }
+    public function actionViewProfile()
+    {
+        return $this->renderAjax('profile');
     }
     
 

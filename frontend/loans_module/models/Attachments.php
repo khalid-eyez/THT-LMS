@@ -15,7 +15,7 @@ class Attachments extends Model
                 'files',
                 'file',
                 'skipOnEmpty' => false,       
-                'maxFiles' => 5,             
+                'maxFiles' => 10,             
                 'maxSize' => 10 * 1024 * 1024,  
                 'tooBig' => 'Each file must be smaller than 10 MB.',
                 'extensions' => 'jpg, png, pdf',

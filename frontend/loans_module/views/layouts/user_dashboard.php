@@ -86,7 +86,7 @@
 
   <?= $content ?>
   </div>
-	<div id="global-loader" class="data-table-area" style="display: none; position: absolute; z-index:10; top:51%;left:43%; width:150px;height:150px"><img src="/img/spinner.gif" /></div>
+	<div id="global-loader" class="data-table-area" style="display: none; position: absolute; z-index:99999; top:51%;left:43%; width:150px;height:150px"><img src="/img/spinner.gif" /></div>
     
   <?= $this->render("@frontend/views/includes/loginfooter") ?>
   
@@ -100,6 +100,7 @@
                       $('#global-loader').show();
                       }).ajaxStop(function () {
                       $('#global-loader').hide();
+                      
                       });
                      $('body').on('click','.pay, .notika-main-menu-dropdown li a',function(e){
                         e.preventDefault();

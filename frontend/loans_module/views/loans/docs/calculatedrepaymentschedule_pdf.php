@@ -160,7 +160,7 @@ if (!empty($schedules)) {
             <?php $k = $leftKeys[$i]; ?>
             <tr>
                 <th><?= $k !== null ? Html::encode($k) : '&nbsp;' ?></th>
-                <td><?= $k !== null ? Html::encode($meta[$k]) : '&nbsp;' ?></td>
+                <td><?= $k !== null ? Html::encode(ucfirst($meta[$k])) : '&nbsp;' ?></td>
             </tr>
         <?php endfor; ?>
     </table>
@@ -226,7 +226,7 @@ if (!empty($schedules)) {
     <tr class="totals">
         <th></th>
         <th>TOTALS</th>
-        <th><?= Yii::$app->formatter->asDecimal($startLoanAmount, 2) ?></th>
+        <th><?= Yii::$app->formatter->asDecimal($lastBalance, 2) ?></th>
         <th><?= Yii::$app->formatter->asDecimal($principalTotal, 2) ?></th>
         <th><?= Yii::$app->formatter->asDecimal($interestTotal, 2) ?></th>
         <th><?= Yii::$app->formatter->asDecimal($installmentTotal, 2) ?></th>
