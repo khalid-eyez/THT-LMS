@@ -8,13 +8,14 @@ use common\models\ShareholderDepositForm;
 use common\models\CustomerShareholderForm;
 use common\helpers\UniqueCodeHelper;
 use common\models\Shareholder;
-use common\models\ShareholderSearch;
-
 use common\models\DepositSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use common\helpers\PdfHelper;
+use frontend\shareholder_module\models\ExcelReporter;
+
 /**
  * DepositController implements the CRUD actions for Deposit model.
  */
@@ -46,14 +47,116 @@ class DepositController extends Controller
   
      public function actionIndex()
     {
-        $searchModel = new ShareholderSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $searchModel = new DepositSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+        'searchModel' => $searchModel,
+        'dataProvider' => $dataProvider,
         ]);
     }
+     public function actionShareholderDepositsPdfReport($shareholderID)
+    {
+        // 1) Load shareholder with customer relation
+        $shareholder = Shareholder::find()
+            ->with('customer')
+            ->where(['id' => (int)$shareholderID])
+            ->one();
+
+        if (!$shareholder) {
+            throw new NotFoundHttpException('Shareholder not found.');
+        }
+
+        // 2) Build search & data provider in locked shareholder context
+        $searchModel = new DepositSearch();
+
+        // supports both POST (your export JS) and GET (manual)
+        $params = Yii::$app->request->post();
+        if (empty($params)) {
+            $params = Yii::$app->request->get();
+        }
+
+        // IMPORTANT:
+        // Your DepositSearch::search signature: search($params, $formName = null, $contextShareholderID = null)
+        // Passing null for formName lets Yii use DepositSearch::formName() => "DepositSearch"
+        $dataProvider = $searchModel->search($params, null, (int)$shareholderID);
+
+        // optional: stable ordering in PDF (latest first). Adjust if you prefer ASC.
+        $dataProvider->query->orderBy(['deposit_date' => SORT_DESC, 'depositID' => SORT_DESC]);
+        $dataProvider->pagination = false; // PDFs should include all rows
+
+        // 3) Render MPDF-compatible view as HTML
+        $content = $this->renderPartial('_shareholder_deposits_table_pdf', [
+            'dataProvider'   => $dataProvider,
+            'shareholder'    => $shareholder,
+            'shareholderID'  => (int)$shareholderID,
+        ]);
+
+        // 4) Generate and return PDF via helper
+        // Assumes PdfHelper::generate($content) returns a response (or sends output)
+        return PdfHelper::download($content,'shareholder_deposits');
+    }
+
+
+// ...
+
+public function actionShareholderDepositsExcelReport($shareholderID)
+{
+    $shareholderID = (int)$shareholderID;
+
+    $shareholder = Shareholder::find()
+        ->with('customer')
+        ->where(['id' => $shareholderID])
+        ->one();
+
+    if (!$shareholder) {
+        throw new \yii\web\NotFoundHttpException('Shareholder not found.');
+    }
+
+    $searchModel = new DepositSearch();
+
+    $params = Yii::$app->request->post();
+    if (empty($params)) {
+        $params = Yii::$app->request->get();
+    }
+
+    $dataProvider = $searchModel->search($params, null, $shareholderID);
+    $dataProvider->pagination = false;
+
+    $dateRange = Yii::$app->request->post('DepositSearch')['deposit_date']
+        ?? Yii::$app->request->get('DepositSearch')['deposit_date']
+        ?? null;
+
+    return ExcelReporter::shareholderDeposits(
+        $shareholder,
+        $dataProvider,
+        $dateRange
+    );
+    }
+  
+
+    public function actionShareholderDeposits($shareholderID=null)
+    {
+     $searchModel = new DepositSearch();
+
+    // 1) First modal load (GET) -> show wrapper view only, cashbook has "Search results"
+    if (Yii::$app->request->isGet) {
+        return $this->renderAjax('shareholder-deposits', [
+            'searchModel' => $searchModel,
+            'shareholderID' => $shareholderID,
+        ]);
+    }
+
+    // 2) Filtering (AJAX POST) -> load deposits and return only the table partial
+    $dataProvider = $searchModel->search(Yii::$app->request->post(), null, $shareholderID);
+
+    return $this->renderPartial('_shareholder_deposits_table', [
+        'dataProvider'  => $dataProvider,
+        'shareholderID' => $shareholderID,
+    ]);
+    }
+    
+
 
     /**
      * Displays a single Deposit model.
@@ -90,14 +193,14 @@ class DepositController extends Controller
                $model->payment_document = UploadedFile::getInstance($model, 'payment_document');
               
                 if ($model->save()) {
-                    Yii::$app->session->setFlash('success', 'Deposit recorded successfully');
-                    return $this->redirect(['index']);
+                    Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i> Deposit recorded successfully');
+                    return $this->redirect(yii::$app->request->referrer);
                 }
                 throw new Exception(json_encode($model->getErrors()));
     
             }
 
-            return $this->render('create', [
+            return $this->renderAjax('create', [
                 'model' => $model,
             ]);
         }

@@ -5,17 +5,14 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\CustomerShareholderForm $model */
 
-$this->title = 'Register Shareholder';
-$this->params['breadcrumbs'][] = ['label' => 'Shareholders', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="shareholder-create">
+ <div class="wizard-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="wizard-wrap-int">
 
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0"><?= Html::encode($this->title) ?></h4>
-        </div>
-
         <div class="card-body">
 
             <?= $this->render('_form', [
@@ -25,5 +22,5 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
-</div>
+</div></div></div></div></div>
 

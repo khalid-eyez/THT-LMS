@@ -84,10 +84,7 @@ class LoanService extends Model
    }
 
    }
-   public function calculate()
-   {
-      return (new LoanCalculator)->generateRepaymentSchedule(12000000,4,'monthly',12,date('Y-m-d H:i:s'));
-   }
+  
 
 
    }

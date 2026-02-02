@@ -7,17 +7,29 @@ use yii\helpers\Url;
 $shareholder = $customer->shareholder;
 $loans = $customer->customerLoans ?: [];
 
-/* shareholder aggregates */
-$totalDeposits = 0;
-$totalDepositInterest = 0;
+/* shareholder aggregates (use model functions) */
+$totalDeposits = 0.0;
+
+// Total interest are the approved AND paid ones
+$totalInterestPaidApproved = 0.0;
+
+// Payable Interests = approved but not paid yet
+$totalInterestApproved = 0.0;
+$payableInterests = 0.0;
+
+// Claimable (not yet claimed at all)
+$claimableInterest = 0.0;
 
 if ($shareholder) {
     foreach ($shareholder->deposits as $deposit) {
         $totalDeposits += (float) $deposit->amount;
-        foreach ($deposit->depositInterests as $interest) {
-            $totalDepositInterest += (float) $interest->amount;
-        }
     }
+
+    $totalInterestPaidApproved = (float) ($shareholder->totalPaidApprovedInterest ?? 0);
+    $totalInterestApproved     = (float) ($shareholder->totalApprovedInterests ?? 0);
+
+    $payableInterests = max(0, $totalInterestApproved - $totalInterestPaidApproved);
+    $claimableInterest = (float) ($shareholder->totalClaimableInterests ?? 0);
 }
 
 /* general avatar image */
@@ -29,7 +41,77 @@ $updateUrl = Url::to(['update', 'id' => $customer->id]);
 /* delete + index urls */
 $deleteUrl = Url::to(['/loans/customer/delete', 'id' => $customer->id]);
 $indexUrl  = Url::to(['/loans/customer/index']);
+
+/* apply loan */
+$applyLoanUrl = Url::to(['/loans/loans/create-loan-reg', 'customerID' => $customer->id]);
+
+/* ✅ deposit create URL (load into modal) */
+$depositCreateUrl = $shareholder
+    ? Url::to(['/shareholder/deposit/create', 'shareholder_id' => $shareholder->id])
+    : null;
+
+/* shareholder statement URLs */
+$depositsStatementUrl = $shareholder
+    ? Url::to(['/shareholder/deposit/shareholder-deposits', 'shareholderID' => $shareholder->id])
+    : null;
+
+$interestStatementUrl = $shareholder
+    ? Url::to(['/shareholder_module/interest/index', 'shareholderID' => $shareholder->id])
+    : null;
+
+/* claim interest (placeholder route; adjust) */
+$claimInterestUrl = $shareholder
+    ? Url::to(['/shareholder_module/claims/create', 'shareholderID' => $shareholder->id])
+    : null;
+
+/* pay payable interests (placeholder route; adjust) */
+$payInterestUrl = $shareholder
+    ? Url::to(['/shareholder_module/payments/create', 'shareholderID' => $shareholder->id])
+    : null;
+
+/* disable logic */
+$isPayableActive   = ($payableInterests > 0);
+$isClaimableActive = ($claimableInterest > 0);
 ?>
+
+<style>
+.icon-actions{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+.icon-actions .btn{
+    width:34px;
+    height:34px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+}
+.share-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+.share-row .right-actions{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+.share-row .right-actions .btn{
+    width:30px;
+    height:30px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+}
+.btn-soft-disabled{
+    opacity: .55;
+}
+</style>
 
 <div class="wizard-area">
     <div class="container">
@@ -43,10 +125,8 @@ $indexUrl  = Url::to(['/loans/customer/index']);
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-                                    <!-- Customer Info -->
                                     <div class="statistic-right-area notika-shadow mg-tb-30 sm-res-mg-t-0">
 
-                                        <!-- Avatar -->
                                         <div class="text-center mb-3">
                                             <?= Html::img($avatarUrl, [
                                                 'alt' => 'Customer Avatar',
@@ -66,32 +146,57 @@ $indexUrl  = Url::to(['/loans/customer/index']);
 
                                         <hr>
 
-                                        <div class="mt-3 text-center">
-                                            <?= Html::a(
-                                                'Apply Loan',
-                                                ['/loans/loans/create-loan-reg', 'customerID' => $customer->id],
-                                                ['class' => 'btn btn-success btn-sm mr-1 pay']
-                                            ) ?>
+                                        <div class="mt-3 icon-actions">
 
-                                            <!-- UPDATE -->
                                             <?= Html::a(
-                                                'Update',
-                                                $updateUrl,
+                                                '<i class="fa fa-money"></i>',
+                                                $applyLoanUrl,
                                                 [
-                                                    'class' => 'btn btn-primary btn-sm mr-1 js-customer-update',
-                                                    'data-url' => $updateUrl,
+                                                    'class' => 'btn btn-success btn-sm pay',
+                                                    'title' => 'Apply loan',
+                                                    'data-toggle' => 'tooltip',
+                                                    'data-pjax' => '0',
                                                 ]
                                             ) ?>
 
-                                            <!-- DELETE (AJAX GET) -->
                                             <?= Html::a(
-                                                'Delete',
+                                                '<i class="fa fa-edit"></i>',
+                                                $updateUrl,
+                                                [
+                                                    'class' => 'btn btn-primary btn-sm js-customer-update',
+                                                    'data-url' => $updateUrl,
+                                                    'title' => 'Update customer',
+                                                    'data-toggle' => 'tooltip',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            ) ?>
+
+                                            <!-- ✅ Record deposit now opens modal -->
+                                            <?php if ($shareholder && $depositCreateUrl): ?>
+                                                <?= Html::a(
+                                                    '<i class="fa fa-plus-circle"></i>',
+                                                    'javascript:void(0)',
+                                                    [
+                                                        'class' => 'btn btn-info btn-sm js-deposit-create',
+                                                        'data-url' => $depositCreateUrl, // /shareholder/deposit/create?shareholder_id=ID
+                                                        'title' => 'Record deposit',
+                                                        'data-toggle' => 'tooltip',
+                                                        'data-pjax' => '0',
+                                                    ]
+                                                ) ?>
+                                            <?php endif; ?>
+
+                                            <?= Html::a(
+                                                '<i class="fa fa-trash"></i>',
                                                 'javascript:void(0)',
                                                 [
                                                     'class' => 'btn btn-danger btn-sm js-customer-delete',
                                                     'data-url' => $deleteUrl,
+                                                    'title' => 'Delete customer',
+                                                    'data-toggle' => 'tooltip',
                                                 ]
                                             ) ?>
+
                                         </div>
 
                                     </div>
@@ -100,13 +205,11 @@ $indexUrl  = Url::to(['/loans/customer/index']);
                             </div>
                         </div>
 
-                        <!-- RIGHT: LOANS CARD + SHAREHOLDER CARD (below) -->
+                        <!-- RIGHT: LOANS CARD + SHAREHOLDER CARD -->
                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12">
 
-                            <!-- CARD 1: LOAN HISTORY + FINANCIAL SUMMARY -->
                             <div class="sale-statistic-inner notika-shadow mg-tb-30">
 
-                                <!-- Loan History -->
                                 <h5 class="mb-3 bg-primary" style="margin-top:6px; margin-bottom:12px; padding:4px">
                                     <i class="fa fa-history"></i> Loan History
                                 </h5>
@@ -140,7 +243,6 @@ $indexUrl  = Url::to(['/loans/customer/index']);
                                     <p class="text-muted">No loans found.</p>
                                 <?php endif; ?>
 
-                                <!-- Financial Summary -->
                                 <h5 class="mt-4 mb-2 bg-primary" style="margin-top:24px;margin-bottom:12px; padding:4px">
                                     <i class="fa fa-bar-chart"></i> Financial Summary
                                 </h5>
@@ -153,7 +255,6 @@ $indexUrl  = Url::to(['/loans/customer/index']);
 
                             </div>
 
-                            <!-- CARD 2: SHAREHOLDER INFORMATION -->
                             <?php if ($shareholder): ?>
                                 <div class="sale-statistic-inner notika-shadow mg-tb-30">
 
@@ -162,14 +263,76 @@ $indexUrl  = Url::to(['/loans/customer/index']);
                                     </h5>
 
                                     <p><strong>Member ID:</strong> <?= Html::encode($shareholder->memberID) ?></p>
-                                    <p><strong>Initial Capital:</strong>
-                                        <?= Yii::$app->formatter->asDecimal($shareholder->initialCapital) ?>
+
+                                    <p class="share-row">
+                                        <span><strong>Initial Capital:</strong> <?= Yii::$app->formatter->asDecimal($shareholder->initialCapital) ?></span>
                                     </p>
-                                    <p><strong>Total Deposits:</strong>
-                                        <?= Yii::$app->formatter->asDecimal($totalDeposits) ?>
+
+                                    <p class="share-row">
+                                        <span><strong>Total Deposits:</strong> <?= Yii::$app->formatter->asDecimal($totalDeposits) ?></span>
+                                        <span class="right-actions">
+                                            <?= Html::a(
+                                                '<i class="fa fa-file-text-o"></i>',
+                                                'javascript:void(0)',
+                                                [
+                                                    'class' => 'btn btn-default btn-xs js-deposits-statement',
+                                                    'data-url' => $depositsStatementUrl,
+                                                    'title' => 'View deposits statement',
+                                                    'data-toggle' => 'tooltip',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            ) ?>
+                                        </span>
                                     </p>
-                                    <p><strong>Total Interest:</strong>
-                                        <?= Yii::$app->formatter->asDecimal($totalDepositInterest) ?>
+
+                                    <p class="share-row">
+                                        <span><strong>Total Interest:</strong> <?= Yii::$app->formatter->asDecimal($totalInterestPaidApproved) ?></span>
+                                        <span class="right-actions">
+                                            <?= Html::a(
+                                                '<i class="fa fa-line-chart"></i>',
+                                                $interestStatementUrl ?: 'javascript:void(0)',
+                                                [
+                                                    'class' => 'btn btn-default btn-xs',
+                                                    'title' => 'Interest statement',
+                                                    'data-toggle' => 'tooltip',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            ) ?>
+                                        </span>
+                                    </p>
+
+                                    <p class="share-row">
+                                        <span><strong>Payable Interests:</strong> <?= Yii::$app->formatter->asDecimal($payableInterests) ?></span>
+                                        <span class="right-actions">
+                                            <?= Html::a(
+                                                '<i class="fa fa-credit-card"></i>',
+                                                ($payInterestUrl && $isPayableActive) ? $payInterestUrl : 'javascript:void(0)',
+                                                [
+                                                    'class' => 'btn btn-default btn-xs ' . ($isPayableActive ? '' : 'btn-soft-disabled'),
+                                                    'title' => $isPayableActive ? 'Pay payable interests' : 'No payable interests to pay',
+                                                    'data-toggle' => 'tooltip',
+                                                    'data-pjax' => '0',
+                                                    'onclick' => $isPayableActive ? null : 'return false;',
+                                                ]
+                                            ) ?>
+                                        </span>
+                                    </p>
+
+                                    <p class="share-row">
+                                        <span><strong>Claimable Interest:</strong> <?= Yii::$app->formatter->asDecimal($claimableInterest) ?></span>
+                                        <span class="right-actions">
+                                            <?= Html::a(
+                                                '<i class="fa fa-money"></i>',
+                                                ($claimInterestUrl && $isClaimableActive) ? $claimInterestUrl : 'javascript:void(0)',
+                                                [
+                                                    'class' => 'btn btn-default btn-xs ' . ($isClaimableActive ? '' : 'btn-soft-disabled'),
+                                                    'title' => $isClaimableActive ? 'Claim interest' : 'No claimable interest yet',
+                                                    'data-toggle' => 'tooltip',
+                                                    'data-pjax' => '0',
+                                                    'onclick' => $isClaimableActive ? null : 'return false;',
+                                                ]
+                                            ) ?>
+                                        </span>
                                     </p>
 
                                 </div>
@@ -184,7 +347,7 @@ $indexUrl  = Url::to(['/loans/customer/index']);
     </div>
 </div>
 
-<!-- ✅ UPDATE MODAL (content loaded via ajax) -->
+<!-- ✅ UPDATE MODAL -->
 <div class="modal fade animated rubberBand" style="margin-top: 15px;" id="customerUpdateModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -197,9 +360,47 @@ $indexUrl  = Url::to(['/loans/customer/index']);
             </div>
 
             <div class="modal-body" id="customerUpdateModalBody" style="min-height:150px;">
-                <div class="text-center text-muted" style="padding:20px;">
-                    Loading...
-                </div>
+                <div class="text-center text-muted" style="padding:20px;">Loading...</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ DEPOSIT CREATE MODAL -->
+<div class="modal fade animated rubberBand" style="margin-top: 15px;" id="depositCreateModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary" style="padding:9px;">
+                <i class="fa fa-plus-circle"></i> Record Deposit
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff; opacity:1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" id="depositCreateModalBody" style="min-height:150px;">
+                <div class="text-center text-muted" style="padding:20px;">Loading...</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ DEPOSITS STATEMENT MODAL -->
+<div class="modal fade animated rubberBand" style="margin-top: 15px;" id="depositsStatementModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary" style="padding:9px;">
+                <i class="fa fa-file-text-o"></i> Deposits Statement
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff; opacity:1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" id="depositsStatementModalBody" style="min-height:150px;">
+                <div class="text-center text-muted" style="padding:20px;">Loading...</div>
             </div>
 
         </div>
@@ -210,9 +411,14 @@ $indexUrl  = Url::to(['/loans/customer/index']);
 $this->registerJs(<<<JS
 (function () {
 
-    // ---------- UPDATE (modal load) ----------
-    $(document).off('click.customerUpdateModal');
+    function initTooltips(scope){
+        var \$s = scope ? $(scope) : $(document);
+        if (\$.fn.tooltip) \$s.find('[data-toggle="tooltip"]').tooltip();
+    }
+    $(document).ready(function(){ initTooltips(document); });
 
+    // ---------- UPDATE MODAL ----------
+    $(document).off('click.customerUpdateModal');
     $(document).on('click.customerUpdateModal', '.js-customer-update', function (e) {
         e.preventDefault();
 
@@ -222,10 +428,7 @@ $this->registerJs(<<<JS
         $('#customerUpdateModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
         $('#customerUpdateModal').modal('show');
 
-        // show loader after modal appears
-        // $('#customerUpdateModal').one('shown.bs.modal', function () {
-        //     if ($('#global-loader').length) $('#global-loader').show();
-        // });
+        if ($('#global-loader').length) $('#global-loader').show();
 
         $.ajax({
             url: url,
@@ -233,6 +436,7 @@ $this->registerJs(<<<JS
             cache: false,
             success: function (html) {
                 $('#customerUpdateModalBody').html(html);
+                initTooltips('#customerUpdateModal');
             },
             error: function () {
                 $('#customerUpdateModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load the update form.</div>');
@@ -245,9 +449,40 @@ $this->registerJs(<<<JS
         return false;
     });
 
-    // ---------- DELETE (GET -> then load index into .content) ----------
-    $(document).off('click.customerDelete');
+    // ---------- ✅ DEPOSIT CREATE MODAL ----------
+    $(document).off('click.depositCreateModal');
+    $(document).on('click.depositCreateModal', '.js-deposit-create', function (e) {
+        e.preventDefault();
 
+        var url = $(this).data('url');
+        if (!url) return false;
+
+        $('#depositCreateModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
+        $('#depositCreateModal').modal('show');
+
+        if ($('#global-loader').length) $('#global-loader').show();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            cache: false,
+            success: function (html) {
+                $('#depositCreateModalBody').html(html);
+                initTooltips('#depositCreateModal');
+            },
+            error: function () {
+                $('#depositCreateModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load deposit form.</div>');
+            },
+            complete: function () {
+                if ($('#global-loader').length) $('#global-loader').hide();
+            }
+        });
+
+        return false;
+    });
+
+    // ---------- DELETE ----------
+    $(document).off('click.customerDelete');
     $(document).on('click.customerDelete', '.js-customer-delete', function (e) {
         e.preventDefault();
 
@@ -258,7 +493,6 @@ $this->registerJs(<<<JS
             return false;
         }
 
-        // one toast while loading
         if (window.toastr) {
             toastr.clear();
             toastr.remove();
@@ -272,13 +506,13 @@ $this->registerJs(<<<JS
             type: 'GET',
             cache: false,
             success: function () {
-                // load index into .content
                 $('.content').load('{$indexUrl}', function () {
                     if (window.toastr) {
                         toastr.clear();
                         toastr.remove();
                         toastr.success('Customer deleted successfully!');
                     }
+                    initTooltips(document);
                 });
             },
             error: function () {
@@ -292,6 +526,72 @@ $this->registerJs(<<<JS
             },
             complete: function () {
                 if ($('#global-loader').length) $('#global-loader').hide();
+            }
+        });
+
+        return false;
+    });
+
+    // ---------- DEPOSITS STATEMENT MODAL ----------
+    $(document).off('click.depositsStatementModal');
+    $(document).on('click.depositsStatementModal', '.js-deposits-statement', function (e) {
+        e.preventDefault();
+
+        var url = $(this).data('url');
+        if (!url) return false;
+
+        $('#depositsStatementModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
+        $('#depositsStatementModal').modal('show');
+
+        if ($('#global-loader').length) $('#global-loader').show();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            cache: false,
+            success: function (html) {
+                $('#depositsStatementModalBody').html(html);
+                initTooltips('#depositsStatementModalBody');
+            },
+            error: function () {
+                $('#depositsStatementModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load deposits statement.</div>');
+            },
+            complete: function () {
+                if ($('#global-loader').length) $('#global-loader').hide();
+            }
+        });
+
+        return false;
+    });
+
+    // ---------- DEPOSITS STATEMENT SEARCH (inside modal) ----------
+    $(document).off('submit.depositsStatementSearch');
+    $(document).on('submit.depositsStatementSearch', '#depositsStatementModal .loan-search-bar form', function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var url  = form.attr('action');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+            beforeSend: function () {
+                if ($('#global-loader').length) $('#global-loader').show();
+            },
+            success: function (response) {
+                $('#depositsStatementModal .cashbook').html(response);
+                initTooltips('#depositsStatementModal');
+            },
+            error: function (xhr) {
+                $('#depositsStatementModal .cashbook').html(
+                    '<div class="alert alert-danger">Failed to load data.</div>'
+                );
+                console.error(xhr.responseText);
+            },
+            complete:function()
+            {
+                 if ($('#global-loader').length) $('#global-loader').hide();
             }
         });
 

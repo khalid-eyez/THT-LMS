@@ -86,9 +86,9 @@
                         </div>
                         <div id="Forms" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/create']) ?>">New Shareholder</a>
+                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/index']) ?>">Shareholders List</a>
                                 </li>
-                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/index']) ?>">Manage Shareholder</a>
+                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/create']) ?>">New Shareholder</a>
                                 </li>
                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/claims']) ?>">Shareholder Claims</a>
                                 </li>

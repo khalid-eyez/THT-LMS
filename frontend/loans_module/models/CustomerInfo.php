@@ -44,7 +44,7 @@ class CustomerInfo extends Model
       $customer->address=$this->address;
       $customer->NIN=$this->NIN;
       $customer->TIN=$this->TIN;
-      $customer->customerID=UniqueCodeHelper::generate('HTHC',5);
+      $customer->customerID=UniqueCodeHelper::generate('HTHC',5).'-'.date('y').substr($this->NIN, -1);
       if (!$customer->save()) {
        throw new UserException("Unable to save Customer info");
       }

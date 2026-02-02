@@ -35,16 +35,19 @@ class DepositSearch extends Deposit
     /**
      * Creates data provider instance with search query applied
      *
+     * Modes:
+     * - Locked (shareholder context): pass $contextShareholderID (hard filter)
+     * - General search: do not pass $contextShareholderID (optional filter by $this->shareholderID)
+     *
      * @param array $params
      * @param string|null $formName Form name to be used into `->load()` method.
+     * @param int|null $contextShareholderID If provided, results are scoped to this shareholder only.
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $formName = null)
+    public function search($params, $formName = null, $contextShareholderID = null)
     {
         $query = Deposit::find();
-
-        // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -53,18 +56,45 @@ class DepositSearch extends Deposit
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
+        }
+
+        /**
+         * Shareholder filtering:
+         * - If contextShareholderID is provided => hard lock to it
+         * - Else => allow optional filtering by shareholderID from the search form
+         */
+        if ($contextShareholderID !== null && $contextShareholderID !== '') {
+            $query->andWhere(['shareholderID' => (int)$contextShareholderID]);
+        } else {
+            $query->andFilterWhere(['shareholderID' => $this->shareholderID]);
+        }
+
+        /**
+         * deposit_date supports:
+         * - date range string: "YYYY-MM-DD - YYYY-MM-DD"
+         * - single date: "YYYY-MM-DD"
+         */
+        if (!empty($this->deposit_date) && strpos($this->deposit_date, ' - ') !== false) {
+            [$from, $to] = explode(' - ', $this->deposit_date);
+
+            $from = trim($from);
+            $to   = trim($to);
+
+            // If deposit_date is DATETIME in DB, uncomment:
+            // $from .= ' 00:00:00';
+            // $to   .= ' 23:59:59';
+
+            $query->andWhere(['between', 'deposit_date', $from, $to]);
+        } else {
+            $query->andFilterWhere(['deposit_date' => $this->deposit_date]);
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'depositID' => $this->depositID,
-            'shareholderID' => $this->shareholderID,
             'amount' => $this->amount,
             'interest_rate' => $this->interest_rate,
-            'deposit_date' => $this->deposit_date,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'isDeleted' => $this->isDeleted,

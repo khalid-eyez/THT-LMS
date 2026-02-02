@@ -42,6 +42,8 @@ class CustomerSearch extends Customer
      */
     public function search($params, $formName = null)
     {
+        \Yii::error(['date_range' => $this->date_range], 'export-debug');
+
         $query = Customer::find();
 
         // add conditions that should always apply here
@@ -80,7 +82,7 @@ class CustomerSearch extends Customer
 
                if (!empty($this->date_range)) {
             [$start, $end] = explode(' - ', $this->date_range);
-            $query->andFilterWhere(['between', 'DATE(customers.created_at)', $start, $end]);
+            $query->andFilterWhere(['between', 'DATE(created_at)', $start, $end]);
             }
 
         return $dataProvider;

@@ -2,13 +2,18 @@
 
 namespace frontend\shareholder_module\controllers;
 use Yii;
-use common\models\CustomerShareholderForm;
+use frontend\shareholder_module\models\CustomerShareholderForm;
 use common\helpers\UniqueCodeHelper;
 use common\models\Shareholder;
 use common\models\ShareholderSearch;
+use yii\base\UserException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
+use yii\web\ErrorAction;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 /**
  * ShareholderController implements the CRUD actions for Shareholder model.
@@ -17,6 +22,7 @@ class ShareholderController extends Controller
 {  
     //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
     public $sharevalue;
+    public $layout='@frontend/loans_module/views/layouts/user_dashboard';
     
     //public $layout="user_dashboard";
     /**
@@ -36,7 +42,15 @@ class ShareholderController extends Controller
             ]
         );
     }
-
+  public function actions()
+    {
+    return [
+    'error' => [
+        'class' => ErrorAction::class,
+        'view'  => '@frontend/loans-module/views/loans/error', 
+    ],
+    ];
+    }
     /**
      * Lists all Shareholder models.
      *
@@ -47,7 +61,7 @@ class ShareholderController extends Controller
         $searchModel = new ShareholderSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        return $this->render('index', [
+        return $this->renderAjax('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -73,39 +87,48 @@ class ShareholderController extends Controller
      */
 public function actionCreate()
 {
+    $this->layout = '@frontend/loans_module/views/layouts/user_dashboard';
+ 
     $model = new CustomerShareholderForm();
+
+      if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return ActiveForm::validate($model);
+    }
     if ($this->request->isPost) {
        // Load POST data
-
+           try{
         $model->load($this->request->post());
 
         //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
         $sharevalue = 1000;
         $shares= $model->initialCapital/$sharevalue;
         $model->shares=(int)$shares;
+        $saved_model=$model->save();
         // HAPA NATENGENEZA CUSTOMER ID KUPITIA GENERATOR YA KHALID YA KWENYE HELPERS
         //$model->customerID = UniqueCodeHelper::generate('CUST', 6);
         // Attempt to save
-        if ($model->save()) {
-             $searchModel = new ShareholderSearch();
-             $dataProvider = $searchModel->search($this->request->queryParams);
-             Yii::$app->session->setFlash('success', 'Shareholder registered successfully');
-             return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        if ($saved_model) {
+             Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i>Shareholder registered successfully!');
+             return $this->redirect(['/loans/customer/view','customerID'=>$saved_model->id]);
         } else {
-            // SAVE FAILED - show validation errors
-            var_dump($model->errors); 
-            exit;
+            throw new UserException('Unable to add a shareholder !' .Html::errorSummary($model));
+        }
+        }
+        catch(UserException $u)
+        {
+          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed!');
+          throw $u;
+        }
+        catch(\Exception $e)
+        {
+          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed!');
+          throw new UserException('An unknown error occurred !');
         }
 
-    } else {
-        // GET request - first time, just show form
-        //$model->loadDefaultValues();
     }
 
-    return $this->render('create', [
+    return $this->renderAjax('create', [
         'model' => $model,
     ]);
 }

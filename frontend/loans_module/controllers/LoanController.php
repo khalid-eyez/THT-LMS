@@ -7,6 +7,7 @@ use frontend\loans_module\models\CustomerLoanSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii;
 
 /**
  * LoanController implements the CRUD actions for CustomerLoan model.
@@ -30,6 +31,7 @@ class LoanController extends Controller
             ]
         );
     }
+    
 
     /**
      * Lists all CustomerLoan models.
@@ -38,9 +40,14 @@ class LoanController extends Controller
      */
     public function actionIndex()
     {
+        print_r(yii::$app->request); return null;
         $this->layout="user_dashboard";
         $searchModel = new CustomerLoanSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $params = array_merge(
+        Yii::$app->request->queryParams,
+        Yii::$app->request->post()
+        );
+        $dataProvider = $searchModel->search($params);
 
         return $this->render('/loans_crud/index', [
             'searchModel' => $searchModel,

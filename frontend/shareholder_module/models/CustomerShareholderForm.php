@@ -1,10 +1,14 @@
 <?php
 
-namespace common\models;
+namespace frontend\shareholder_module\models;
+use common\models\Customer;
+use common\models\Shareholder;
 use common\helpers\UniqueCodeHelper;
 use Yii;
 use yii\base\Model;
-use yii\db\Exception;
+use yii\base\Exception;
+use yii\base\UserException;
+use yii\helpers\Html;
 
 class CustomerShareholderForm extends Model
 {
@@ -26,7 +30,12 @@ class CustomerShareholderForm extends Model
     public function rules()
     {
         return [
-            [['customerID','full_name','birthDate','gender','address','contacts','NIN'], 'required'],
+            [['full_name','birthDate','gender','address','contacts','NIN'], 'required'],
+            ['NIN', 'unique',
+            'targetClass' => \common\models\Customer::class,
+            'targetAttribute' => 'NIN',
+            'message' => 'This NIN is already registered.'
+            ],
             [['initialCapital'], 'required'],
             [['initialCapital'], 'number'],
             [['shares'], 'integer'],
@@ -54,7 +63,6 @@ public function loadExisting($shareholderId): bool
 
     // Shareholder fields
     $this->shareholder_id  = $shareholder->id;
-    $this->memberID        = $shareholder->memberID;
     $this->initialCapital  = $shareholder->initialCapital;
     $this->shares          = $shareholder->shares;
 
@@ -66,13 +74,17 @@ public function loadExisting($shareholderId): bool
      */
     public function save()
     {
+        if(!$this->validate())
+            {
+                throw new UserException(Html::errorSummary($this));
+            }
         $transaction = Yii::$app->db->beginTransaction();
 
         try {
             /* ---------- SAVE CUSTOMER ---------- */
             $customer = new Customer();
             // HAPA NATENGENEZA CUSTOMER ID KUPITIA GENERATOR YA KHALID YA KWENYE HELPERS
-            $customer->customerID = UniqueCodeHelper::generate('THTC', 5);
+            $customer->customerID = UniqueCodeHelper::generate('THTO', 5)."-".date('y').substr($this->NIN, -1);
            // $customer->customerID = $this->customerID;
             $customer->full_name  = $this->full_name;
             $customer->birthDate  = $this->birthDate;
@@ -89,22 +101,26 @@ public function loadExisting($shareholderId): bool
             /* ---------- SAVE SHAREHOLDER ---------- */
             $shareholder = new Shareholder();
             $shareholder->customerID     = $customer->id;
-            $shareholder->memberID       =UniqueCodeHelper::generate('SH', 5);;
+            $shareholder->memberID       =UniqueCodeHelper::generate('SH', 5)."-".date('y').substr($this->NIN, -1);
             $shareholder->initialCapital = $this->initialCapital;
             $shareholder->shares         = $this->shares;
 
             if (!$shareholder->save()) {
-                throw new Exception('Shareholder save failed: ' . json_encode($shareholder->errors));
+                throw new UserException('Shareholder save failed: ' . json_encode($shareholder->errors));
             }
 
             $transaction->commit();
-            return true;
+            return $customer;
 
-        } catch (\Throwable $e) {
+        } catch (UserException $e) {
             $transaction->rollBack();
             throw $e;
-            $this->addError('customerID', $e->getMessage());
-            return false;
+         
+        }
+        catch (Exception $t) {
+            $transaction->rollBack();
+            throw $t;
+         
         }
     }
 }

@@ -5,6 +5,9 @@ use yii\behaviors\TimestampBehavior;
 
 use Yii;
 use yii\db\Expression;
+use yii\base\Exception;
+use yii\base\UserException;
+use DateTime;
 
 /**
  * This is the model class for table "deposits".
@@ -160,5 +163,157 @@ class Deposit extends \yii\db\ActiveRecord
     public function setTypeToMonthly()
     {
         $this->type = self::TYPE_MONTHLY;
+    }
+     public function getMonthlyInterestAmount(): float
+    {
+        return round(
+            $this->amount * ((float)$this->interest_rate / 100),
+            2
+        );
+    }
+
+    /**
+     * Total approved (already claimed) interest.
+     */
+    public function getTotalApprovedInterest(): float
+    {
+        $sum = $this->getDepositInterests()
+            ->andWhere(['IS NOT', 'approved_at', null])
+            ->sum('interest_amount');
+
+        return (float) ($sum ?? 0);
+    }
+    public function getTotalPaidApprovedInterest(): float
+    {
+    $sum = $this->getDepositInterests()
+    ->andWhere(['IS NOT', 'payment_date', null])
+    ->andWhere(['IS NOT', 'approved_at', null])
+    ->sum('interest_amount');
+
+    return (float) ($sum ?? 0);
+    }
+    /**
+     * Last approved interest claim.
+     */
+    public function getLastApprovedInterestClaim(): ?DepositInterest
+    {
+        return $this->getDepositInterests()
+            ->andWhere(['IS NOT', 'approved_at', null])
+            ->orderBy(['approved_at' => SORT_DESC])
+            ->one();
+    }
+
+    /**
+     * Number of FULL months elapsed since last approved claim
+     * (or since deposit_date if none).
+     */
+    public function getElapsedClaimableMonths(): int
+    {
+        $lastApproved = $this->getLastApprovedInterestClaim();
+
+        $startDate = $lastApproved && $lastApproved->approved_at
+            ? $lastApproved->approved_at
+            : $this->deposit_date;
+
+        if (!$startDate) {
+            return 0;
+        }
+
+        return $this->fullMonthsBetween(
+            $startDate,
+            date('Y-m-d H:i:s') // TODAY (hard-coded)
+        );
+    }
+
+    /**
+     * Total interest currently claimable (not yet approved).
+     */
+    public function getTotalClaimableInterest(): float
+    {
+        $months = $this->getElapsedClaimableMonths();
+
+        if ($months <= 0) {
+            return 0.0;
+        }
+
+        return round(
+            $months * $this->getMonthlyInterestAmount(),
+            2
+        );
+    }
+
+    /**
+     * Helper: count FULL completed months between two dates.
+     */
+    private function fullMonthsBetween(string $from, string $to): int
+    {
+        $fromDt = new DateTime($from);
+        $toDt   = new DateTime($to);
+
+        if ($toDt <= $fromDt) {
+            return 0;
+        }
+
+        $months =
+            ((int)$toDt->format('Y') - (int)$fromDt->format('Y')) * 12
+            + ((int)$toDt->format('n') - (int)$fromDt->format('n'));
+
+        // If current day < start day → last month not complete
+        if ((int)$toDt->format('j') < (int)$fromDt->format('j')) {
+            $months--;
+        }
+
+        return max(0, $months);
+    }
+    public function claimInterest(): DepositInterest
+    {
+        // 1) Block if there's already a pending claim (unapproved)
+        $pending = $this->getDepositInterests()
+            ->andWhere(['approved_at' => null])
+            ->andWhere(['approved_by' => null]) // optional, but consistent with "not approved"
+            ->exists();
+
+        if ($pending) {
+            throw new UserException('There is already a pending interest claim awaiting approval.');
+        }
+
+        // 2) Calculate claimable months + amount
+        $months = $this->getElapsedClaimableMonths(); // hardcoded "today" internally
+        if ($months < 1) {
+            throw new UserException('No interest is currently claimable (less than 1 full month elapsed).');
+        }
+
+        $amount = $this->getTotalClaimableInterest(); // hardcoded "today" internally
+        if ($amount <= 0) {
+            throw new UserException('Claimable interest amount is zero.');
+        }
+
+        // 3) Create DepositInterest row (pending approval)
+        $tx = Yii::$app->db->beginTransaction();
+        try {
+            $interest = new DepositInterest();
+            $interest->depositID = $this->depositID;
+            $interest->interest_amount = $amount;
+            $interest->claim_months = $months;
+
+            // claim_date means "requested/created"
+            $interest->claim_date = date('Y-m-d H:i:s');
+
+            // leave payment_date, approved_at, approved_by as null (pending)
+            // $interest->payment_date = null;
+            // $interest->approved_at = null;
+            // $interest->approved_by = null;
+
+            if (!$interest->save()) {
+                $errors = json_encode($interest->getErrors());
+                throw new UserException("Failed to create interest claim record: {$errors}");
+            }
+
+            $tx->commit();
+            return $interest;
+        } catch (\Throwable $e) {
+            $tx->rollBack();
+            throw $e;
+        }
     }
 }

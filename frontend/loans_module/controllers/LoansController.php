@@ -445,11 +445,16 @@ class LoansController extends Controller
     }
     public function actionLoans()
     {
-        if(yii::$app->request->isAjax)
+            if(yii::$app->request->isAjax)
             {
+                 
               $this->layout="user_dashboard";
         $searchModel = new CustomerLoanSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $params = array_merge(
+        Yii::$app->request->queryParams,
+        Yii::$app->request->post()
+        );
+        $dataProvider = $searchModel->search($params);
 
         return $this->renderAjax('/loans_crud/index', [
             'searchModel' => $searchModel,
@@ -459,7 +464,11 @@ class LoansController extends Controller
             else{
                  $this->layout="user_dashboard";
         $searchModel = new CustomerLoanSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $params = array_merge(
+        Yii::$app->request->queryParams,
+        Yii::$app->request->post()
+        );
+        $dataProvider = $searchModel->search($params);
 
         return $this->render('/loans_crud/index', [
             'searchModel' => $searchModel,
@@ -468,6 +477,50 @@ class LoansController extends Controller
             }
        
     }
+     public function actionExportLoansJson()
+{
+    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+    $searchModel = new \frontend\loans_module\models\CustomerLoanSearch();
+
+    // Use current filters from query string
+    $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+    // ✅ export ALL rows (no pagination)
+    $dataProvider->pagination = false;
+
+    $models = $dataProvider->getModels();
+
+    // Must match your grid columns
+    $headers = [
+        'Loan ID',
+        'Loan Type',
+        'Loan Amount',
+        'Repayment',
+        'Duration',
+        'Status',
+        'Loan Date',
+    ];
+
+    $rows = [];
+    foreach ($models as $m) {
+        $rows[] = [
+            (string)($m->loanID ?? ''),
+            (string)($m->loanType->type ?? ''),
+            (string)($m->loan_amount ?? ''),
+            (string)($m->repayment_frequency ?? ''),
+            (string)($m->loan_duration_units ?? ''),
+            (string)($m->status ?? ''),
+            Yii::$app->formatter->asDate($m->created_at, 'php:d M Y'),
+        ];
+    }
+
+    return [
+        'headers' => $headers,
+        'rows' => $rows,
+        'count' => count($rows),
+    ];
+}
 
     public function actionCreateLoan(){
         if(yii::$app->request->isPost){

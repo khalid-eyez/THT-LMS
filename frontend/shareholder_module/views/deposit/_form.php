@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
-<div class="deposit-form">
+<div class="container-fluid">
 
     <?php $form = ActiveForm::begin([
     'options' => ['enctype' => 'multipart/form-data']
@@ -16,19 +16,21 @@ use yii\widgets\ActiveForm;
     
     <?=   $form->field($model, 'amount')->textInput() ?>
     
-    <?=   $form->field($model, 'type')->dropDownList([
-        'capital' => 'Capital',
-        'monthly' => 'Monthly',
+    <?= $form->field($model, 'type')->dropDownList([
+    'capital' => 'Initial Capital',
+    'monthly' => 'Monthly Deposit',
+    ], [
+    'prompt' => '-- Select Deposit Type --',
     ]) ?>
+
    
    <?=    $form->field($model, 'deposit_date')->input('date') ?>
-      <hr>
 
-      <?= $form->field($model, 'payment_document')->fileInput() ?>
+      <?= $form->field($model, 'payment_document',)->fileInput() ?>
 
-    <div   class="form-group">
-        <?= Html::submitButton('Record Deposit', ['class' => 'btn btn-primary']) ?>
-    </div>
+    
+        <?= Html::submitButton('<i class="fa fa-save"></i> Record Deposit', ['class' => 'btn btn-primary pull-right','style'=>'margin-bottom:20px']) ?>
+  
 
     <?php  ActiveForm::end(); ?>
 

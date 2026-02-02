@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
+use yii;
 
 /**
  * CustomerController implements the CRUD actions for Customer model.
@@ -33,7 +34,15 @@ class CustomerController extends Controller
             ]
         );
     }
-
+      public function actions()
+    {
+    return [
+    'error' => [
+        'class' => ErrorAction::class,
+        'view'  => 'error', 
+    ],
+    ];
+    }
     /**
      * Lists all Customer models.
      *
@@ -41,16 +50,39 @@ class CustomerController extends Controller
      */
     public function actionIndex()
     {
-        $this->layout="user_dashboard";
-        $searchModel = new CustomerSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        Yii::error(['GET'=>Yii::$app->request->get(), 'POST'=>Yii::$app->request->post()], 'export-debug');
+        $this->layout = "user_dashboard";
+    $searchModel = new CustomerSearch();
 
-        return $this->renderAjax('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+    $params = array_merge(Yii::$app->request->queryParams, Yii::$app->request->post());
+    $dataProvider = $searchModel->search($params);
+
+    if (Yii::$app->request->isAjax) {
+        return $this->renderAjax('index', compact('searchModel','dataProvider'));
     }
+    return $this->render('index', compact('searchModel','dataProvider'));
+    }
+public function actionExport()
+{
+    $this->layout = false; // no layout for export response
 
+    $searchModel = new CustomerSearch();
+
+    // export request can send filters via GET or POST depending on your setup
+    $params = array_merge(Yii::$app->request->queryParams, Yii::$app->request->post());
+
+    // DEBUG: now you WILL see params here
+    Yii::error(['GET' => Yii::$app->request->get(), 'POST' => Yii::$app->request->post()], 'export-debug');
+
+    $dataProvider = $searchModel->search($params);
+    $dataProvider->pagination = false;
+
+    // ✅ IMPORTANT: render a view that ONLY renders ExportMenu and returns the file
+    return $this->renderPartial('_export', [
+        'searchModel' => $searchModel,
+        'dataProvider' => $dataProvider,
+    ]);
+}
     /**
      * Displays a single Customer model.
      * @param int $id ID
