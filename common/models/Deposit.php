@@ -8,6 +8,7 @@ use yii\db\Expression;
 use yii\base\Exception;
 use yii\base\UserException;
 use DateTime;
+use common\exceptions\UnproccessableClaimException;
 
 /**
  * This is the model class for table "deposits".
@@ -69,7 +70,17 @@ class Deposit extends \yii\db\ActiveRecord
             [['shareholderID'], 'exist', 'skipOnError' => true, 'targetClass' => Shareholder::class, 'targetAttribute' => ['shareholderID' => 'id']],
         ];
     }
+     public function beforeDelete()
+     {
+        $paid_deposits=$this->getDepositInterests()
+    ->andWhere(['IS NOT', 'payment_date', null])
+    ->andWhere(['IS NOT', 'approved_at', null])->all();
 
+        if($paid_deposits!=null){
+            throw new UserException('Cannot delete deposits having paid interests claims!');
+        }
+        return parent::beforeDelete();
+     }
     /**
      * {@inheritdoc}
      */
@@ -183,6 +194,41 @@ class Deposit extends \yii\db\ActiveRecord
 
         return (float) ($sum ?? 0);
     }
+    public function getPayableInterests()
+    {
+       return $this->getDepositInterests()
+    ->andWhere(['payment_date'=>null])
+    ->andWhere(['IS NOT', 'approved_at', null])
+    ->andWhere(['IS NOT', 'approved_by', null])
+    ->all();  
+    }
+
+    public function pay($payment_date)
+    {
+        $payableinterests=$this->getPayableInterests();
+        $total_paid=0;
+
+        foreach($payableinterests as $payableinterest)
+            {
+                $payableinterest->payment_date=$payment_date;
+                if(!$payableinterest->save())
+                    {
+                        throw new UserException("Unprocessable claim detected!");
+                    }
+
+                    $total_paid+=$payableinterest->interest_amount;
+            }
+
+            return $total_paid;
+    }
+    public function getTotalApprovableInterest(): float
+    {
+    $sum = $this->getDepositInterests()
+        ->andWhere(['approved_at'=>null])
+        ->sum('interest_amount');
+
+    return (float) ($sum ?? 0);
+    }
     public function getTotalPaidApprovedInterest(): float
     {
     $sum = $this->getDepositInterests()
@@ -203,16 +249,46 @@ class Deposit extends \yii\db\ActiveRecord
             ->one();
     }
 
+    public function getApprovableClaims()
+    {
+   
+        return $this->getDepositInterests()
+            ->andWhere(['approved_at'=>null])
+            ->andWhere(['approved_by'=>null])
+            ->all();
+    
+    }
+
+    public function approve()
+    {
+        $approvables=$this->getApprovableClaims();
+        if($approvables==null){return true;}
+
+        foreach($approvables as $approvable)
+            {
+                $approvable->approve();
+            }
+
+            return true;
+    }
+   
+    public function getLastInterestClaim(): ?DepositInterest
+    {
+        return $this->getDepositInterests()
+            ->orderBy(['approved_at' => SORT_DESC])
+            ->one();
+    }
+
     /**
      * Number of FULL months elapsed since last approved claim
      * (or since deposit_date if none).
      */
     public function getElapsedClaimableMonths(): int
     {
-        $lastApproved = $this->getLastApprovedInterestClaim();
+        $lastInt = $this->getLastInterestClaim();
 
-        $startDate = $lastApproved && $lastApproved->approved_at
-            ? $lastApproved->approved_at
+        $startDate = $lastInt && $lastInt->claim_date
+            ? $lastInt->claim_date
             : $this->deposit_date;
 
         if (!$startDate) {
@@ -267,25 +343,15 @@ class Deposit extends \yii\db\ActiveRecord
     }
     public function claimInterest(): DepositInterest
     {
-        // 1) Block if there's already a pending claim (unapproved)
-        $pending = $this->getDepositInterests()
-            ->andWhere(['approved_at' => null])
-            ->andWhere(['approved_by' => null]) // optional, but consistent with "not approved"
-            ->exists();
-
-        if ($pending) {
-            throw new UserException('There is already a pending interest claim awaiting approval.');
-        }
-
         // 2) Calculate claimable months + amount
         $months = $this->getElapsedClaimableMonths(); // hardcoded "today" internally
         if ($months < 1) {
-            throw new UserException('No interest is currently claimable (less than 1 full month elapsed).');
+            throw new UnproccessableClaimException('No interest is currently claimable (less than 1 full month elapsed).');
         }
 
         $amount = $this->getTotalClaimableInterest(); // hardcoded "today" internally
         if ($amount <= 0) {
-            throw new UserException('Claimable interest amount is zero.');
+            throw new UnproccessableClaimException('Claimable interest amount is zero.');
         }
 
         // 3) Create DepositInterest row (pending approval)

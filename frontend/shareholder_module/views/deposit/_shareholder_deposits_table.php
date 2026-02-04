@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var yii\data\ActiveDataProvider $dataProvider */
 /** @var int $shareholderID */
@@ -47,6 +48,7 @@ if ($dateRange && strpos($dateRange, ' - ') !== false) {
                 <th class="text-end">Amount</th>
                 <th class="text-end">Interest %</th>
                 <th style="width:170px;">Record Date</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -83,6 +85,13 @@ if ($dateRange && strpos($dateRange, ' - ') !== false) {
                             $formatter->asDatetime($deposit->created_at, 'php:d M Y')
                         ) ?>
                     </td>
+                    <td><a href="<?= Url::to(['/shareholder/deposit/delete-deposit', 'depositID' => $deposit->depositID]) ?>"
+                    data-confirm="Are you sure you want to delete this deposit?"
+                    data-method="post"
+                    data-toggle="tooltip"
+                    data-title="Delete deposit">
+                    <i class="fa fa-trash"></i>
+                    </a></td>
                 </tr>
             <?php endforeach; ?>
 

@@ -30,6 +30,8 @@ class Cashbook extends \yii\db\ActiveRecord
         return [
              [
             'class' => TimestampBehavior::class,
+             'createdAtAttribute' => 'created_at',
+            'updatedAtAttribute' => 'updated_at',
             'value' => new Expression('NOW()'),
              ],
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'

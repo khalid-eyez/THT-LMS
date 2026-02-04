@@ -27,10 +27,7 @@ class DepositInterest extends \yii\db\ActiveRecord
  public function behaviors()
     {
         return [
-               [
-            'class' => TimestampBehavior::class,
-            'value' => new Expression('NOW()'),
-             ],
+        
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }
@@ -102,6 +99,13 @@ class DepositInterest extends \yii\db\ActiveRecord
     public static function find()
     {
         return new DepositInterestQuery(get_called_class());
+    }
+    public function approve()
+    {
+    $this->approved_by=yii::$app->user->identity->id;
+    $this->approved_at=date('Y-m-d H:i:s');
+
+    return $this->save();
     }
 
 }

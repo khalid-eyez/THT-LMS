@@ -38,7 +38,7 @@
                        
                         <div id="mailbox" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="/loans">List</a>
+                                <li><a href="/loans">Loans List</a>
                                 </li>
                                 <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Loan</a>
                                 </li>
@@ -74,11 +74,15 @@
                                 </li>
                                 <li><a href="/loans/loans/excutive-summary-reporter">Excutive Summary</a>
                                 </li>
+                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/deposits-summary']) ?>">Shareholder Deposits Summary</a>
+                                </li>
+                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/interest-summary-reporter']) ?>">Shareholder Interests Summary</a>
+                                </li>
                             </ul>
                         </div>
                         <div id="Tables" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="/loans/customer/index">List</a>
+                                <li><a href="/loans/customer/index">Customers List</a>
                                 </li>
                                 <li><a href="data-table.html"></a>
                                 </li>
@@ -90,10 +94,8 @@
                                 </li>
                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/create']) ?>">New Shareholder</a>
                                 </li>
-                                <li><a href="<?=Url::toRoute(['/shareholder/shareholder/claims']) ?>">Shareholder Claims</a>
-                                </li>
-                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/claims2']) ?>">Claims progress</a>
-                                </li>
+                               
+                                 
                             </ul>
                         </div>
                         <div id="Appviews" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">

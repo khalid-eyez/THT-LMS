@@ -118,6 +118,7 @@ use yii\helpers\Html;
     $principal=0;
     $interest=0;
     $installment=0;
+    $loan_balance=0;
     foreach ($loan->repaymentSchedules as $due){
         
         $principal+=$due->principle_amount;

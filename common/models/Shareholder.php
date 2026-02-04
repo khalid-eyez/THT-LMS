@@ -4,6 +4,9 @@ namespace common\models;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use Yii;
+use common\exceptions\UnproccessableClaimException;
+use yii\base\UserException;
+use frontend\cashbook_module\models\Cashbook;
 
 /**
  * This is the model class for table "shareholders".
@@ -138,7 +141,57 @@ public function behaviors()
 
         return round($total, 2);
     }
+    public function getApprovableInterest()
+    {
+        $deposits=$this->deposits;
+        $total=0;
 
+        foreach($deposits as $deposit)
+            {
+                $total+=$deposit->getTotalApprovableInterest();
+            }
+
+            return $total;
+    }
+
+    public function payInterests($payment_doc,$payment_date)
+    {
+       $deposits=$this->deposits;
+       $total_paid=0;
+       
+       foreach($deposits as $deposit)
+        {
+           $total_paid+=$deposit->pay($payment_date); 
+        }
+         
+        $cashbookdata=[
+            'credit'=>$total_paid,
+            'debit'=>0,
+            'payment_doc'=>$payment_doc,
+            'category'=>'Deposits',
+            'description'=>'['.$this->memberID.'] Interest on deposits'
+
+        ];
+
+        $cashbook=new Cashbook($cashbookdata);
+
+        $cashbook=$cashbook->save('DPI',$this->id);
+
+        return $cashbook;
+    }
+    public function approveInterests()
+    {
+        $deposits=$this->deposits;
+
+        foreach($deposits as $deposit)
+            {
+                if(!$deposit->approve());
+                {
+                    continue;
+                }
+            }
+            return true;
+    }
     /**
      * Claim interest for ALL deposits under this shareholder.
      *
@@ -207,5 +260,108 @@ public function behaviors()
 
         return $result;
     }
+    public function totalDeposits($from, $to)
+    {
+        if($from==null && $to==null)
+            {
+            $sum = $this->getDeposits()
+            ->sum('amount');
+
+            return (float) ($sum ?? 0);  
+            }
+        $fromDt = $from . ' 00:00:00';
+        $toDt   = $to   . ' 23:59:59';
+      $sum = $this->getDeposits()
+        ->andWhere(['between', 'deposit_date', $fromDt, $toDt])
+        ->sum('amount');
+
+    return (float) ($sum ?? 0);
+    }
+    public function depositsSummary($from,$to)
+    {
+        return [
+            'Customer ID'=>$this->customer->customerID,
+            'Member ID'=>$this->memberID,
+            'Full Name'=>$this->customer->full_name,
+            'Deposit Amount'=>$this->totalDeposits($from,$to)
+        ];
+    }
+    public function claimInterests()
+    {
+        $deposits=$this->deposits;
+        $transaction=yii::$app->db->beginTransaction();
+        try
+        {
+        foreach($deposits as $deposit)
+        {
+            try{
+                $deposit->claimInterest();
+            }
+            catch(UnproccessableClaimException $uc)
+            {
+                continue;
+            }
+        }
+        $transaction->commit();
+        return true;
+        }
+        catch(UserException $u)
+        {
+           $transaction->rollBack();
+           throw $u;
+        }
+         catch(\Exception $e)
+        {
+            $transaction->rollBack();
+            throw $e;    
+        }
+    }
+
+    public function getPaidInterests($from=null,$to=null): array
+    {
+        $query = DepositInterest::find()
+        ->innerJoinWith('deposit d')
+        ->andWhere(['d.shareholderID' => $this->id])
+        ->andWhere(['IS NOT', 'deposit_interests.approved_at', null])
+        ->andWhere(['IS NOT', 'deposit_interests.payment_date', null]);
+
+        if ($from !== null && $to !== null) {
+        $query->andWhere([
+        'between',
+        'deposit_interests.payment_date',
+        $from . ' 00:00:00',
+        $to . ' 23:59:59',
+        ]);
+        }
+
+        return $query
+        ->orderBy([
+        'deposit_interests.payment_date' => SORT_DESC,
+        'deposit_interests.id' => SORT_DESC,
+        ])
+        ->all();
+    }
+
+    public function getTotalPaidInterests($from = null, $to = null): float
+    {
+    $query = DepositInterest::find()
+    ->innerJoinWith('deposit d')
+    ->andWhere(['d.shareholderID' => $this->id])
+    ->andWhere(['IS NOT', 'deposit_interests.approved_at', null])
+    ->andWhere(['IS NOT', 'deposit_interests.payment_date', null]);
+
+    if ($from !== null && $to !== null) {
+    $query->andWhere([
+    'between',
+    'deposit_interests.payment_date',
+    $from . ' 00:00:00',
+    $to . ' 23:59:59',
+    ]);
+    }
+
+    return (float) ($query->sum('deposit_interests.interest_amount') ?? 0);
+    } 
+
+
 
 }

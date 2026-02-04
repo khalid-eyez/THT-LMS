@@ -15,6 +15,8 @@ use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use common\helpers\PdfHelper;
 use frontend\shareholder_module\models\ExcelReporter;
+use common\models\Deposit;
+use frontend\shareholder_module\models\ShareholderInterestForm;
 
 /**
  * DepositController implements the CRUD actions for Deposit model.
@@ -54,6 +56,39 @@ class DepositController extends Controller
         'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionShareholderInterestStatement($shareholderID)
+    {
+        $model=new ShareholderInterestForm;
+        if(yii::$app->request->isPost)
+            {
+               $model->load(yii::$app->request->post()); 
+               return $this->renderAjax('shareholder_interests_result',['interests'=>$model->getInterests($shareholderID),'date_range'=>$model->date_range]);
+            }
+        return $this->renderAjax('shareholder_interests_form',['model'=>$model,'shareholderID'=>$shareholderID]);
+    }
+
+    public function actionShareholderInterestStatementPdf($shareholderID)
+    {
+    $model=new ShareholderInterestForm;
+    if(yii::$app->request->isPost)
+    {
+    $shareholder=Shareholder::findOne($shareholderID);
+    $model->load(yii::$app->request->post());
+    $content=$this->renderPartial('shareholder_interests_pdf',['interests'=>$model->getInterests($shareholderID),'date_range'=>$model->date_range,'shareholder'=>$shareholder]);
+    PdfHelper::download($content,'Interests_statement'); 
+    }
+    }
+  
+    public function actionShareholderInterestStatementExcel($shareholderID)
+    {
+    $model=new ShareholderInterestForm;
+    if(yii::$app->request->isPost)
+    {
+    $model->load(yii::$app->request->post());
+    $model->exportInterestStatementExcel($shareholderID);
+    }
     }
      public function actionShareholderDepositsPdfReport($shareholderID)
     {
@@ -110,7 +145,7 @@ public function actionShareholderDepositsExcelReport($shareholderID)
         ->one();
 
     if (!$shareholder) {
-        throw new \yii\web\NotFoundHttpException('Shareholder not found.');
+        throw new NotFoundHttpException('Shareholder not found.');
     }
 
     $searchModel = new DepositSearch();
@@ -203,6 +238,20 @@ public function actionShareholderDepositsExcelReport($shareholderID)
             return $this->renderAjax('create', [
                 'model' => $model,
             ]);
+        }
+
+        public function actionDeleteDeposit($depositID)
+        {
+        $deposit=Deposit::findOne($depositID);
+        if($deposit->delete())
+        {
+            yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Deposit Deleted Successfully !');
+            return $this->redirect(yii::$app->request->referrer);
+        }
+        else{
+            yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Deposit Deleting Failed !');
+            return $this->redirect(yii::$app->request->referrer);
+        }
         }
 
     /**

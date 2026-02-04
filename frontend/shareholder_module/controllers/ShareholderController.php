@@ -3,6 +3,7 @@
 namespace frontend\shareholder_module\controllers;
 use Yii;
 use frontend\shareholder_module\models\CustomerShareholderForm;
+use frontend\shareholder_module\models\DepositsSummaryForm;
 use common\helpers\UniqueCodeHelper;
 use common\models\Shareholder;
 use common\models\ShareholderSearch;
@@ -14,6 +15,16 @@ use yii\helpers\Html;
 use yii\web\ErrorAction;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
+use yii\data\ActiveDataProvider;
+use frontend\shareholder_module\models\InterestPay;
+
+use common\models\Deposit;
+use common\helpers\PdfHelper;
+
+use frontend\shareholder_module\models\ExcelReporter;
+use frontend\shareholder_module\models\ShareholderInterestForm;
+use yii\web\UploadedFile;
+use kartik\mpdf\Pdf;
 
 /**
  * ShareholderController implements the CRUD actions for Shareholder model.
@@ -78,6 +89,177 @@ class ShareholderController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
+    }
+public function actionDepositsSummary()
+    {
+        $model = new DepositsSummaryForm();
+
+        // render the template view that contains search + buttons + .cashbook
+        return $this->renderAjax('deposits-summary', [
+            'model' => $model,
+        ]);
+    }
+
+    
+    public function actionDepositsSummaryReporter()
+    {
+        $model = new DepositsSummaryForm();
+        $model->load(Yii::$app->request->post());
+        if($model->date_range!=null)
+            {
+                [$from,$to]=explode(' - ',$model->date_range);
+            }
+        
+
+        return $this->renderAjax('_deposits_summary_results', [
+            'range' => ['from'=>$from??null,'to'=>$to??null],
+            'deposits'=>$model->depositsSummary()
+        ]);
+    }
+    public function actionInterestSummaryReporter()
+    {
+        $model=new ShareholderInterestForm();
+        if(yii::$app->request->isPost)
+            {
+                $model->load(yii::$app->request->post());
+                $summaries=$model->interests_summary();
+
+                return $this->renderAjax('interest_summary_results',['interest_summaries'=>$summaries,'date_range'=>$model->date_range]);
+            }
+        return $this->renderAjax('interests_summary',['model'=>$model]);
+    }
+    public function actionInterestSummaryPdf()
+    {
+    $model=new ShareholderInterestForm();
+    if(yii::$app->request->isPost)
+    {
+    $model->load(yii::$app->request->post());
+    $summaries=$model->interests_summary();
+    $content= $this->renderPartial('interest_summary_pdf',['interest_summaries'=>$summaries,'date_range'=>$model->date_range]);
+    PdfHelper::download($content,'shareholder_interest_summary');
+    }
+    }
+     public function actionInterestSummaryExcel()
+    {
+    $model=new ShareholderInterestForm();
+    if(yii::$app->request->isPost)
+    {
+    $model->load(yii::$app->request->post());
+    $model->exportInterestSummaryExcel();
+    }
+    }
+
+    public function actionDepositsSummaryPdf()
+    {
+        $model = new DepositsSummaryForm();
+        $model->load(Yii::$app->request->post());
+        if($model->date_range!=null)
+            {
+                [$from,$to]=explode(' - ',$model->date_range);
+            }
+        
+
+       $content=$this->renderPartial('deposits_summary_pdf', [
+            'range' => ['from'=>$from??null,'to'=>$to??null],
+            'deposits'=>$model->depositsSummary()
+        ]);
+
+        PdfHelper::download($content,'deposits_summary');
+    }
+     public function actionDepositsSummaryExcel()
+    {
+        $model = new DepositsSummaryForm();
+        $model->load(Yii::$app->request->post());
+        $model->exportShareholdersDepositsSummaryXlsx();
+        
+
+    
+    }
+
+    public function actionApproveInterest($shareholderID)
+    {
+        $shareholder=Shareholder::findOne($shareholderID);
+
+        if($shareholder->approveInterests())
+            {
+               yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Interests approved successfully !');
+                return $this->redirect(yii::$app->request->referrer); 
+            }
+    }
+    public function actionDeleteDeposit($depositID)
+    {
+        $deposit=Deposit::findOne($depositID);
+        if($deposit->delete())
+            {
+               yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Deposit Deleted Successfully !');
+                return $this->redirect(yii::$app->request->referrer);
+            }
+            else{
+                yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Deposit Deleting Failed !');
+                return $this->redirect(yii::$app->request->referrer);
+            }
+    }
+    public function actionPayInterests($shareholderID)
+    {
+      $paymentmodel=new InterestPay();
+      try{
+         if(yii::$app->request->isPost)
+            {
+                $paymentmodel->load(yii::$app->request->post());
+                $file=UploadedFile::getInstance($paymentmodel,'payment_doc');
+                $paymentmodel->payment_doc=$file;
+                $paymentDetails=$paymentmodel->payInterest($shareholderID);
+                Yii::error(['created_at' => $paymentDetails->created_at], __METHOD__);
+
+                $receipt=$this->renderPartial('interest_payment_receipt_pdf',['cashbook'=>$paymentDetails]);
+                PdfHelper::download($receipt,'payment_receipt');
+            }
+      }
+      catch(UserException $t)
+      {
+          throw $t;
+      }
+      catch(\Exception $n)
+      {
+        throw $n;
+      }
+      return $this->renderAjax('interest_payment_form',['model'=>$paymentmodel]);
+    }
+    public function actionClaimInterest($shareholderID)
+    {
+        $shareholder=Shareholder::findOne($shareholderID);
+        try
+        {
+        if($shareholder->claimInterests())
+            {
+                yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Interest claim successful !');
+                return $this->redirect(yii::$app->request->referrer);
+            }
+            else
+                {
+                   yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> An unknown error occured while claiming interests !');
+            return $this->redirect(yii::$app->request->referrer);  
+                }
+        }
+        catch(UserException $u)
+        {
+          yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> Interest claiming failed !'.$u->getMessage());
+          return $this->redirect(yii::$app->request->referrer);
+        }
+         catch(\Exception $e)
+        {
+            yii::$app->session->setFlash('error','<i class="fa fa-exclamation-triangle"></i> An unknown error occured while claiming interests !'.$e->getMessage());
+            return $this->redirect(yii::$app->request->referrer);
+        }
+    }
+
+   
+
+    private function parseRange(?string $range): array
+    {
+        if (!$range || strpos($range, ' - ') === false) return [null, null];
+        [$from, $to] = array_map('trim', explode(' - ', $range));
+        return [$from ?: null, $to ?: null];
     }
 
     /**

@@ -27,8 +27,9 @@ if ($shareholder) {
 
     $totalInterestPaidApproved = (float) ($shareholder->totalPaidApprovedInterest ?? 0);
     $totalInterestApproved     = (float) ($shareholder->totalApprovedInterests ?? 0);
+    $totalApprovable           = (float) ($shareholder->getApprovableInterest() ?? 0);
 
-    $payableInterests = max(0, $totalInterestApproved - $totalInterestPaidApproved);
+    $payableInterests  = max(0, $totalInterestApproved - $totalInterestPaidApproved);
     $claimableInterest = (float) ($shareholder->totalClaimableInterests ?? 0);
 }
 
@@ -55,18 +56,23 @@ $depositsStatementUrl = $shareholder
     ? Url::to(['/shareholder/deposit/shareholder-deposits', 'shareholderID' => $shareholder->id])
     : null;
 
-$interestStatementUrl = $shareholder
-    ? Url::to(['/shareholder_module/interest/index', 'shareholderID' => $shareholder->id])
+/* ✅ NEW: interest statement modal URL */
+$interestStatementModalUrl = $shareholder
+    ? Url::to(['/shareholder/deposit/shareholder-interest-statement', 'shareholderID' => $shareholder->id])
     : null;
 
-/* claim interest (placeholder route; adjust) */
+$approveUrl = $shareholder
+    ? Url::to(['/shareholder/shareholder/approve-interest', 'shareholderID' => $shareholder->id])
+    : null;
+
+/* claim interest */
 $claimInterestUrl = $shareholder
-    ? Url::to(['/shareholder_module/claims/create', 'shareholderID' => $shareholder->id])
+    ? Url::to(['/shareholder/shareholder/claim-interest', 'shareholderID' => $shareholder->id])
     : null;
 
-/* pay payable interests (placeholder route; adjust) */
+/* ✅ pay interests URL (THIS will load the form via AJAX and also be the submit URL) */
 $payInterestUrl = $shareholder
-    ? Url::to(['/shareholder_module/payments/create', 'shareholderID' => $shareholder->id])
+    ? Url::to(['/shareholder/shareholder/pay-interests', 'shareholderID' => $shareholder->id])
     : null;
 
 /* disable logic */
@@ -171,14 +177,13 @@ $isClaimableActive = ($claimableInterest > 0);
                                                 ]
                                             ) ?>
 
-                                            <!-- ✅ Record deposit now opens modal -->
                                             <?php if ($shareholder && $depositCreateUrl): ?>
                                                 <?= Html::a(
                                                     '<i class="fa fa-plus-circle"></i>',
                                                     'javascript:void(0)',
                                                     [
                                                         'class' => 'btn btn-info btn-sm js-deposit-create',
-                                                        'data-url' => $depositCreateUrl, // /shareholder/deposit/create?shareholder_id=ID
+                                                        'data-url' => $depositCreateUrl,
                                                         'title' => 'Record deposit',
                                                         'data-toggle' => 'tooltip',
                                                         'data-pjax' => '0',
@@ -290,10 +295,27 @@ $isClaimableActive = ($claimableInterest > 0);
                                         <span class="right-actions">
                                             <?= Html::a(
                                                 '<i class="fa fa-line-chart"></i>',
-                                                $interestStatementUrl ?: 'javascript:void(0)',
+                                                'javascript:void(0)',
+                                                [
+                                                    'class' => 'btn btn-default btn-xs js-interest-statement',
+                                                    'data-url' => $interestStatementModalUrl,
+                                                    'title' => 'Interest statement',
+                                                    'data-toggle' => 'tooltip',
+                                                    'data-pjax' => '0',
+                                                ]
+                                            ) ?>
+                                        </span>
+                                    </p>
+
+                                    <p class="share-row">
+                                        <span><strong>Approvable Interest:</strong> <?= Yii::$app->formatter->asDecimal($totalApprovable) ?></span>
+                                        <span class="right-actions">
+                                            <?= Html::a(
+                                                '<i class="fa fa-check"></i>',
+                                                $approveUrl ?: 'javascript:void(0)',
                                                 [
                                                     'class' => 'btn btn-default btn-xs',
-                                                    'title' => 'Interest statement',
+                                                    'title' => 'Approve Claim',
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
                                                 ]
@@ -306,9 +328,10 @@ $isClaimableActive = ($claimableInterest > 0);
                                         <span class="right-actions">
                                             <?= Html::a(
                                                 '<i class="fa fa-credit-card"></i>',
-                                                ($payInterestUrl && $isPayableActive) ? $payInterestUrl : 'javascript:void(0)',
+                                                'javascript:void(0)',
                                                 [
-                                                    'class' => 'btn btn-default btn-xs ' . ($isPayableActive ? '' : 'btn-soft-disabled'),
+                                                    'class' => 'btn btn-default btn-xs js-interest-pay-modal ' . ($isPayableActive ? '' : 'btn-soft-disabled'),
+                                                    'data-url' => $payInterestUrl,
                                                     'title' => $isPayableActive ? 'Pay payable interests' : 'No payable interests to pay',
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
@@ -407,6 +430,46 @@ $isClaimableActive = ($claimableInterest > 0);
     </div>
 </div>
 
+<!-- ✅ NEW: INTEREST STATEMENT MODAL -->
+<div class="modal fade animated rubberBand" style="margin-top: 15px;" id="interestStatementModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary" style="padding:9px;">
+                <i class="fa fa-line-chart"></i> Interest Statement
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff; opacity:1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" id="interestStatementModalBody" style="min-height:150px;">
+                <div class="text-center text-muted" style="padding:20px;">Loading...</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ INTEREST PAYMENT MODAL (AJAX LOADED) -->
+<div class="modal fade animated rubberBand" style="margin-top: 15px;" id="interestPaymentModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary" style="padding:9px;">
+                <i class="fa fa-credit-card"></i> Pay Interest
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff; opacity:1;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" id="interestPaymentModalBody" style="min-height:150px;">
+                <div class="text-center text-muted" style="padding:20px;">Loading...</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <?php
 $this->registerJs(<<<JS
 (function () {
@@ -416,6 +479,13 @@ $this->registerJs(<<<JS
         if (\$.fn.tooltip) \$s.find('[data-toggle="tooltip"]').tooltip();
     }
     $(document).ready(function(){ initTooltips(document); });
+
+    function showLoader() {
+        if ($('#global-loader').length) $('#global-loader').show();
+    }
+    function hideLoader() {
+        if ($('#global-loader').length) $('#global-loader').hide();
+    }
 
     // ---------- UPDATE MODAL ----------
     $(document).off('click.customerUpdateModal');
@@ -428,7 +498,7 @@ $this->registerJs(<<<JS
         $('#customerUpdateModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
         $('#customerUpdateModal').modal('show');
 
-        if ($('#global-loader').length) $('#global-loader').show();
+        showLoader();
 
         $.ajax({
             url: url,
@@ -442,14 +512,14 @@ $this->registerJs(<<<JS
                 $('#customerUpdateModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load the update form.</div>');
             },
             complete: function () {
-                if ($('#global-loader').length) $('#global-loader').hide();
+                hideLoader();
             }
         });
 
         return false;
     });
 
-    // ---------- ✅ DEPOSIT CREATE MODAL ----------
+    // ---------- DEPOSIT CREATE MODAL ----------
     $(document).off('click.depositCreateModal');
     $(document).on('click.depositCreateModal', '.js-deposit-create', function (e) {
         e.preventDefault();
@@ -460,7 +530,7 @@ $this->registerJs(<<<JS
         $('#depositCreateModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
         $('#depositCreateModal').modal('show');
 
-        if ($('#global-loader').length) $('#global-loader').show();
+        showLoader();
 
         $.ajax({
             url: url,
@@ -474,7 +544,7 @@ $this->registerJs(<<<JS
                 $('#depositCreateModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load deposit form.</div>');
             },
             complete: function () {
-                if ($('#global-loader').length) $('#global-loader').hide();
+                hideLoader();
             }
         });
 
@@ -499,7 +569,7 @@ $this->registerJs(<<<JS
             toastr.info('Deleting customer, please wait...');
         }
 
-        if ($('#global-loader').length) $('#global-loader').show();
+        showLoader();
 
         $.ajax({
             url: delUrl,
@@ -525,7 +595,7 @@ $this->registerJs(<<<JS
                 }
             },
             complete: function () {
-                if ($('#global-loader').length) $('#global-loader').hide();
+                hideLoader();
             }
         });
 
@@ -543,7 +613,7 @@ $this->registerJs(<<<JS
         $('#depositsStatementModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
         $('#depositsStatementModal').modal('show');
 
-        if ($('#global-loader').length) $('#global-loader').show();
+        showLoader();
 
         $.ajax({
             url: url,
@@ -557,7 +627,39 @@ $this->registerJs(<<<JS
                 $('#depositsStatementModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load deposits statement.</div>');
             },
             complete: function () {
-                if ($('#global-loader').length) $('#global-loader').hide();
+                hideLoader();
+            }
+        });
+
+        return false;
+    });
+
+    // ---------- NEW: INTEREST STATEMENT MODAL ----------
+    $(document).off('click.interestStatementModal');
+    $(document).on('click.interestStatementModal', '.js-interest-statement', function (e) {
+        e.preventDefault();
+
+        var url = $(this).data('url');
+        if (!url) return false;
+
+        $('#interestStatementModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
+        $('#interestStatementModal').modal('show');
+
+        showLoader();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            cache: false,
+            success: function (html) {
+                $('#interestStatementModalBody').html(html);
+                initTooltips('#interestStatementModalBody');
+            },
+            error: function () {
+                $('#interestStatementModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load interest statement.</div>');
+            },
+            complete: function () {
+                hideLoader();
             }
         });
 
@@ -576,9 +678,7 @@ $this->registerJs(<<<JS
             url: url,
             type: 'POST',
             data: form.serialize(),
-            beforeSend: function () {
-                if ($('#global-loader').length) $('#global-loader').show();
-            },
+            beforeSend: function () { showLoader(); },
             success: function (response) {
                 $('#depositsStatementModal .cashbook').html(response);
                 initTooltips('#depositsStatementModal');
@@ -589,9 +689,42 @@ $this->registerJs(<<<JS
                 );
                 console.error(xhr.responseText);
             },
-            complete:function()
-            {
-                 if ($('#global-loader').length) $('#global-loader').hide();
+            complete:function(){ hideLoader(); }
+        });
+
+        return false;
+    });
+
+    // ---------- PAY INTEREST MODAL ----------
+    $(document).off('click.interestPayModal');
+    $(document).on('click.interestPayModal', '.js-interest-pay-modal', function (e) {
+        e.preventDefault();
+
+        var url = $(this).data('url');
+        if (!url) return false;
+
+        $('#interestPaymentModalBody').html('<div class="text-center text-muted" style="padding:20px;">Loading...</div>');
+        $('#interestPaymentModal').modal('show');
+
+        showLoader();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            cache: false,
+            success: function (html) {
+                $('#interestPaymentModalBody').html(html);
+
+                var \$form = $('#interestPaymentModalBody').find('form');
+                if (\$form.length) \$form.attr('action', url);
+
+                initTooltips('#interestPaymentModal');
+            },
+            error: function () {
+                $('#interestPaymentModalBody').html('<div class="alert alert-danger" style="margin:0;">Failed to load interest payment form.</div>');
+            },
+            complete: function () {
+                hideLoader();
             }
         });
 
