@@ -16,7 +16,9 @@ use yii\web\UploadedFile;
 use common\helpers\PdfHelper;
 use frontend\shareholder_module\models\ExcelReporter;
 use common\models\Deposit;
+use common\models\DepositInterest;
 use frontend\shareholder_module\models\ShareholderInterestForm;
+use yii\helpers\Html;
 
 /**
  * DepositController implements the CRUD actions for Deposit model.
@@ -80,7 +82,32 @@ class DepositController extends Controller
     PdfHelper::download($content,'Interests_statement'); 
     }
     }
-  
+    public function actionClaims()
+    {
+        return $this->renderAjax("claims");
+    }
+    public function actionApproveClaim($interestID)
+    {
+        $interest=DepositInterest::findOne($interestID);
+        if($interest->approve())
+            {
+                    return $this->asJson(['success'=>'Claim Approved successfully!']);
+            }
+            else{
+                return $this->asJson(['error'=>'Claim Approving Failed!'.Html::errorSummary($interest)]);
+            }
+    }
+     public function actionDeleteClaim($interestID)
+    {
+        $interest=DepositInterest::findOne($interestID);
+        if($interest->delete())
+            {
+                    return $this->asJson(['success'=>'Claim Deleted successfully!']);
+            }
+            else{
+                    return $this->asJson(['error'=>'Claim Deleting Failed!'.Html::errorSummary($interest)]);
+            }
+    }
     public function actionShareholderInterestStatementExcel($shareholderID)
     {
     $model=new ShareholderInterestForm;

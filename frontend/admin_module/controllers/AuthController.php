@@ -24,7 +24,7 @@ class AuthController extends \yii\web\Controller
                         
                     ],
                     [
-                        'actions' => ['logout','view-profile', 'error','changepassword','change-password-restrict'],
+                        'actions' => ['logout','view-profile', 'error','changepassword','changepassword-ajax','change-password-restrict'],
                         'allow' => true,
                         'roles' =>['@']
                         
@@ -142,6 +142,29 @@ class AuthController extends \yii\web\Controller
         }
     
         return $this->render('changePassword',['model' => $models]);
+    }
+
+     public function actionChangepasswordAjax(){
+        $models = new ChangePasswordForm;
+        try{
+            if($models->load(Yii::$app->request->post())){
+                if($models->changePassword()){
+                    Yii::$app->user->logout();
+                    $destroySession = true;
+                    Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i> Password changed successfully, Now login with the new password!');
+                    return $this->redirect(['auth']);
+                }else{
+                    return $this->asJson(['error','Password changing failed !']);
+                }
+           
+                    
+             } 
+            
+        }catch(\Exception $e){
+            return $this->asJson(['error','Password changing failed !']);
+        }
+    
+        return $this->renderAjax('changePassword2',['model' => $models]);
     }
     /**
      * Changes the user password on restriction (when the user still has the default password)

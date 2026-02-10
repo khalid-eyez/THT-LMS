@@ -44,7 +44,7 @@ use yii\widgets\ActiveForm;
         <div class="col-md-4">
             <?= $form->field($model, 'gender')
                 ->dropDownList(
-                    ['male' => 'Male', 'female' => 'Female'],
+                    ['Male' => 'Male', 'Female' => 'Female'],
                     ['prompt' => 'Gender']
                 )
                 ->label(false) ?>

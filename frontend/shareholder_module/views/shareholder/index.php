@@ -179,7 +179,7 @@ Pjax::begin([
                                 },
                                 'update' => function($url, $model, $key) {
                                     return Html::a('<i class="fa fa-edit"></i>', $url, [
-                                        'class' => 'text-info me-1',
+                                        'class' => 'text-info me-1 pay',
                                         'title' => 'Update',
                                         'data-pjax' => '0',
                                     ]);

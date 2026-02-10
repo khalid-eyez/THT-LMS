@@ -40,7 +40,11 @@
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="/loans">Loans List</a>
                                 </li>
-                                <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Loan</a>
+                                <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Application</a>
+
+                                </li>
+                                <li><a href="<?=Url::toRoute(['/loans/loans/applications']) ?>">Pending Applications</a>
+                                
                                 </li>
                                  <li><a href="<?=Url::toRoute(['/loans/loans/loan-calculator']) ?>">Loan Calculator</a>
                                 </li>
@@ -50,17 +54,7 @@
                         </div>
                         <div id="Interface" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="/loans/create-loan">Animations</a>
-                                </li>
-                                <li><a href="google-map.html">Google Map</a>
-                                </li>
-                                <li><a href="data-map.html">Data Maps</a>
-                                </li>
-                                <li><a href="code-editor.html">Code Editor</a>
-                                </li>
-                                <li><a href="image-cropper.html">Images Cropper</a>
-                                </li>
-                                <li><a href="wizard.html">Wizard</a>
+                                <li><a href="/shareholder/settings/settings">Settings</a>
                                 </li>
                             </ul>
                         </div>
@@ -94,31 +88,15 @@
                                 </li>
                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/create']) ?>">New Shareholder</a>
                                 </li>
+                                 <li><a href="<?=Url::toRoute(['/shareholder/deposit/claims']) ?>">Interest Claims</a>
+                                </li>
                                
                                  
                             </ul>
                         </div>
                         <div id="Appviews" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
-                                <li><a href="notification.html">Notifications</a>
-                                </li>
-                                <li><a href="alert.html">Alerts</a>
-                                </li>
-                                <li><a href="modals.html">Modals</a>
-                                </li>
-                                <li><a href="buttons.html">Buttons</a>
-                                </li>
-                                <li><a href="tabs.html">Tabs</a>
-                                </li>
-                                <li><a href="accordion.html">Accordion</a>
-                                </li>
-                                <li><a href="dialog.html">Dialogs</a>
-                                </li>
-                                <li><a href="popovers.html">Popovers</a>
-                                </li>
-                                <li><a href="tooltips.html">Tooltips</a>
-                                </li>
-                                <li><a href="dropdown.html">Dropdowns</a>
+                               <li><a href="/shareholder/settings/settings">Settings</a>
                                 </li>
                             </ul>
                         </div>
@@ -126,7 +104,7 @@
                             <ul class="notika-main-menu-dropdown">
                                 <li><a href="/admin/auth/view-profile">Profile Info</a>
                                 </li>
-                                <li><a href="invoice.html">Change Password</a>
+                                <li><a href="/admin/auth/changepassword-ajax">Change Password</a>
                                 </li>
                             </ul>
                         </div>

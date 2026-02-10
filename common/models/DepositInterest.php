@@ -108,4 +108,16 @@ class DepositInterest extends \yii\db\ActiveRecord
     return $this->save();
     }
 
+    public static function getPendingClaims()
+    {
+    return self::find()
+    ->where([
+    'approved_at' => null,
+    'approved_by' => null,
+    'payment_date' => null,
+    ])
+    ->all();
+    }
+
+
 }

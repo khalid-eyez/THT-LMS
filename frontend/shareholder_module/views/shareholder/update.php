@@ -6,11 +6,13 @@ use common\models\Shareholder;
 /** @var yii\web\View $this */
 /** @var common\models\CustomerShareholderForm $model */
 
-$this->title = 'Update Shareholder';
-$this->params['breadcrumbs'][] = ['label' => 'Shareholders', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
-<div class="customer-shareholder-update">
+<div class="breadcomb-area bg-white">
+    <div class="container bg-white">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bg-white">
+                <div class="wizard-wrap-int">
 
    <!-- <h1><?= Html::encode($this->title) ?></h1> -->
 
@@ -19,5 +21,5 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
     ]) ?>
 
-</div>
+</div></div></div></div></div>
 

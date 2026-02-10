@@ -350,6 +350,8 @@ public function actionCreate()
             'model' => $model,
         ]);
     }
+
+    
     /**
      * Updates an existing Shareholder model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -369,17 +371,17 @@ public function actionCreate()
         $sharevalue = 1000;
         $shares= $model->initialCapital/$sharevalue;
         $model->shares=(int)$shares;
-        
-        if ($model->load($this->request->post()) && $model->save()) {
-             $searchModel = new ShareholderSearch();
-             $dataProvider = $searchModel->search($this->request->queryParams);
-            return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        $customer=$model->customer;
+        if ($model->load($this->request->post()) 
+            && $customer->load($this->request->post())
+            && $customer->save()
+            && $model->save()) {
+                
+                 yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Shareholder updated successfully !');
+                 return $this->redirect(yii::$app->request->referrer);
         }
         }
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }

@@ -18,7 +18,6 @@ class Setting extends \yii\db\ActiveRecord
  public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
              'auditBehaviour'=>'bedezign\yii2\audit\AuditTrailBehavior'
         ];
     }

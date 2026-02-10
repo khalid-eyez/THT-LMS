@@ -559,6 +559,10 @@ class LoansController extends Controller
 
 
     }
+    public function actionApplications()
+    {
+        return $this->renderAjax('pending_applications');
+    }
     public function actionCreateLoanReg($customerID){
         if(yii::$app->request->isPost){
             try{
@@ -605,6 +609,8 @@ class LoansController extends Controller
     }
     public function actionApprove($loanID)
     {
+         try
+        {
         $loan=CustomerLoan::findOne($loanID);
         $loan->status="approved";
         $loan->approvedby=yii::$app->user->identity->id;
@@ -614,15 +620,78 @@ class LoansController extends Controller
             yii::$app->session->setFlash('success','<i class="fa fa-check-circle"></i> Loan status updated successfully!');
             return $this->redirect(yii::$app->request->referrer);
         }
+         }
+        catch(UserException $e)
+        {
+         return $this->asJson(['error'=>'Loan status updating failed!'.$e->getMessage()]);
+        }
+         catch(Exception $i)
+        {
+          return $this->asJson(['error'=>'Loan status updating failed! An unknown error occured']); 
+        }
 
     }
     public function actionDisapprove($loanID)
     {
+         try
+        {
         $loan=CustomerLoan::findOne($loanID);
         $loan->status="rejected";
         if($loan->save()){
             yii::$app->session->setFlash('success','<i class="fa fa-check-circle"></i> Loan status updated successfully!');
             return $this->redirect(yii::$app->request->referrer);
+        }
+         }
+        catch(UserException $e)
+        {
+         return $this->asJson(['error'=>'Loan status updating failed!'.$e->getMessage()]);
+        }
+         catch(Exception $i)
+        {
+          return $this->asJson(['error'=>'Loan status updating failed! An unknown error occured']); 
+        }
+
+    }
+    public function actionApproveAjax($loanID)
+    {
+        try
+        {
+        $loan=CustomerLoan::findOne($loanID);
+        $loan->status="approved";
+        $loan->approvedby=yii::$app->user->identity->id;
+        $loan->approved_at = date('Y-m-d H:i:s');
+
+        if($loan->save()){
+            return $this->asJson(['success'=>'Loan status updated successfully!']);
+        }
+        }
+        catch(UserException $e)
+        {
+         return $this->asJson(['error'=>'Loan status updating failed!'.$e->getMessage()]);
+        }
+         catch(Exception $i)
+        {
+          return $this->asJson(['error'=>'Loan status updating failed! An unknown error occured']); 
+        }
+
+    }
+    public function actionDisapproveAjax($loanID)
+    {
+        try
+        {
+        $loan=CustomerLoan::findOne($loanID);
+        $loan->status="rejected";
+        if($loan->save()){
+            return $this->asJson(['success'=>'Loan status updated successfully!']);
+        }
+          }
+        catch(UserException $e)
+        {
+         return $this->asJson(['error'=>'Loan status updating failed!'.$e->getMessage()]);
+        }
+         catch(Exception $i)
+        {
+          return $this->asJson(['error'=>'Loan status updating failed! An unknown error occured']); 
         }
 
     }
