@@ -56,11 +56,13 @@ use yii\widgets\ActiveForm;
         <div class="col-md-4">
             <?= $form->field($model, 'NIN')
                 ->textInput(['maxlength' => true, 'placeholder' => 'NIN'])
+                ->label("NIN")
                  ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'TIN')
                 ->textInput(['maxlength' => true, 'placeholder' => 'TIN'])
+                ->label("TIN")
                  ?>
         </div>
     </div>
