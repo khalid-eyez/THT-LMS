@@ -302,11 +302,12 @@ public function actionCreate()
         }
         catch(UserException $u)
         {
-          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed!');
+          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed! '.$u->getMessage());
           throw $u;
         }
         catch(\Exception $e)
         {
+        throw $e;
           Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed!');
           throw new UserException('An unknown error occurred !');
         }
