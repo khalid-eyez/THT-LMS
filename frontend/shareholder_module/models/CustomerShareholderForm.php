@@ -57,8 +57,6 @@ public function loadExisting($shareholderId): bool
 
     // Shareholder fields
     $this->shareholder_id  = $shareholder->id;
-    $this->initialCapital  = $shareholder->initialCapital;
-    $this->shares          = $shareholder->shares;
 
     return true;
 }
