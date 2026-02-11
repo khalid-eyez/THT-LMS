@@ -38,6 +38,7 @@ class Setting extends \yii\db\ActiveRecord
         return [
             [['name', 'value'], 'required'],
             ['name','unique'],
+            ['name','trim'],
             [['value'], 'safe'],
             [['name'], 'string', 'max' => 20],
         ];

@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\shareholder_module\controllers;
+use Exception;
 use Yii;
 use frontend\shareholder_module\models\CustomerShareholderForm;
 use frontend\shareholder_module\models\DepositsSummaryForm;
@@ -285,6 +286,7 @@ public function actionCreate()
 
         //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
         $sharevalue = (new Setting)->getSettingValue("Share Value");
+        throw new Exception(gettype($sharevalue)." -->".$sharevalue);
         $shares= $model->initialCapital/$sharevalue;
         $model->shares=(int)$shares;
         $saved_model=$model->save();
