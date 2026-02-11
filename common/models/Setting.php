@@ -72,7 +72,7 @@ class Setting extends \yii\db\ActiveRecord
             {
                 throw new Exception($name." not found");
             }
-        $setting->value;
+        return $setting->value;
     }
 
 }
