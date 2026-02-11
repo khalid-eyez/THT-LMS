@@ -57,6 +57,15 @@ JSLoggingAsset::register($this);
   min-height:1100px;
   overflow: auto;
 }
+.bg-primary, .btn-primary{
+  background-color: #215aa5!important;
+  color:white!important;
+  border:solid 1px #215aa5!important
+}
+.text-primary{
+ color: #215aa5!important;
+ 
+}
 .help-block-error .help-block{
     color: red;
 }

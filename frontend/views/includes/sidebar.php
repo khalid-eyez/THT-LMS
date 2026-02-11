@@ -18,17 +18,6 @@ $user=yii::$app->user;
   <?php if($user->can("view_storage_info")){ ?>
   <a href="<?=Url::to('/storage/monitor')?>" class="menuitem monitor"><i class="nav-icon fa fa-hdd" aria-hidden="true"></i> <span class="mn">Storage Monitor</span></a>
   <?php } ?>
-  <!-- SHAREHOLDERS MODULE TESTING-->
-  <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/shareholder/create']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-university" aria-hidden="true"></i>&nbsp;<span class="mn"> New Shareholder</span></a>
-  <?php } ?>
-  <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/shareholder/index']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-users" aria-hidden="true"></i>&nbsp;<span class="mn"> Manage Shareholders</span></a>
-  <?php } ?>
-  <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/deposit/index']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-money-bill-wave" aria-hidden="true"></i>&nbsp;<span class="mn">Shareholder Deposits</span></a>
-  <?php } ?>
-  <?php if(!Yii::$app->user->isGuest){ ?>
-  <a href="<?= Url::toRoute(['/shareholder/shareholder/claims']) ?>" class="menuitem Shareholder"><i class="nav-icon fa fa-tasks" aria-hidden="true"></i>&nbsp;<span class="mn">Shareholders Claims</span></a>
-  <?php } ?>
+ 
+
   </div>
