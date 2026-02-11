@@ -1,6 +1,7 @@
 <?php
 
 namespace common\models;
+use Exception;
 use yii\behaviors\TimestampBehavior;
 
 use Yii;
@@ -36,6 +37,7 @@ class Setting extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'value'], 'required'],
+            ['name','unique'],
             [['value'], 'safe'],
             [['name'], 'string', 'max' => 20],
         ];
@@ -60,6 +62,16 @@ class Setting extends \yii\db\ActiveRecord
     public static function find()
     {
         return new SettingQuery(get_called_class());
+    }
+
+    public function getSettingValue($name)
+    {
+        $setting=$this->find()->where(['name'=>$name])->one();
+        if($setting==null)
+            {
+                throw new Exception($name." not found");
+            }
+        $setting->value;
     }
 
 }

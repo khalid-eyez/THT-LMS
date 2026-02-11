@@ -25,6 +25,7 @@ use frontend\shareholder_module\models\ExcelReporter;
 use frontend\shareholder_module\models\ShareholderInterestForm;
 use yii\web\UploadedFile;
 use kartik\mpdf\Pdf;
+use common\models\Setting;
 
 /**
  * ShareholderController implements the CRUD actions for Shareholder model.
@@ -283,7 +284,7 @@ public function actionCreate()
         $model->load($this->request->post());
 
         //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
-        $sharevalue = 1000;
+        $sharevalue = (new Setting)->getSettingValue("Share Value");
         $shares= $model->initialCapital/$sharevalue;
         $model->shares=(int)$shares;
         $saved_model=$model->save();
