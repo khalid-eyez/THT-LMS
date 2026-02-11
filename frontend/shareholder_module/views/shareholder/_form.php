@@ -20,7 +20,7 @@ use yii\widgets\ActiveForm;
         <div class="col-md-12">
             <?= $form->field($model, 'full_name')
                 ->textInput(['maxlength' => true, 'placeholder' => 'Full Name'])
-                ->label(false) ?>
+                ->label(true) ?>
         </div>
     </div>
 
@@ -29,12 +29,12 @@ use yii\widgets\ActiveForm;
         <div class="col-md-4">
             <?= $form->field($model, 'birthDate')
                 ->input('date', ['placeholder' => 'Birth Date'])
-                ->label(false) ?>
+                ->label(true) ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'address')
                 ->textInput(['maxlength' => true, 'placeholder' => 'Address'])
-                ->label(false) ?>
+                ->label(true) ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'gender')
@@ -42,7 +42,7 @@ use yii\widgets\ActiveForm;
                     ['Male' => 'Male', 'Female' => 'Female'],
                     ['prompt' => 'Gender']
                 )
-                ->label(false) ?>
+                ->label(true) ?>
         </div>
     </div>
 
@@ -51,23 +51,23 @@ use yii\widgets\ActiveForm;
         <div class="col-md-4">
             <?= $form->field($model, 'contacts')
                 ->textInput(['maxlength' => true, 'placeholder' => 'Contacts'])
-                ->label(false) ?>
+                ->label(true) ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'NIN')
                 ->textInput(['maxlength' => true, 'placeholder' => 'NIN'])
-                ->label(false) ?>
+                ->label(true) ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'TIN')
                 ->textInput(['maxlength' => true, 'placeholder' => 'TIN'])
-                ->label(false) ?>
+                ->label(true) ?>
         </div>
     </div>
 
     <div class="form-group mt-3">
         <div class="pull-right">
-            <?= Html::submitButton('Register Shareholder', ['class' => 'btn btn-primary']) ?>
+            <?= Html::submitButton('<i class="fa fa-save"></i> Register Shareholder', ['class' => 'btn btn-primary']) ?>
         </div>
         <div style="clear:both;"></div>
     </div>
