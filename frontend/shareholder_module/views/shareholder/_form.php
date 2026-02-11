@@ -20,7 +20,7 @@ use yii\widgets\ActiveForm;
         <div class="col-md-12">
             <?= $form->field($model, 'full_name')
                 ->textInput(['maxlength' => true, 'placeholder' => 'Full Name'])
-                ->label(true) ?>
+                 ?>
         </div>
     </div>
 
@@ -29,12 +29,12 @@ use yii\widgets\ActiveForm;
         <div class="col-md-4">
             <?= $form->field($model, 'birthDate')
                 ->input('date', ['placeholder' => 'Birth Date'])
-                ->label(true) ?>
+                 ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'address')
                 ->textInput(['maxlength' => true, 'placeholder' => 'Address'])
-                ->label(true) ?>
+                 ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'gender')
@@ -42,7 +42,7 @@ use yii\widgets\ActiveForm;
                     ['Male' => 'Male', 'Female' => 'Female'],
                     ['prompt' => 'Gender']
                 )
-                ->label(true) ?>
+                 ?>
         </div>
     </div>
 
@@ -51,17 +51,17 @@ use yii\widgets\ActiveForm;
         <div class="col-md-4">
             <?= $form->field($model, 'contacts')
                 ->textInput(['maxlength' => true, 'placeholder' => 'Contacts'])
-                ->label(true) ?>
+                 ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'NIN')
                 ->textInput(['maxlength' => true, 'placeholder' => 'NIN'])
-                ->label(true) ?>
+                 ?>
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'TIN')
                 ->textInput(['maxlength' => true, 'placeholder' => 'TIN'])
-                ->label(true) ?>
+                 ?>
         </div>
     </div>
 
