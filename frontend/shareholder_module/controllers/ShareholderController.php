@@ -285,9 +285,10 @@ public function actionCreate()
         $model->load($this->request->post());
 
         //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
-        $sharevalue = (new Setting)->getSettingValue("Share Value");
-        throw new Exception(gettype($sharevalue)." -->".$sharevalue);
-        $shares= $model->initialCapital/$sharevalue;
+        $sharevalue = floatval((new Setting)->getSettingValue("Share Value"));
+
+        //throw new Exception(gettype($sharevalue)." -->".$sharevalue);
+        $shares=($sharevalue==0)?0:$model->initialCapital/$sharevalue;
         $model->shares=(int)$shares;
         $saved_model=$model->save();
         // HAPA NATENGENEZA CUSTOMER ID KUPITIA GENERATOR YA KHALID YA KWENYE HELPERS
@@ -307,7 +308,6 @@ public function actionCreate()
         }
         catch(\Exception $e)
         {
-        throw $e;
           Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed!');
           throw new UserException('An unknown error occurred !');
         }
