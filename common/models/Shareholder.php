@@ -75,7 +75,17 @@ public function behaviors()
             'deleted_at' => 'Deleted At',
         ];
     }
+    public function beforeSave($insert)
+    {
+        if(!$insert && $this->isAttributeChanged('initialCapital'))
+            {
 
+                $sharevalue = floatval((new Setting)->getSettingValue("Share Value"));
+                $shares=($sharevalue==0)?0:$this->initialCapital/$sharevalue;
+                $this->shares=$shares;
+            }
+        return parent::beforeSave($insert);
+    }
     /**
      * Gets query for [[Customer]].
      *
@@ -361,6 +371,8 @@ public function behaviors()
 
     return (float) ($query->sum('deposit_interests.interest_amount') ?? 0);
     } 
+
+    
 
 
 

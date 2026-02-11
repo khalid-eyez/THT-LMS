@@ -22,10 +22,7 @@ class CustomerShareholderForm extends Model
     public $NIN;
     public $TIN;
 
-    /* ---------- SHAREHOLDER FIELDS ---------- */
-    public $memberID;
-    public $initialCapital;
-    public $shares;
+ 
 
     public function rules()
     {
@@ -36,9 +33,6 @@ class CustomerShareholderForm extends Model
             'targetAttribute' => 'NIN',
             'message' => 'This NIN is already registered.'
             ],
-            [['initialCapital'], 'required'],
-            [['initialCapital'], 'number'],
-            [['shares'], 'integer'],
         ];
     }
    //loading for search
@@ -102,8 +96,8 @@ public function loadExisting($shareholderId): bool
             $shareholder = new Shareholder();
             $shareholder->customerID     = $customer->id;
             $shareholder->memberID       =UniqueCodeHelper::generate('SH', 5)."-".date('y').substr($this->NIN, -1);
-            $shareholder->initialCapital = $this->initialCapital;
-            $shareholder->shares         = $this->shares;
+            $shareholder->initialCapital = 0;
+            $shareholder->shares         = 0;
 
             if (!$shareholder->save()) {
                 throw new UserException('Shareholder save failed: ' . json_encode($shareholder->errors));

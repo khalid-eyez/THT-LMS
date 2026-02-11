@@ -81,6 +81,26 @@ class Deposit extends \yii\db\ActiveRecord
         }
         return parent::beforeDelete();
      }
+
+     public function beforeSave($insert)
+     {
+        if($insert)
+            {
+               if($this->hasInitialDeposit($this->shareholderID))
+                {
+                    throw new UserException("Shareholder can deposit initial capital only once!");
+                }
+
+                $shareholder=Shareholder::findOne($this->shareholderID);
+                $shareholder->initialCapital=$this->amount;
+
+                if(!$shareholder->save())
+                    {
+                       throw new UserException("Could not update shareholder initial capital!"); 
+                    }
+            }
+        return parent::beforeSave($insert);
+     }
     /**
      * {@inheritdoc}
      */
@@ -382,4 +402,14 @@ class Deposit extends \yii\db\ActiveRecord
             throw $e;
         }
     }
+    public function hasInitialDeposit($shareholderID): bool
+    {
+    return self::find()
+    ->where([
+    'shareholderID' => $shareholderID,
+    'type' => self::TYPE_CAPITAL,
+    ])
+    ->exists();
+    }
+
 }

@@ -285,15 +285,7 @@ public function actionCreate()
         $model->load($this->request->post());
 
         //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
-        $sharevalue = floatval((new Setting)->getSettingValue("Share Value"));
-
-        //throw new Exception(gettype($sharevalue)." -->".$sharevalue);
-        $shares=($sharevalue==0)?0:$model->initialCapital/$sharevalue;
-        $model->shares=(int)$shares;
         $saved_model=$model->save();
-        // HAPA NATENGENEZA CUSTOMER ID KUPITIA GENERATOR YA KHALID YA KWENYE HELPERS
-        //$model->customerID = UniqueCodeHelper::generate('CUST', 6);
-        // Attempt to save
         if ($saved_model) {
              Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i>Shareholder registered successfully!');
              return $this->redirect(['/loans/customer/view','customerID'=>$saved_model->id]);
