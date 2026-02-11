@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 
     <div class="row">
         <!-- Full Name + Initial Capital -->
-        <div class="col-md-6">
+        <div class="col-md-12">
             <?= $form->field($model, 'full_name')
                 ->textInput(['maxlength' => true, 'placeholder' => 'Full Name'])
                 ->label(false) ?>
