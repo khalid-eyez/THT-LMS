@@ -29,7 +29,14 @@ class Setting extends \yii\db\ActiveRecord
     {
         return 'settings';
     }
-
+     public function beforeSave($insert)
+     {
+        if(!$insert && $this->isAttributeChanged("name"))
+            {
+                return false;
+            }
+        return parent::beforeSave($insert);
+     }
     /**
      * {@inheritdoc}
      */
