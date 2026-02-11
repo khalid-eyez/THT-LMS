@@ -44,14 +44,11 @@ use common\models\Shareholder;
 
     <!-- Row 3: 3 columns -->
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <?= $form->field($model->customer, 'NIN')->textInput(['maxlength' => true]) ?>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <?= $form->field($model->customer, 'TIN')->textInput(['maxlength' => true]) ?>
-        </div>
-        <div class="col-md-4">
-            <?= $form->field($model, 'initialCapital')->textInput() ?>
         </div>
     </div>
 

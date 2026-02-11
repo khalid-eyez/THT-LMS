@@ -22,11 +22,6 @@ use yii\widgets\ActiveForm;
                 ->textInput(['maxlength' => true, 'placeholder' => 'Full Name'])
                 ->label(false) ?>
         </div>
-        <div class="col-md-6">
-            <?= $form->field($model, 'initialCapital')
-                ->textInput(['placeholder' => 'Initial Capital'])
-                ->label(false) ?>
-        </div>
     </div>
 
     <div class="row">
