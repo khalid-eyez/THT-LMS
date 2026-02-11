@@ -14,7 +14,7 @@ use yii\widgets\ActiveForm;
          'enableAjaxValidation' => true,
     'enableClientValidation' => true,
     ]); ?>
-
+<h5 class="text-primary"><i class="fa fa-edit"></i> Shareholder Registration</h5>
     <div class="row">
         <!-- Full Name + Initial Capital -->
         <div class="col-md-12">
