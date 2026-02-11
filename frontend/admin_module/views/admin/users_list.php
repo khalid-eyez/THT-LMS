@@ -23,7 +23,7 @@ $this->params['pageTitle']="Users";
                <div class="col-sm-12"><?= Html::a('<i class="fa fa-plus-circle"></i> Add User', ['create'], ['class' => 'btn btn-primary btn-sm float-right ml-1','data-toggle'=>'modal','data-target'=>'#membermodal']) ?></div>
     <table class="table table-bordered table-striped table-hover text-sm" id="userTable" style="width:100%">
             <thead>
-            <tr class="p-1" style="background-color:#0341a3;color:white"><th width="1%">#</th><th>Username</th><th>Roles</th><th>Last Login</th><th width="10%"></th></tr>
+            <tr class="p-1" style="background-color: #386bbd;color:white"><th width="1%">#</th><th>Username</th><th>Roles</th><th>Last Login</th><th width="10%"></th></tr>
             
             </thead>
             <tbody>
