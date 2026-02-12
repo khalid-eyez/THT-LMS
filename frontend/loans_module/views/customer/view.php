@@ -177,18 +177,19 @@ $isClaimableActive = ($claimableInterest > 0);
                                                     'data-pjax' => '0',
                                                 ]
                                             ) ?>
-                                            <?php if ($shareholder): ?>
-                                                <?= Html::a(
-                                                    '<i class="fa fa-file-o"></i>',
-                                                    [
-                                                        'class' => 'btn btn-primary btn-sm',
-                                                        'data-url' => $PoRUrl,
-                                                        'title' => 'Download PoR',
-                                                        'data-toggle' => 'tooltip',
-                                                        'data-pjax' => '0',
-                                                    ]
-                                                ) ?>
-                                            <?php endif; ?>
+                                <?php if ($shareholder): ?>
+                                <?= Html::a(
+                                '<i class="fa fa-file-o"></i>',
+                                $PoRUrl,
+                                [
+                                'class' => 'btn btn-primary btn-sm',
+                                'title' => 'Download PoR',
+                                'data-toggle' => 'tooltip',
+                                'data-pjax' => '0',
+                                ]
+                                ) ?>
+                                <?php endif; ?>
+
 
                                             <?php if ($shareholder && $depositCreateUrl): ?>
                                                 <?= Html::a(
