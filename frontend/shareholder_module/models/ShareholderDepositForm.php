@@ -1,6 +1,7 @@
 <?php
 namespace frontend\shareholder_module\models;
 
+use Exception;
 use Yii;
 use yii\base\Model;
 use common\helpers\UniqueCodeHelper;
@@ -60,6 +61,7 @@ class ShareholderDepositForm extends Model
             $uploadPath = Yii::getAlias('@web') . '/uploads/';
 
             if (!is_dir($uploadPath)) {
+                throw new Exception($uploadPath);
                 mkdir($uploadPath, 0777, true);
             }
 
