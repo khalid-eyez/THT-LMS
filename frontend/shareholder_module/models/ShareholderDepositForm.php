@@ -58,7 +58,7 @@ class ShareholderDepositForm extends Model
 
         try {
             /* ---------- Upload file ---------- */
-            $uploadPath = Yii::getAlias('@web') . '/uploads/';
+            $uploadPath ='uploads/';
 
             if (!is_dir($uploadPath)) {
                 throw new Exception($uploadPath);
