@@ -254,12 +254,11 @@ public function actionShareholderDepositsExcelReport($shareholderID)
 
                $model->payment_document = UploadedFile::getInstance($model, 'payment_document');
               
-                if ($model->save()) {
+                    $cashbook=$model->save();
                     Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i> Deposit recorded successfully');
+                    $content=$this->renderPartial('deposit_receipt_pdf',['cashbook'=>$cashbook]);
+                    PdfHelper::download($content,'deposit_receipt');
                     return $this->redirect(yii::$app->request->referrer);
-                }
-                throw new Exception(json_encode($model->getErrors()));
-    
             }
 
             return $this->renderAjax('create', [

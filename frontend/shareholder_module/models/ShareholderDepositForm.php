@@ -56,19 +56,8 @@ class ShareholderDepositForm extends Model
         $transaction = Yii::$app->db->beginTransaction();
 
         try {
-            /* ---------- Upload file ---------- */
-            $uploadPath = Yii::getAlias('@frontend/web/uploads/');
 
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
-            }
-
-            $fileName = 'DEP_' . time() . '.' . $this->payment_document->extension;
-            $fileFullPath = $uploadPath . $fileName;
-
-            if (!$this->payment_document->saveAs($fileFullPath)) {
-                throw new \Exception('Could not save payment reference document');
-            }
+            $fileFullPath = $this->saveFile();
 
             /* ---------- Save Deposit ---------- */
             $deposit = new Deposit();
@@ -98,7 +87,7 @@ class ShareholderDepositForm extends Model
             $cashbook = new Cashbook($cashbook_record);
             $record_saved=$cashbook->save("DP",substr($shareholder->customer->NIN, -1));
             $transaction->commit();
-            return true;
+            return $record_saved;
 
         } catch (\Throwable $e) {
 
@@ -111,5 +100,17 @@ class ShareholderDepositForm extends Model
         Yii::error($e->getMessage(), __METHOD__);
          throw $e;
     }
+    }
+     public function saveFile()
+    {
+            $file=$this->payment_document;
+            $filename='/uploads/'.uniqid() . '.' . $file->extension;
+            $path= Yii::getAlias('@webroot').$filename;
+            if($file->saveAs($path))
+            {
+                return $filename;
+            }
+
+      
     }
 }
