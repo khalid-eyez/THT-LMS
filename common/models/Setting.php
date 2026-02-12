@@ -2,6 +2,7 @@
 
 namespace common\models;
 use Exception;
+use yii\base\UserException;
 use yii\behaviors\TimestampBehavior;
 
 use Yii;
@@ -33,7 +34,7 @@ class Setting extends \yii\db\ActiveRecord
      {
         if(!$insert && $this->isAttributeChanged("name"))
             {
-                return false;
+                throw new UserException("The setting name cannot be updated ! ");
             }
         return parent::beforeSave($insert);
      }

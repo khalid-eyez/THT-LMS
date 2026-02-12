@@ -275,6 +275,7 @@ public function behaviors()
         if($from==null && $to==null)
             {
             $sum = $this->getDeposits()
+            ->andWhere(['!=','type','capital'])
             ->sum('amount');
 
             return (float) ($sum ?? 0);  
@@ -282,6 +283,7 @@ public function behaviors()
         $fromDt = $from . ' 00:00:00';
         $toDt   = $to   . ' 23:59:59';
       $sum = $this->getDeposits()
+        ->andWhere(['!=','type','capital'])
         ->andWhere(['between', 'deposit_date', $fromDt, $toDt])
         ->sum('amount');
 
