@@ -21,9 +21,9 @@ $payableInterests = 0.0;
 $claimableInterest = 0.0;
 
 if ($shareholder) {
-    foreach ($shareholder->deposits as $deposit) {
-        $totalDeposits += (float) $deposit->amount;
-    }
+    
+        $totalDeposits += (float) $shareholder->totalDeposits(null, null);
+    
 
     $totalInterestPaidApproved = (float) ($shareholder->totalPaidApprovedInterest ?? 0);
     $totalInterestApproved     = (float) ($shareholder->totalApprovedInterests ?? 0);
