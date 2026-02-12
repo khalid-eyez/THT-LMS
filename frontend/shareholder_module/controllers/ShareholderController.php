@@ -313,7 +313,12 @@ public function actionCreate()
     ]);
 }
 
-
+public function actionDownloadPor($shareholderID)
+{
+    $shareholder=Shareholder::findOne($shareholderID);
+    $content=$this->renderPartial('shareholder_por_pdf',['shareholder'=>$shareholder]);
+    PdfHelper::download($content,"shareholder_PoR");
+}
       /** HAPA NI ACTION YA DEPOSIT */
      public function actionDeposit()
     {

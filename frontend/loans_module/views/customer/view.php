@@ -42,6 +42,7 @@ $updateUrl = Url::to(['update', 'id' => $customer->id]);
 /* delete + index urls */
 $deleteUrl = Url::to(['/loans/customer/delete', 'id' => $customer->id]);
 $indexUrl  = Url::to(['/loans/customer/index']);
+$PoRUrl=$shareholder?Url::to(['/shareholder/shareholder/download-por','shareholderID'=>$shareholder->id]):null;
 
 /* apply loan */
 $applyLoanUrl = Url::to(['/loans/loans/create-loan-reg', 'customerID' => $customer->id]);
@@ -158,7 +159,7 @@ $isClaimableActive = ($claimableInterest > 0);
                                                 '<i class="fa fa-money"></i>',
                                                 $applyLoanUrl,
                                                 [
-                                                    'class' => 'btn btn-success btn-sm pay',
+                                                    'class' => 'btn btn-primary btn-sm pay',
                                                     'title' => 'Apply loan',
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
@@ -176,13 +177,26 @@ $isClaimableActive = ($claimableInterest > 0);
                                                     'data-pjax' => '0',
                                                 ]
                                             ) ?>
+                                            <?php if ($shareholder): ?>
+                                                <?= Html::a(
+                                                    '<i class="fa fa-file-0"></i>',
+                                                    'javascript:void(0)',
+                                                    [
+                                                        'class' => 'btn btn-primary btn-sm js-deposit-create',
+                                                        'data-url' => $PoRUrl,
+                                                        'title' => 'Download PoR',
+                                                        'data-toggle' => 'tooltip',
+                                                        'data-pjax' => '0',
+                                                    ]
+                                                ) ?>
+                                            <?php endif; ?>
 
                                             <?php if ($shareholder && $depositCreateUrl): ?>
                                                 <?= Html::a(
                                                     '<i class="fa fa-plus-circle"></i>',
                                                     'javascript:void(0)',
                                                     [
-                                                        'class' => 'btn btn-info btn-sm js-deposit-create',
+                                                        'class' => 'btn btn-primary btn-sm js-deposit-create',
                                                         'data-url' => $depositCreateUrl,
                                                         'title' => 'Record deposit',
                                                         'data-toggle' => 'tooltip',
