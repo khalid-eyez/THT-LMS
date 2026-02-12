@@ -20,6 +20,10 @@ $formatter = Yii::$app->formatter;
 /** Totals */
 $totalDeposits = 0.0;
 foreach ($rows as $deposit) {
+    if($deposit->type=="capital")
+        {
+          continue;
+        }
     $totalDeposits += (float)$deposit->amount;
 }
 
@@ -104,7 +108,7 @@ $initialCap   = $shareholder->initialCapital ?? null;
     <img src="<?= Yii::getAlias('@webroot/img/logo.png') ?>" style="width:120px;height:90px">
 </p>
 
-<h3 style="text-align:center;margin-top:30px;margin-bottom:3px">Shareholder Deposits</h3>
+<h3 style="text-align:center;margin-top:30px;margin-bottom:3px">Shareholder Monthly Deposits</h3>
 <hr style="margin-bottom: 50px; margin-top:0px">
 
 <!-- SHAREHOLDER INFO (LEFT) + SUMMARY (RIGHT) -->

@@ -11,6 +11,10 @@ $formatter = Yii::$app->formatter;
 // Calculate totals
 $totalAmount = 0.0;
 foreach ($rows as $deposit) {
+     if($deposit->type=="capital")
+        {
+          continue;
+        }
     $totalAmount += (float) $deposit->amount;
 }
 
