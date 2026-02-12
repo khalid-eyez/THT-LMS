@@ -103,7 +103,7 @@ public function behaviors()
      */
     public function getDeposits()
     {
-        return $this->hasMany(Deposit::class, ['shareholderID' => 'id']);
+        return $this->hasMany(Deposit::class, ['shareholderID' => 'id'])->andWhere(['!=','type','capital']);
     }
 
     /**

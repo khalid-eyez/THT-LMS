@@ -84,7 +84,7 @@ class Deposit extends \yii\db\ActiveRecord
 
      public function beforeSave($insert)
      {
-        if($insert)
+        if($insert && $this->type==self::TYPE_CAPITAL)
             {
                if($this->hasInitialDeposit($this->shareholderID))
                 {
