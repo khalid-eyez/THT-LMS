@@ -179,10 +179,10 @@ $isClaimableActive = ($claimableInterest > 0);
                                             ) ?>
                                             <?php if ($shareholder): ?>
                                                 <?= Html::a(
-                                                    '<i class="fa fa-file-0"></i>',
+                                                    '<i class="fa fa-file-o"></i>',
                                                     'javascript:void(0)',
                                                     [
-                                                        'class' => 'btn btn-primary btn-sm js-deposit-create',
+                                                        'class' => 'btn btn-primary btn-sm',
                                                         'data-url' => $PoRUrl,
                                                         'title' => 'Download PoR',
                                                         'data-toggle' => 'tooltip',
