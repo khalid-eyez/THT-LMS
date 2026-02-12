@@ -80,7 +80,7 @@ class ShareholderDepositForm extends Model
             $cashbook_record=[
                 'debit'=>$this->amount,
                 'credit'=>0,
-                'category'=>'Deposit',
+                'category'=>'Deposits',
                 'payment_doc'=>$fileFullPath,
                 'description'=>$description
             ];

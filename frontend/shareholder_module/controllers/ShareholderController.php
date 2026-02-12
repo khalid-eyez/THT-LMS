@@ -288,6 +288,8 @@ public function actionCreate()
         $saved_model=$model->save();
         if ($saved_model) {
              Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i>Shareholder registered successfully!');
+             $content=$this->renderPartial('shareholder_por_pdf',['shareholder'=>$saved_model->shareholder]);
+             PdfHelper::download($content,'shareholder_PoR');
              return $this->redirect(['/loans/customer/view','customerID'=>$saved_model->id]);
         } else {
             throw new UserException('Unable to add a shareholder !' .Html::errorSummary($model));
