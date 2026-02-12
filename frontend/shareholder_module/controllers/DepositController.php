@@ -4,7 +4,7 @@ namespace frontend\shareholder_module\controllers;
 //from shareholder
 use Exception;
 use Yii;
-use common\models\ShareholderDepositForm;
+use frontend\shareholder_module\models\ShareholderDepositForm;
 use common\models\CustomerShareholderForm;
 use common\helpers\UniqueCodeHelper;
 use common\models\Shareholder;

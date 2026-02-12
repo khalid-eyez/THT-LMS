@@ -1,10 +1,14 @@
 <?php
-namespace common\models;
+namespace frontend\shareholder_module\models;
 
 use Yii;
 use yii\base\Model;
 use common\helpers\UniqueCodeHelper;
 use yii\web\UploadedFile;
+use common\models\Deposit;
+use frontend\cashbook_module\models\Cashbook;
+use common\models\Setting;
+use common\models\Shareholder;
 
 class ShareholderDepositForm extends Model
 {
@@ -42,20 +46,18 @@ class ShareholderDepositForm extends Model
     public function save()
     {
 
-        $this->interest_rate = 10;
+        $this->interest_rate = (new Setting())->getSettingValue("Interest Rate");
     
         if(!$this->validate()) {
         Yii::error($this->errors, 'form_validation');
         return false;
        }
-       if ($this->validate()) {
-        //print("HII BWANA KHALID ATASOLVE MIMI LIMENISHINDA,maana naona apa imevalidate");
-       }
+    
         $transaction = Yii::$app->db->beginTransaction();
 
         try {
             /* ---------- Upload file ---------- */
-            $uploadPath = Yii::getAlias('@frontend/web/uploads/deposits/');
+            $uploadPath = Yii::getAlias('@frontend/web/uploads/');
 
             if (!is_dir($uploadPath)) {
                 mkdir($uploadPath, 0777, true);
@@ -65,7 +67,7 @@ class ShareholderDepositForm extends Model
             $fileFullPath = $uploadPath . $fileName;
 
             if (!$this->payment_document->saveAs($fileFullPath)) {
-                throw new \Exception('File upload failed');
+                throw new \Exception('Could not save payment reference document');
             }
 
             /* ---------- Save Deposit ---------- */
@@ -81,53 +83,32 @@ class ShareholderDepositForm extends Model
             }
 
             /* ---------- Save Cashbook ---------- */
-            $cashbook = new Cashbook();
-            //$cashbook->customerID = $this->customerID;
-            $cashbook->reference_no = UniqueCodeHelper::generate('DEP-REF', 5);
-            $cashbook->description = 'Shareholder Deposit';
-            $cashbook->category = 'Deposit';
-            $cashbook->debit = 0;
-            $cashbook->credit = $this->amount;
-            $cashbook->balance = $this->getNewBalance($this->amount);
-            $cashbook->payment_document = $fileName;
-              // var_dump($fileName);
-               //var_dump($cashbook->payment_document);
-              // exit;
-            if (!$cashbook->save()) {
-                //  var_dump($fileName);
-                 // var_dump($cashbook->payment_document);
-                //  exit;
-                throw new \Exception(json_encode($cashbook->getErrors()));
-            }
-
+          
+            $shareholder=Shareholder::findOne($this->shareholderID);
+            $memberID=$shareholder->memberID;
+            $description="[$memberID] ".($deposit->type==$deposit::TYPE_CAPITAL)?"Initial Capital Deposit":"Monthly Deposit";
+            $cashbook_record=[
+                'debit'=>$this->amount,
+                'credit'=>0,
+                'category'=>'Deposit',
+                'payment_doc'=>$fileName,
+                'description'=>$description
+            ];
+            $cashbook = new Cashbook($cashbook_record);
+            $record_saved=$cashbook->save("DP",substr($shareholder->customer->NIN, -1));
             $transaction->commit();
             return true;
 
         } catch (\Throwable $e) {
 
         $transaction->rollBack();
-        throw $e;
-
         // Remove uploaded file if DB fails
         if (isset($fileFullPath) && file_exists($fileFullPath)) {
             unlink($fileFullPath);
         }
 
         Yii::error($e->getMessage(), __METHOD__);
-        return false;
+         throw $e;
     }
-    }
-
-    /**
-     * Calculate new balance
-     */
-    private function getNewBalance($credit)
-    {
-        $lastBalance = Cashbook::find()
-            ->orderBy(['id' => SORT_DESC])
-            ->select('balance')
-            ->scalar();
-
-        return ($lastBalance ?? 0) + $credit;
     }
 }
