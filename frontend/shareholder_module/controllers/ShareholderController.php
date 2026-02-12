@@ -369,19 +369,11 @@ public function actionDownloadPor($shareholderID)
         $model = $this->findModel($id);
 
         if($this->request->isPost){
-                  
-        //HAPA NIMETENGENEZA SHAREVALUE NITAKAYOITUMIA KWA MUDA KIDOGO
-        $sharevalue = 1000;
-        $shares= $model->initialCapital/$sharevalue;
-        $model->shares=(int)$shares;
         $customer=$model->customer;
-        if ($model->load($this->request->post()) 
-            && $customer->load($this->request->post())
-            && $customer->save()
-            && $model->save()) {
+        if ($customer->load($this->request->post()) && $customer->save()) {
                 
                  yii::$app->session->setFlash('success','<i class="fa fa-info-circle"></i> Shareholder updated successfully !');
-                 return $this->redirect(yii::$app->request->referrer);
+                 return $this->redirect(['/loans/customer/view','customerID'=>$customer->id]);
         }
         }
         return $this->renderAjax('update', [
