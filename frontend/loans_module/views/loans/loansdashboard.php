@@ -41,6 +41,10 @@ $hintOutstanding12    = "12m: " . $fmtMoney($outstandingLast12);
 $hintRepaymentPaid12  = "12m: " . $fmtMoney($repaymentPaidLast12);
 $hintAccruedInterest12= "12m: " . $fmtMoney($accruedInterestLast12);
 $hintPaidInterest12   = "12m: " . $fmtMoney($paidInterestLast12);
+
+// ---- NEW hints (last 12 months) for deposits ----
+$hintMonthlyDeposits12 = isset($monthlyDepositsLast12) ? ("12m: " . $fmtMoney($monthlyDepositsLast12)) : "";
+$hintCapitalDeposits12 = isset($capitalDepositsLast12) ? ("12m: " . $fmtMoney($capitalDepositsLast12)) : "";
 ?>
 <style>
 /* ------- compact KPI cards ------- */
@@ -352,6 +356,20 @@ $hintPaidInterest12   = "12m: " . $fmtMoney($paidInterestLast12);
               'value' => number_format($totalOverdueUnpaid + $totalPenalties, 2),
               'icon' => 'notika-icon notika-alarm',
               'hint' => ''
+            ]) ?>
+
+            <!-- ===== NEW: last 2 cards (Total Deposits & Total Capital) ===== -->
+            <?= $this->render('_kpi', [
+              'title' => 'Total Monthly Deposits',
+              'value' => number_format($totalMonthlyDeposits ?? 0, 2),
+              'icon' => 'notika-icon notika-wallet',
+              'hint' => $hintMonthlyDeposits12
+            ]) ?>
+            <?= $this->render('_kpi', [
+              'title' => 'Total Capital Deposits',
+              'value' => number_format($totalCapitalDeposits ?? 0, 2),
+              'icon' => 'notika-icon notika-dollar',
+              'hint' => $hintCapitalDeposits12
             ]) ?>
           </div>
 

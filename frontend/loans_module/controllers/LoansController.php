@@ -32,6 +32,7 @@ use common\models\LoanType;
 use common\models\Shareholder;
 use frontend\loans_module\models\ExcutiveSummary;
 use yii\helpers\Html;
+use common\models\Deposit;
 
 //use frontend\loans_module\models\LoanCalculatorForm;
 
@@ -48,9 +49,9 @@ class LoansController extends Controller
     ],
     ];
     }
-    public function actionDashboard()
-    {
-           // ====== CARDS ======
+   public function actionDashboard()
+{
+    // ====== CARDS ======
 
     // ---------- helpers ----------
     $db = Yii::$app->db;
@@ -98,6 +99,15 @@ class LoansController extends Controller
     $totalProcessingFees = (float) CustomerLoan::find()
         ->where(['isDeleted' => 0])
         ->sum('processing_fee');
+
+    // ====== NEW: Deposits totals (all-time) ======
+    $totalMonthlyDeposits = (float) (Deposit::find()
+        ->where(['isDeleted' => 0, 'type' => Deposit::TYPE_MONTHLY])
+        ->sum(new Expression('COALESCE(amount,0)')) ?? 0);
+
+    $totalCapitalDeposits = (float) (Deposit::find()
+        ->where(['isDeleted' => 0, 'type' => Deposit::TYPE_CAPITAL])
+        ->sum(new Expression('COALESCE(amount,0)')) ?? 0);
 
     // Outstanding balance = SUM(latest repayment_statement.balance per loan)
     $latestBalanceSubquery = (new \yii\db\Query())
@@ -166,6 +176,18 @@ class LoansController extends Controller
     $accruedInterestLast12 = (float) RepaymentSchedule::find()
         ->andWhere(['>=', 'repayment_date', $start12])
         ->sum(new Expression('COALESCE(interest_amount,0)'));
+
+    // ====== NEW: Deposits totals (last 12 months) ======
+    // Uses deposit_date (since that exists on deposits)
+    $monthlyDepositsLast12 = (float) (Deposit::find()
+        ->where(['isDeleted' => 0, 'type' => Deposit::TYPE_MONTHLY])
+        ->andWhere(['>=', 'deposit_date', $start12])
+        ->sum(new Expression('COALESCE(amount,0)')) ?? 0);
+
+    $capitalDepositsLast12 = (float) (Deposit::find()
+        ->where(['isDeleted' => 0, 'type' => Deposit::TYPE_CAPITAL])
+        ->andWhere(['>=', 'deposit_date', $start12])
+        ->sum(new Expression('COALESCE(amount,0)')) ?? 0);
 
     // Outstanding balance (last 12 months) – interpret as loans created in last 12 months
     $latestBalanceLast12Sub = (new \yii\db\Query())
@@ -388,6 +410,10 @@ class LoansController extends Controller
         'totalPaidInterest' => $totalPaidInterest,
         'totalExpectedThisWeek' => $totalExpectedThisWeek,
 
+        // ====== NEW: deposits KPIs ======
+        'totalMonthlyDeposits' => $totalMonthlyDeposits,
+        'totalCapitalDeposits' => $totalCapitalDeposits,
+
         // KPI last 12 months for hints
         'customersLast12' => $customersLast12,
         'shareholdersLast12' => $shareholdersLast12,
@@ -397,6 +423,10 @@ class LoansController extends Controller
         'repaymentPaidLast12' => $repaymentPaidLast12,
         'accruedInterestLast12' => $accruedInterestLast12,
         'paidInterestLast12' => $paidInterestLast12,
+
+        // ====== NEW: deposits last-12 hints ======
+        'monthlyDepositsLast12' => $monthlyDepositsLast12,
+        'capitalDepositsLast12' => $capitalDepositsLast12,
 
         // charts
         'labels12' => $labels12,
@@ -418,8 +448,8 @@ class LoansController extends Controller
         'interestTypeLabels' => $interestTypeLabels,
         'interestTypeAmounts' => $interestTypeAmounts,
     ]);
-       
-    }
+}
+
 
     public function actionExcutiveSummaryReporter(){
         $model=new ExcutiveSummary();

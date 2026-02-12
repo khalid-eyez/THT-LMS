@@ -33,6 +33,8 @@
                         </li>
                         <li><a  data-toggle="tab" href="#Page"><i class="notika-icon notika-support"></i> Account</a>
                         </li>
+                        <li><a style="border:solid 1px rgba(255,255,255,.5);max-width:163px;overflow:hidden;padding:5px!important;margin-top:8px;border-radius:7px!important"><marquee><?= yii::$app->user->identity->username ?></marquee></a>
+                        </li>
                     </ul>
                     <div class="tab-content custom-menu-content">
                        
