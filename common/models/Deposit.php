@@ -99,6 +99,14 @@ class Deposit extends \yii\db\ActiveRecord
                        throw new UserException("Could not update shareholder initial capital!"); 
                     }
             }
+
+            if($insert && $this->type==self::TYPE_MONTHLY)
+                {
+                    if($this->shareholder->initialCapital==0 || $this->shareholder->initialCapital==null)
+                        {
+                          throw new UserException("Cannot record monthly deposit before initial capital deposit");
+                        }
+                }
         return parent::beforeSave($insert);
      }
     /**
