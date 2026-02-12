@@ -86,12 +86,13 @@ class ShareholderDepositForm extends Model
           
             $shareholder=Shareholder::findOne($this->shareholderID);
             $memberID=$shareholder->memberID;
-            $description="[$memberID] ".($this->type=="capital")?"Shareholder Initial Capital Deposit":"Shareholder Monthly Deposit";
+            $description=($this->type=="capital")?"Shareholder Initial Capital Deposit":"Shareholder Monthly Deposit";
+            $description="[$memberID] ".$description;
             $cashbook_record=[
                 'debit'=>$this->amount,
                 'credit'=>0,
                 'category'=>'Deposit',
-                'payment_doc'=>$fileName,
+                'payment_doc'=>$fileFullPath,
                 'description'=>$description
             ];
             $cashbook = new Cashbook($cashbook_record);
