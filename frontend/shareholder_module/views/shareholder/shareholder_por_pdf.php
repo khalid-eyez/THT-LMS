@@ -35,15 +35,11 @@ $initialCapital = (float) $shareholder->initialCapital;
                 <td><?= Html::encode($shareholder->memberID) ?></td>
             </tr>
             <tr>
-                <td><strong>Shareholder No</strong></td>
-                <td><?= Html::encode($shareholder->id) ?></td>
-            </tr>
-            <tr>
                 <td><strong>Registration Date</strong></td>
                 <td>
                     <?php
                     // If you don't have created_at on shareholders table, show "N/A"
-                    $regDate = $shareholder->created_at ?? null;
+                    $regDate = $shareholder->customer->created_at ?? null;
                     echo $regDate ? Yii::$app->formatter->asDate($regDate) : 'N/A';
                     ?>
                 </td>
@@ -90,10 +86,6 @@ $initialCapital = (float) $shareholder->initialCapital;
                 <td><strong>TIN</strong></td>
                 <td><?= Html::encode($customer?->TIN) ?></td>
             </tr>
-            <tr>
-                <td><strong>Customer Status</strong></td>
-                <td><?= Html::encode($customer?->status) ?></td>
-            </tr>
         </table>
     </div>
 
@@ -105,11 +97,11 @@ $initialCapital = (float) $shareholder->initialCapital;
                 <td><?= Yii::$app->formatter->asDecimal($initialCapital, 2) ?> TZS</td>
             </tr>
             <tr>
-                <td><strong>Shares</strong></td>
+                <td><strong>Total Shares</strong></td>
                 <td><?= Yii::$app->formatter->asInteger((int)$shareholder->shares) ?></td>
             </tr>
             <tr>
-                <td><strong>Total Deposits (Excl. Capital)</strong></td>
+                <td><strong>Total Monthly Deposits</strong></td>
                 <td><?= Yii::$app->formatter->asDecimal($totalDeposits, 2) ?> TZS</td>
             </tr>
         </table>

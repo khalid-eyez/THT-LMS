@@ -76,7 +76,7 @@ public function loadExisting($shareholderId): bool
             /* ---------- SAVE CUSTOMER ---------- */
             $customer = new Customer();
             // HAPA NATENGENEZA CUSTOMER ID KUPITIA GENERATOR YA KHALID YA KWENYE HELPERS
-            $customer->customerID = UniqueCodeHelper::generate('THTO', 5)."-".date('y').substr($this->NIN, -1);
+            $customer->customerID = UniqueCodeHelper::generate('HTHO', 5)."-".date('y').substr($this->NIN, -1);
            // $customer->customerID = $this->customerID;
             $customer->full_name  = $this->full_name;
             $customer->birthDate  = $this->birthDate;
