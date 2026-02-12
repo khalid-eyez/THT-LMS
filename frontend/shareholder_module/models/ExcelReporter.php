@@ -40,6 +40,10 @@ class ExcelReporter
     // ---- TOTALS ----
     $totalDeposits = 0.0;
     foreach ($rows as $deposit) {
+         if($deposit->type=="capital")
+        {
+          continue;
+        }
         $totalDeposits += (float)$deposit->amount;
     }
 
@@ -148,7 +152,10 @@ class ExcelReporter
     // ---- DATA ROWS ----
     $r = $headerRow + 1;
     foreach ($rows as $i => $deposit) {
-
+        if($deposit->type=="capital")
+        {
+        continue;
+        }
         $depositDate = $deposit->deposit_date
             ? date('j M Y', strtotime($deposit->deposit_date))
             : '';
