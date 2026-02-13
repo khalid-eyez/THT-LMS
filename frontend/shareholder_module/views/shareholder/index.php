@@ -186,13 +186,9 @@ Pjax::begin([
                                 },
                                 'delete' => function($url, $model, $key) {
                                     return Html::a('<i class="fa fa-trash"></i>', $url, [
-                                        'class' => 'text-danger',
+                                        'class' => 'text-danger del',
                                         'title' => 'Delete',
-                                        'data' => [
-                                            'confirm' => 'Are you sure you want to delete this shareholder?',
-                                            'method' => 'post',
-                                        ],
-                                        'data-pjax' => '0',
+                                     
                                     ]);
                                 },
                             ],

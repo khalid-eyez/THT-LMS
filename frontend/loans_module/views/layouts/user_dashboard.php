@@ -113,7 +113,27 @@
                         });
                         
                         
-                     })
+                     });
+
+                        $('body').on('click', '.del', function (e) {
+                        e.preventDefault();
+
+                        // Custom confirm only for delete links
+                        if ($(this).hasClass('del')) {
+                        const ok = window.confirm('Are you sure you want to delete this shareholder?');
+                        if (!ok) return; // user cancelled
+                        }
+
+                        $('#global-loader').show();
+
+                        const url = $(this).attr('href');
+                        $('.content').load(url, function () {
+                        history.pushState({ url: url }, '', url);
+                        $('#global-loader').hide();
+                        });
+                        });
+
+                     
                           function cleanupFloatingWidgets() {
                           $('.daterangepicker').remove();
                           }

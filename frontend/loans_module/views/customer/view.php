@@ -16,14 +16,14 @@ $totalInterestPaidApproved = 0.0;
 // Payable Interests = approved but not paid yet
 $totalInterestApproved = 0.0;
 $payableInterests = 0.0;
+$totalApprovable=0.0;
 
 // Claimable (not yet claimed at all)
 $claimableInterest = 0.0;
 
 if ($shareholder) {
-    
-        $totalDeposits += (float) $shareholder->totalDeposits(null, null);
-    
+
+    $totalDeposits += (float) $shareholder->totalDeposits(null, null);
 
     $totalInterestPaidApproved = (float) ($shareholder->totalPaidApprovedInterest ?? 0);
     $totalInterestApproved     = (float) ($shareholder->totalApprovedInterests ?? 0);
@@ -76,9 +76,30 @@ $payInterestUrl = $shareholder
     ? Url::to(['/shareholder/shareholder/pay-interests', 'shareholderID' => $shareholder->id])
     : null;
 
-/* disable logic */
-$isPayableActive   = ($payableInterests > 0);
-$isClaimableActive = ($claimableInterest > 0);
+
+/**
+ * ✅ Unified "disable" helper: works for BOTH UI and delegated JS handlers.
+ * - adds class btn-soft-disabled
+ * - adds aria-disabled + tabindex
+ * - adds data-disabled=1 (JS checks this to stop modal from opening)
+ */
+function btnDisableAttrs(bool $active, string $titleWhenActive, string $titleWhenInactive): array {
+    return [
+        'classSuffix' => $active ? '' : 'btn-soft-disabled',
+        'title'       => $active ? $titleWhenActive : $titleWhenInactive,
+        'ariaDisabled'=> $active ? 'false' : 'true',
+        'tabindex'    => $active ? null : '-1',
+        'dataDisabled'=> $active ? '0' : '1',
+        'onclick'     => $active ? null : 'return false;',
+    ];
+}
+
+/* ✅ disable logic per number shown */
+$depositsBtn   = btnDisableAttrs(((float)$totalDeposits > 0), 'View deposits statement', 'No deposits to show');
+$interestBtn   = btnDisableAttrs(((float)$totalInterestPaidApproved > 0), 'Interest statement', 'No interest to show');
+$approveBtn    = btnDisableAttrs(((float)$totalApprovable > 0), 'Approve Claim', 'No approvable interest');
+$payableBtn    = btnDisableAttrs(((float)$payableInterests > 0), 'Pay payable interests', 'No payable interests to pay');
+$claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interest', 'No claimable interest yet');
 ?>
 
 <style>
@@ -117,6 +138,8 @@ $isClaimableActive = ($claimableInterest > 0);
 }
 .btn-soft-disabled{
     opacity: .55;
+    pointer-events: none;  /* ✅ prevents click from reaching element */
+    cursor: not-allowed;
 }
 </style>
 
@@ -294,11 +317,15 @@ $isClaimableActive = ($claimableInterest > 0);
                                                 '<i class="fa fa-file-text-o"></i>',
                                                 'javascript:void(0)',
                                                 [
-                                                    'class' => 'btn btn-default btn-xs js-deposits-statement',
+                                                    'class' => 'btn btn-default btn-xs js-deposits-statement ' . $depositsBtn['classSuffix'],
                                                     'data-url' => $depositsStatementUrl,
-                                                    'title' => 'View deposits statement',
+                                                    'title' => $depositsBtn['title'],
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
+                                                    'aria-disabled' => $depositsBtn['ariaDisabled'],
+                                                    'tabindex' => $depositsBtn['tabindex'],
+                                                    'data-disabled' => $depositsBtn['dataDisabled'],
+                                                    'onclick' => $depositsBtn['onclick'],
                                                 ]
                                             ) ?>
                                         </span>
@@ -311,11 +338,15 @@ $isClaimableActive = ($claimableInterest > 0);
                                                 '<i class="fa fa-line-chart"></i>',
                                                 'javascript:void(0)',
                                                 [
-                                                    'class' => 'btn btn-default btn-xs js-interest-statement',
+                                                    'class' => 'btn btn-default btn-xs js-interest-statement ' . $interestBtn['classSuffix'],
                                                     'data-url' => $interestStatementModalUrl,
-                                                    'title' => 'Interest statement',
+                                                    'title' => $interestBtn['title'],
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
+                                                    'aria-disabled' => $interestBtn['ariaDisabled'],
+                                                    'tabindex' => $interestBtn['tabindex'],
+                                                    'data-disabled' => $interestBtn['dataDisabled'],
+                                                    'onclick' => $interestBtn['onclick'],
                                                 ]
                                             ) ?>
                                         </span>
@@ -328,10 +359,14 @@ $isClaimableActive = ($claimableInterest > 0);
                                                 '<i class="fa fa-check"></i>',
                                                 $approveUrl ?: 'javascript:void(0)',
                                                 [
-                                                    'class' => 'btn btn-default btn-xs',
-                                                    'title' => 'Approve Claim',
+                                                    'class' => 'btn btn-default btn-xs ' . $approveBtn['classSuffix'],
+                                                    'title' => $approveBtn['title'],
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
+                                                    'aria-disabled' => $approveBtn['ariaDisabled'],
+                                                    'tabindex' => $approveBtn['tabindex'],
+                                                    'data-disabled' => $approveBtn['dataDisabled'],
+                                                    'onclick' => $approveBtn['onclick'],
                                                 ]
                                             ) ?>
                                         </span>
@@ -344,12 +379,15 @@ $isClaimableActive = ($claimableInterest > 0);
                                                 '<i class="fa fa-credit-card"></i>',
                                                 'javascript:void(0)',
                                                 [
-                                                    'class' => 'btn btn-default btn-xs js-interest-pay-modal ' . ($isPayableActive ? '' : 'btn-soft-disabled'),
+                                                    'class' => 'btn btn-default btn-xs js-interest-pay-modal ' . $payableBtn['classSuffix'],
                                                     'data-url' => $payInterestUrl,
-                                                    'title' => $isPayableActive ? 'Pay payable interests' : 'No payable interests to pay',
+                                                    'title' => $payableBtn['title'],
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
-                                                    'onclick' => $isPayableActive ? null : 'return false;',
+                                                    'aria-disabled' => $payableBtn['ariaDisabled'],
+                                                    'tabindex' => $payableBtn['tabindex'],
+                                                    'data-disabled' => $payableBtn['dataDisabled'],
+                                                    'onclick' => $payableBtn['onclick'],
                                                 ]
                                             ) ?>
                                         </span>
@@ -360,13 +398,16 @@ $isClaimableActive = ($claimableInterest > 0);
                                         <span class="right-actions">
                                             <?= Html::a(
                                                 '<i class="fa fa-money"></i>',
-                                                ($claimInterestUrl && $isClaimableActive) ? $claimInterestUrl : 'javascript:void(0)',
+                                                ($claimInterestUrl) ? $claimInterestUrl : 'javascript:void(0)',
                                                 [
-                                                    'class' => 'btn btn-default btn-xs ' . ($isClaimableActive ? '' : 'btn-soft-disabled'),
-                                                    'title' => $isClaimableActive ? 'Claim interest' : 'No claimable interest yet',
+                                                    'class' => 'btn btn-default btn-xs ' . $claimableBtn['classSuffix'],
+                                                    'title' => $claimableBtn['title'],
                                                     'data-toggle' => 'tooltip',
                                                     'data-pjax' => '0',
-                                                    'onclick' => $isClaimableActive ? null : 'return false;',
+                                                    'aria-disabled' => $claimableBtn['ariaDisabled'],
+                                                    'tabindex' => $claimableBtn['tabindex'],
+                                                    'data-disabled' => $claimableBtn['dataDisabled'],
+                                                    'onclick' => $claimableBtn['onclick'],
                                                 ]
                                             ) ?>
                                         </span>
@@ -501,6 +542,15 @@ $this->registerJs(<<<JS
         if ($('#global-loader').length) $('#global-loader').hide();
     }
 
+    // ✅ global guard: stops delegated handlers from opening modals when "disabled"
+    function isDisabled(\$el){
+        return (
+            \$el.hasClass('btn-soft-disabled') ||
+            \$el.attr('aria-disabled') === 'true' ||
+            String(\$el.data('disabled')) === '1'
+        );
+    }
+
     // ---------- UPDATE MODAL ----------
     $(document).off('click.customerUpdateModal');
     $(document).on('click.customerUpdateModal', '.js-customer-update', function (e) {
@@ -537,6 +587,11 @@ $this->registerJs(<<<JS
     $(document).off('click.depositCreateModal');
     $(document).on('click.depositCreateModal', '.js-deposit-create', function (e) {
         e.preventDefault();
+
+        if (isDisabled($(this))) {
+            e.stopImmediatePropagation();
+            return false;
+        }
 
         var url = $(this).data('url');
         if (!url) return false;
@@ -621,6 +676,11 @@ $this->registerJs(<<<JS
     $(document).on('click.depositsStatementModal', '.js-deposits-statement', function (e) {
         e.preventDefault();
 
+        if (isDisabled($(this))) {
+            e.stopImmediatePropagation();
+            return false;
+        }
+
         var url = $(this).data('url');
         if (!url) return false;
 
@@ -652,6 +712,11 @@ $this->registerJs(<<<JS
     $(document).off('click.interestStatementModal');
     $(document).on('click.interestStatementModal', '.js-interest-statement', function (e) {
         e.preventDefault();
+
+        if (isDisabled($(this))) {
+            e.stopImmediatePropagation();
+            return false;
+        }
 
         var url = $(this).data('url');
         if (!url) return false;
@@ -713,6 +778,11 @@ $this->registerJs(<<<JS
     $(document).off('click.interestPayModal');
     $(document).on('click.interestPayModal', '.js-interest-pay-modal', function (e) {
         e.preventDefault();
+
+        if (isDisabled($(this))) {
+            e.stopImmediatePropagation();
+            return false;
+        }
 
         var url = $(this).data('url');
         if (!url) return false;

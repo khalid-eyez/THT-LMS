@@ -49,7 +49,7 @@ class ShareholderController extends Controller
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
-                        'delete' => ['POST'],
+                        //'delete' => ['POST'],
                     ],
                 ],
             ]
@@ -398,7 +398,15 @@ public function actionDownloadPor($shareholderID)
     {
         $this->findModel($id)->delete();
         yii::$app->session->setFlash('success','Shareholder deleted successfully!');
-        return $this->redirect(['index']);
+        $searchModel = new ShareholderSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+        if(yii::$app->request->isAjax)
+            {
+        return $this->renderAjax('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+            }
     }
 
     /**
