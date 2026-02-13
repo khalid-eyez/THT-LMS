@@ -73,33 +73,31 @@ class ShareholderController extends Controller
     {
         $searchModel = new ShareholderSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        if(yii::$app->request->isAjax)
+            {
         return $this->renderAjax('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+            }
+
+            return $this->redirect("/loans/dashboard");
     }
 
-    /**
-     * Displays a single Shareholder model.
-     * @param int $id ID
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {   
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
+
 public function actionDepositsSummary()
     {
         $model = new DepositsSummaryForm();
 
         // render the template view that contains search + buttons + .cashbook
+        if(yii::$app->request->isAjax){
+
+      
         return $this->renderAjax('deposits-summary', [
             'model' => $model,
         ]);
+          }
+          return $this->redirect("/loans/dashboard");
     }
 
     
@@ -112,11 +110,14 @@ public function actionDepositsSummary()
                 [$from,$to]=explode(' - ',$model->date_range);
             }
         
-
+        if(yii::$app->request->isAjax)
+            {
         return $this->renderAjax('_deposits_summary_results', [
             'range' => ['from'=>$from??null,'to'=>$to??null],
             'deposits'=>$model->depositsSummary()
         ]);
+            }
+            return $this->redirect("/loans/dashboard");
     }
     public function actionInterestSummaryReporter()
     {
@@ -128,7 +129,11 @@ public function actionDepositsSummary()
 
                 return $this->renderAjax('interest_summary_results',['interest_summaries'=>$summaries,'date_range'=>$model->date_range]);
             }
+            if(yii::$app->request->isAjax)
+                {
         return $this->renderAjax('interests_summary',['model'=>$model]);
+                }
+                return $this->redirect("/loans/dashboard");
     }
     public function actionInterestSummaryPdf()
     {
@@ -173,8 +178,6 @@ public function actionDepositsSummary()
         $model = new DepositsSummaryForm();
         $model->load(Yii::$app->request->post());
         $model->exportShareholdersDepositsSummaryXlsx();
-        
-
     
     }
 
@@ -225,7 +228,11 @@ public function actionDepositsSummary()
       {
         throw $n;
       }
+      if(yii::$app->request->isAjax)
+        {
       return $this->renderAjax('interest_payment_form',['model'=>$paymentmodel]);
+        }
+        return $this->redirect("/loans/dashboard");
     }
     public function actionClaimInterest($shareholderID)
     {
@@ -255,14 +262,6 @@ public function actionDepositsSummary()
         }
     }
 
-   
-
-    private function parseRange(?string $range): array
-    {
-        if (!$range || strpos($range, ' - ') === false) return [null, null];
-        [$from, $to] = array_map('trim', explode(' - ', $range));
-        return [$from ?: null, $to ?: null];
-    }
 
     /**
      * Creates a new Shareholder model.
@@ -288,8 +287,8 @@ public function actionCreate()
         $saved_model=$model->save();
         if ($saved_model) {
              Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i>Shareholder registered successfully!');
-             $content=$this->renderPartial('shareholder_por_pdf',['shareholder'=>$saved_model->shareholder]);
-             PdfHelper::download($content,'shareholder_PoR');
+             //$content=$this->renderPartial('shareholder_por_pdf',['shareholder'=>$saved_model->shareholder]);
+             //PdfHelper::download($content,'shareholder_PoR');
              return $this->redirect(['/loans/customer/view','customerID'=>$saved_model->id]);
         } else {
             throw new UserException('Unable to add a shareholder !' .Html::errorSummary($model));
@@ -297,20 +296,22 @@ public function actionCreate()
         }
         catch(UserException $u)
         {
-          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed! '.$u->getMessage());
+          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i> Shareholder registration failed! '.$u->getMessage());
           throw $u;
         }
         catch(\Exception $e)
         {
-          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i>Shareholder registration failed!');
+          Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i> Shareholder registration failed!');
           throw new UserException('An unknown error occurred !');
         }
 
     }
-
+     if(yii::$app->request->isAjax){
     return $this->renderAjax('create', [
         'model' => $model,
     ]);
+     }
+     return $this->redirect("/loans/dashboard");
 }
 
 public function actionDownloadPor($shareholderID)
@@ -376,9 +377,14 @@ public function actionDownloadPor($shareholderID)
                  return $this->redirect(['/loans/customer/view','customerID'=>$customer->id]);
         }
         }
+        if(yii::$app->request->isAjax)
+            {
         return $this->renderAjax('update', [
             'model' => $model,
         ]);
+            }
+
+            return $this->redirect("/loans/dashboard");
     }
 
     /**
@@ -391,7 +397,7 @@ public function actionDownloadPor($shareholderID)
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
+        yii::$app->session->setFlash('success','Shareholder deleted successfully!');
         return $this->redirect(['index']);
     }
 

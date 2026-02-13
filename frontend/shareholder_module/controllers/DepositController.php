@@ -68,7 +68,11 @@ class DepositController extends Controller
                $model->load(yii::$app->request->post()); 
                return $this->renderAjax('shareholder_interests_result',['interests'=>$model->getInterests($shareholderID),'date_range'=>$model->date_range]);
             }
+            if(yii::$app->request->isAjax)
+                {
         return $this->renderAjax('shareholder_interests_form',['model'=>$model,'shareholderID'=>$shareholderID]);
+                }
+                return $this->redirect("/loans/dashboard");
     }
 
     public function actionShareholderInterestStatementPdf($shareholderID)
@@ -84,7 +88,11 @@ class DepositController extends Controller
     }
     public function actionClaims()
     {
+        if(yii::$app->request->isAjax)
+            {
         return $this->renderAjax("claims");
+            }
+            return $this->redirect("/loans/dashboard");
     }
     public function actionApproveClaim($interestID)
     {
@@ -260,10 +268,14 @@ public function actionShareholderDepositsExcelReport($shareholderID)
                     PdfHelper::download($content,'deposit_receipt');
                     return $this->redirect(yii::$app->request->referrer);
             }
-
+            
+            if(yii::$app->request->isAjax)
+                {
             return $this->renderAjax('create', [
                 'model' => $model,
             ]);
+                }
+                return $this->redirect("/loans/dashboard");
         }
 
         public function actionDeleteDeposit($depositID)
@@ -310,7 +322,7 @@ public function actionShareholderDepositsExcelReport($shareholderID)
     public function actionDelete($depositID)
     {
         $this->findModel($depositID)->delete();
-
+        yii::$app->session->setFlash('success','Deposit deleted successfully !');
         return $this->redirect(['index']);
     }
 
