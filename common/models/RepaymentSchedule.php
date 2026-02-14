@@ -227,7 +227,7 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
                 break;
             }
                 case $loan::REPAYMENT_FREQUENCY_DAILY:{
-                    $gracedays=round($loan->penalty_grace_days/30);
+                    $gracedays=0;
                 break;
             }
         }
