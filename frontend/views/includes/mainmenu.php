@@ -27,9 +27,9 @@
                         </li>
                         <li><a  data-toggle="tab" href="#Tables"><i class="notika-icon notika-windows"></i> Customers</a>
                         </li>
-                        <li><a  data-toggle="tab" href="#Forms"><i class="notika-icon notika-form"></i> Shareholders</a>
+                        <li><a  data-toggle="tab" href="#Forms"><i class="notika-icon notika-edit"></i> Shareholders</a>
                         </li>
-                        <li><a  data-toggle="tab" href="#Appviews"><i class="notika-icon notika-app"></i> Settings</a>
+                        <li><a  data-toggle="tab" href="#Appviews"><i class="notika-icon notika-settings"></i> Settings</a>
                         </li>
                         <li><a  data-toggle="tab" href="#Page"><i class="notika-icon notika-support"></i> Account</a>
                         </li>

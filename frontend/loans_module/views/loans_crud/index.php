@@ -100,7 +100,11 @@ $gridcolumns = [
         'label' => 'Loan Type',
         'value' => fn($model) => $model->loanType->type ?? '',
     ],
-    'loan_amount',
+    [
+      'attribute'=>'loan_amount',
+      'label'=>'Loan Amount',
+      'value'=>fn($model)=>Yii::$app->formatter->asDecimal($model->loan_amount)
+    ],
     [
         'attribute' => 'repayment_frequency',
         'label' => 'Repayment',

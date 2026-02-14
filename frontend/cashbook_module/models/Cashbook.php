@@ -38,7 +38,7 @@ public function save($reference_prefix,$suffix_no)
                 $cashbook=new Book();
                 $cashbook->credit=$this->record['credit'];
                 $cashbook->debit=$this->record['debit'];
-                $cashbook->reference_no=UniqueCodeHelper::generate($reference_prefix).'-'.$suffix_no.date("y");
+                $cashbook->reference_no=UniqueCodeHelper::generate($reference_prefix,5).'-'.$suffix_no.date("y");
                 $cashbook->description=$this->record['description'];
                 $cashbook->payment_document=$this->record['payment_doc'];
                 $cashbook->category=$this->record['category'];
