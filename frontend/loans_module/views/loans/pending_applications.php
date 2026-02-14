@@ -209,13 +209,13 @@ $this->registerCss($css);
                     <tr>
                       <th style="width:140px;">Customer ID</th>
                       <th style="width:120px;">Loan ID</th>
-                      <th style="min-width:200px;">Customer Name</th>
+                      <th style="min-width:190px;">Customer Name</th>
                       <th style="width:150px;" class="text-right">Loan Amount</th>
                       <th style="min-width:100px;">Repayment</th>
-                      <th style="width:30px;" class="text-right">Duration</th>
+                      <th style="width:20px;" class="text-right">Duration</th>
                       <th style="width:170px;">Date Applied</th>
                       <th style="width:170px;">Date Updated</th>
-                      <th style="width:165px;" class="text-center"></th>
+                      <th style="width:185px;" class="text-center"></th>
                     </tr>
                   </thead>
 
