@@ -148,10 +148,14 @@ class CustomerLoan extends \yii\db\ActiveRecord
     }
 public function beforeSave($insert)
 {
-           if(!$insert && $this->isAttributeChanged('status') && $this->status=="rejected")
+           if(!$insert && $this->isAttributeChanged('status') && ($this->status=="rejected" || $this->status=="active"))
             {
               return parent::beforeSave($insert);  
             }
+            if(!$insert && $this->isStatusActive())
+                {
+                 throw new UserException('Cannot update an active loan !');
+                }
             if ($this->customer && $this->customer->hasActiveLoan()) {
             throw new UserException('Customer has another active loan !');
             }
