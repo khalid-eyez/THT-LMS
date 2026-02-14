@@ -175,6 +175,21 @@ use yii\helpers\Html;
     </tr>
 </table>
 
+<table width="100%" style="margin-top: 150px;text-align:left">
+    <tr>
+        <th style="text-align: left;">Disbursed By</th>
+        <td><?= Html::encode($loan->paidby0->name ?? '_____________________________________________') ?></td>
+    </tr>
+    <tr>
+        <th style="text-align: left;">Date</th>
+        <td>_______________________________________________</td>
+    </tr>
+    <tr>
+        <th style="text-align: left;">Signature</th>
+        <td>___________________________________________________</td>
+    </tr>
+</table>
+
 <table width="100%" style="margin-top: 40px">
        <tr>
         <th style="text-align: left;">Customer Name</th>
@@ -182,7 +197,7 @@ use yii\helpers\Html;
     </tr>
       <tr>
         <th style="text-align: left;">Date</th>
-        <td><?= $loan->approved_at ? Yii::$app->formatter->asDate($loan->approved_at) : '________________' ?></td>
+        <td>________________________________________</td>
     </tr>
     <tr>
         <th style="text-align: left;">Signature</th>
