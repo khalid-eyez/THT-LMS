@@ -215,7 +215,7 @@ $this->registerCss($css);
                       <th style="width:50px;" class="text-right">Duration</th>
                       <th style="width:170px;">Date Applied</th>
                       <th style="width:170px;">Date Updated</th>
-                      <th style="width:140px;" class="text-center"></th>
+                      <th style="width:150px;" class="text-center"></th>
                     </tr>
                   </thead>
 
@@ -257,15 +257,9 @@ $this->registerCss($css);
                           <td><?= Html::encode($updatedAt) ?></td>
 
                           <td class="text-center action-btns">
-                              <?= Html::button('<i class="fa fa-eye"></i>', [
-                              'type' => 'button',
-                              'class' => 'btn btn-xs btn-primary',
-                              'data-url' => $viewUrl($row->id),
-                              'data-list-url' => $listUrl,
-                              'title' => 'View',
-                              'data-toggle' => 'tooltip',
-                              'data-placement' => 'top',
-                            ]) ?>
+                             <a href="<?= $viewUrl($row->id) ?>" title="View Loan" class="btn btn-xs btn-primary">
+                                <i class="fa fa-eye"></i>
+                             </a>
                             <?= Html::button('<i class="fa fa-check"></i>', [
                               'type' => 'button',
                               'class' => 'btn btn-xs btn-primary js-loan-action',
