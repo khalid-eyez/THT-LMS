@@ -241,10 +241,18 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             return false;
 
     }
+    public function isPayable()
+    {
+        return ($this->status!="delayed" && $this->status!="paid");
+    }
     public function pay($payment_date,$paid_amount=0,$paymentdoc=null)
     {
             try{
             $transaction=yii::$app->db->beginTransaction();
+            if(!$this->isPayable())
+                {
+                    throw new UserException("Repayment Due Not Payable");
+                }
             $isdelayed=$this->isDelayed($payment_date);
       
             $statement=new RepaymentStatement();
