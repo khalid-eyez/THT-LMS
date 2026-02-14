@@ -26,6 +26,7 @@ foreach ($records as $r) {
 $totalAmount = round($totalAmount, 2);
 
 // ✅ Routes (adjust if yours differ)
+$viewUrl    = fn($id) => Url::to(['/loans/loans/loan-view',    'loanID' => $id], true);
 $approveUrl    = fn($id) => Url::to(['/loans/loans/approve-ajax',    'loanID' => $id], true);
 $disapproveUrl = fn($id) => Url::to(['/loans/loans/disapprove-ajax', 'loanID' => $id], true);
 
@@ -214,7 +215,7 @@ $this->registerCss($css);
                       <th style="width:50px;" class="text-right">Duration</th>
                       <th style="width:170px;">Date Applied</th>
                       <th style="width:170px;">Date Updated</th>
-                      <th style="width:120px;" class="text-center"></th>
+                      <th style="width:140px;" class="text-center"></th>
                     </tr>
                   </thead>
 
@@ -256,6 +257,15 @@ $this->registerCss($css);
                           <td><?= Html::encode($updatedAt) ?></td>
 
                           <td class="text-center action-btns">
+                              <?= Html::button('<i class="fa fa-eye"></i>', [
+                              'type' => 'button',
+                              'class' => 'btn btn-xs btn-primary',
+                              'data-url' => $viewUrl($row->id),
+                              'data-list-url' => $listUrl,
+                              'title' => 'View',
+                              'data-toggle' => 'tooltip',
+                              'data-placement' => 'top',
+                            ]) ?>
                             <?= Html::button('<i class="fa fa-check"></i>', [
                               'type' => 'button',
                               'class' => 'btn btn-xs btn-primary js-loan-action',

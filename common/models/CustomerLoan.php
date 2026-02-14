@@ -148,7 +148,7 @@ class CustomerLoan extends \yii\db\ActiveRecord
     }
 public function beforeSave($insert)
 {
-           if(!$insert && $this->isAttributeChanged('status') && ($this->status=="rejected" || $this->status=="active"))
+           if(!$insert && $this->isAttributeChanged('status') && ($this->status=="rejected" || $this->status=="active" || $this->status=="finished"))
             {
               return parent::beforeSave($insert);  
             }
