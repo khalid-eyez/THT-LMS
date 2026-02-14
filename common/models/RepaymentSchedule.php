@@ -313,6 +313,19 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $statement->balance=$balance;
             $statement->loanID=$this->loan->id;
 
+            //updating the loan if the balance is 0 then the loan is marked
+            //as finished
+
+             $loan=$this->loan;
+             if($balance<=0)
+                {
+                    $loan->status="finished";
+                    if(!$loan->save())
+                        {
+                            throw new UserException("Could not update loan status!");
+                        }
+                }
+
             //persistence
 
             if(!$statement->save()){

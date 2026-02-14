@@ -469,6 +469,10 @@ public function beforeSave($insert)
     }
     public function computeOverdues($payment_date)
     {
+        if($this->isStatusFinished())
+            {
+                throw new UserException("Loan Repayment Finished !");
+            }
        $dues=$this->repaymentSchedules;
 
        foreach($dues as $due)
