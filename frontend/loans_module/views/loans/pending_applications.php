@@ -204,7 +204,7 @@ $this->registerCss($css);
 
               <!-- TABLE -->
               <div class="table-responsive">
-                <table class="table table-hover table-striped" border="1" id="loansTable">
+                <table class="table table-hover table-striped"  id="loansTable">
                   <thead>
                     <tr>
                       <th style="width:140px;">Customer ID</th>
