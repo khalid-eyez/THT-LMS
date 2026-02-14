@@ -256,7 +256,7 @@ $this->registerCss($css);
                           <td><?= Html::encode($createdAt) ?></td>
                           <td><?= Html::encode($updatedAt) ?></td>
 
-                          <td class="action-btns">
+                          <td class="action-btns" style="padding:1px">
                              <a href="<?= $viewUrl($row->id) ?>" title="View Loan" class="btn btn-xs btn-primary">
                                 <i class="fa fa-eye"></i>
                              </a>
