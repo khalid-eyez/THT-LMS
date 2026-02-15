@@ -110,7 +110,8 @@ use yii\helpers\Url;
                           <?= Html::a(
                             'Cancel Repayment',
                             Url::to(['/loans/loans/cancel-repayment',
-                                'file' => $payment_details['payment_doc']
+                                'file' => $payment_details['payment_doc'],
+                                'scheduleID' => $payment_details['repayment_due']->id
                             ]),
                             ['class' => 'btn btn-info pull-right ','style'=>'margin-right:2px']
                         ) ?>

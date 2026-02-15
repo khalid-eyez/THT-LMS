@@ -231,9 +231,10 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
                 break;
             }
         }
-        $due=new \DateTimeImmutable($this->repayment_date);
+        
+        $due=(new \DateTimeImmutable($this->repayment_date))->setTime(0, 0,0);
         $due=$due->add(new \DateInterval("P{$gracedays}D"));
-        $payment_date=new \DateTimeImmutable($payment_date);
+        $payment_date=(new \DateTimeImmutable($payment_date))->setTime(0, 0,0);
         if($payment_date > $due)
             {
                 return true;
@@ -247,8 +248,9 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     }
     public function pay($payment_date,$paid_amount=0,$paymentdoc=null)
     {
+        $transaction=yii::$app->db->beginTransaction();
             try{
-            $transaction=yii::$app->db->beginTransaction();
+            
             if(!$this->isPayable())
                 {
                     throw new UserException("Repayment Due Not Payable");
@@ -376,6 +378,10 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
         {
            
             $isdelayed=$this->isDelayed($payment_date);
+              if(!$this->isPayable())
+                {
+                    throw new UserException("Repayment Due Not Payable");
+                }
       
             $statement=new RepaymentStatement();
             $lastRepayment=$this->loan->getLastRepayment();

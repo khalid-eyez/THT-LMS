@@ -1,4 +1,4 @@
-
+<div style="overflow-x:auto; width:100%;">
 <table class="table table-striped">
     <tr>
         <th>#</th>
@@ -72,3 +72,4 @@
         <th><?= Yii::$app->formatter->asDecimal($balance,2) ?></th>
     </tr>
 </table>
+</div>

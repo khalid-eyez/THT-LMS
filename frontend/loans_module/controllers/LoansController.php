@@ -852,7 +852,7 @@ class LoansController extends Controller
     public function actionRepaymentOverdues($loanID,$payment_date)
     {
         $loan=CustomerLoan::findOne($loanID);
-        return $this->renderAjax('total_repayment',['overdues'=>$loan->computeOverdues($payment_date)]);
+        return $this->renderAjax('total_repayment',['overdues'=>$loan->overduesSimulate($payment_date)]);
         
     }
     public function actionRepaymentConfirm($scheduleID, $paid_amount,$payment_date,$payment_doc){
@@ -865,8 +865,13 @@ class LoansController extends Controller
 
 
     }
-    public function actionCancelRepayment($file)
+    public function actionCancelRepayment($file,$scheduleID)
     {
+        $schedule=RepaymentSchedule::findOne($scheduleID);
+        if(!$schedule->isPayable())
+            {
+                throw new UserException("Cannot cancel a paid due! ");
+            }
         $filePath = Yii::getAlias('@webroot'.$file);
 
         if (file_exists($filePath)) {

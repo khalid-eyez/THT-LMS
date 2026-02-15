@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use Yii;
 use common\helpers\UniqueCodeHelper;
+use Throwable;
 
 /**
  * This is the model class for table "customer_loans".
@@ -466,6 +467,26 @@ public function beforeSave($insert)
      public function totalInterest()
     {
         return $this->getRepaymentSchedules()->sum('interest_amount');
+    }
+
+    public function overduesSimulate($payment_date)
+    {
+      $transaction=yii::$app->db->beginTransaction();
+      try{
+          $overdues=$this->computeOverdues($payment_date);
+          $transaction->rollBack();
+          return  $overdues;
+      }
+      catch(UserException $u)
+      {
+          $transaction->rollBack(); 
+          throw new UserException($u->getMessage());
+      }
+      catch(\Throwable $t)
+      {
+         $transaction->rollBack(); 
+         throw new UserException("Could not fetch any payment dues for the selected date");
+      }
     }
     public function computeOverdues($payment_date)
     {

@@ -27,6 +27,8 @@ class LoanRepayment extends Model{
      public function pay_dry_run($loanID)
      {
          $loan=CustomerLoan::findOne($loanID);
+         $simulatedOverdues=$loan->overduesSimulate($this->payment_date);
+         $loan->refresh();
          $overdues=$loan->computeOverdues($this->payment_date);
          $due=$overdues['due'];
 
