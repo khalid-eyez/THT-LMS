@@ -499,7 +499,8 @@ public function beforeSave($insert)
        foreach($dues as $due)
         {
               if(!$due->isDue($payment_date)){ continue; }
-              if($due->isDelayed($payment_date))
+            
+              if($due->isDelayed($payment_date) && !$due->isLastDue())
                 {
                     $due->pay($payment_date);
                     continue;

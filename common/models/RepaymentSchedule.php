@@ -270,7 +270,19 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
 
             $overdues=$this->loan->overdues();
 
-            
+            //if it's the last due must clear all overdues
+            if($this->isLastDue())
+                {
+               $total_penalties=$overdues['total_penalties'];
+               $loan_balance=$lastRepayment->balance; 
+               
+                $total_dues=$total_penalties+$loan_balance;
+                if($paid_amount<$total_dues)
+                    {
+                        throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
+                    }
+                }
+          
             $paid_installment=min($this->installment_amount,$paid_amount);
             $paid_amount-=$paid_installment;
 
@@ -319,7 +331,7 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             //as finished
 
              $loan=$this->loan;
-             if($balance<=0)
+             if($balance<1)
                 {
                     $loan->status="finished";
                     if(!$loan->save())
@@ -373,6 +385,27 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             }
 
             
+        }
+        public function isLastDue()
+        {
+        if ($this->isDeleted || !$this->isPayable()) {
+        return false;
+        }
+
+        $lastDue = self::find()
+        ->where([
+        'loanID'     => $this->loanID,
+        'isDeleted'  => 0,
+        ])
+        ->andWhere(['not in', 'status', [self::STATUS_PAID, self::STATUS_DELAYED]])
+        ->orderBy(['repayment_date' => SORT_DESC, 'id' => SORT_DESC]) // tie-breaker
+        ->one();
+
+        if (!$lastDue) {
+        return false;
+        }
+
+        return (int)$lastDue->id === (int)$this->id;
         }
         public function pay_dry_run($payment_date,$paid_amount=0,$paymentdoc=null)
         {
