@@ -423,7 +423,17 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $statement->paid_amount=$paid_amount;
 
             $overdues=$this->loan->overdues();
-
+              if($this->isLastDue())
+                {
+               $total_penalties=$overdues['total_penalties'];
+               $loan_balance=$lastRepayment->balance; 
+               
+                $total_dues=$total_penalties+$loan_balance;
+                if($paid_amount<$total_dues)
+                    {
+                        throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
+                    }
+                }
             
             $paid_installment=min($this->installment_amount,$paid_amount);
             $paid_amount-=$paid_installment;
