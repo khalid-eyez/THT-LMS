@@ -277,7 +277,7 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
                $loan_balance=$lastRepayment->balance; 
                
                 $total_dues=$total_penalties+$loan_balance;
-                if($paid_amount<$total_dues)
+                if(round($paid_amount)<round($total_dues))
                     {
                         throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
                     }
