@@ -388,16 +388,11 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
         }
         public function isLastDue()
         {
-        if ($this->isDeleted || !$this->isPayable()) {
-        return false;
-        }
-
         $lastDue = self::find()
         ->where([
         'loanID'     => $this->loanID,
         'isDeleted'  => 0,
         ])
-        ->andWhere(['not in', 'status', [self::STATUS_PAID, self::STATUS_DELAYED]])
         ->orderBy(['repayment_date' => SORT_DESC, 'id' => SORT_DESC]) // tie-breaker
         ->one();
 
