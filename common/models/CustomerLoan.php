@@ -153,10 +153,6 @@ public function beforeSave($insert)
             {
               return parent::beforeSave($insert);  
             }
-            if(!$insert && $this->isStatusActive())
-                {
-                 throw new UserException('Cannot update an active loan !');
-                }
             if ($this->customer && $this->customer->hasActiveLoan()) {
             throw new UserException('Customer has another active loan !');
             }
@@ -536,7 +532,7 @@ public function beforeSave($insert)
         if($this->isToppedUp()){
             throw new UserException("Loan top-up is allowed only once !");
         }
-        $topup_rate=$this->topup_rate/100;
+        $topup_rate=$this->topup_rate;
         $paid_installments=$this->getRepaymentSchedules()
     ->andWhere(['status' => 'paid'])
     ->count();
