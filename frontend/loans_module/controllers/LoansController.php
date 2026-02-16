@@ -642,6 +642,10 @@ class LoansController extends Controller
          try
         {
         $loan=CustomerLoan::findOne($loanID);
+
+          if ($loan->customer && $loan->customer->hasActiveLoan()) {
+            throw new UserException('Customer has another active loan !');
+            }
         $loan->status="approved";
         $loan->approvedby=yii::$app->user->identity->id;
         $loan->approved_at = date('Y-m-d H:i:s');
