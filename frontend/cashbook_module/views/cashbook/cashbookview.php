@@ -2,6 +2,7 @@
 <?php
 use yii;
 use yii\helpers\Url;
+use yii\helpers\Html;
 [$start, $end] = explode(' - ', $model->date_range);
 ?>
 
@@ -35,13 +36,13 @@ use yii\helpers\Url;
 <div class="card-box">
 <div class="row mb-3">
     <div class="col-sm-6" style="text-align:left">
-    Start Date: <?=date_format(new \DateTime($start),'d M Y')?> <br> End Date: <?=date_format(new \DateTime($end),'d M Y')?>
+    Start Date: <?=date_format(new \DateTime($start),'d M y')?> <br> End Date: <?=date_format(new \DateTime($end),'d M y')?>
     
     </div>
     <div class="col-sm-6" style="text-align:right">
        <?php
     $obalance=$records[0]->openingBalance();
-    $balancedisp=($obalance<0)?yii::$app->formatter->asDecimal(abs($obalance),2).' Cr':yii::$app->formatter->asDecimal(abs($obalance),2).' Dr';
+    $balancedisp=($obalance<0)?yii::$app->formatter->asDecimal(abs($obalance),2).' C':yii::$app->formatter->asDecimal(abs($obalance),2).' D';
     ?>
     <?=$balancedisp?><br>
     </div>
@@ -64,17 +65,21 @@ use yii\helpers\Url;
 
     ?>
     <tr>
-        <td><?=date_format((new DateTime($record->created_at)),'d M Y')?></td>
-        <td><?=$record->reference_no?></td>
+        <td><?=date_format((new DateTime($record->created_at)),'d M y')?></td>
+        <td><?= Html::encode($record->reference_no) ?>
+
+        <?php if ($record->status === 'reversed'): ?>
+        <span class="badge bg-danger ms-1">REV</span>
+        <?php endif; ?></td>
         <td><?=$record->description?></td>
         <td><?=yii::$app->formatter->asDecimal(abs($record->debit),2)?></td>
         <td><?=yii::$app->formatter->asDecimal(abs($record->credit),2)?></td>
         
-        <td><?=($record->balance<0)?yii::$app->formatter->asDecimal(abs($record->balance),2).' Cr':yii::$app->formatter->asDecimal(abs($record->balance),2).' Dr'?></td>
+        <td><?=($record->balance<0)?yii::$app->formatter->asDecimal(abs($record->balance),2).' C':yii::$app->formatter->asDecimal(abs($record->balance),2).' D'?></td>
         <td>
             <a href="<?=$record->payment_document?>" target="_blank" data-toggle="tooltip" title="Reference Document"><i class="fa fa-file-o"></i></a>
             <a href="<?=Url::to(['/cashbook/cashbook/receipt-pdf','cashbookID'=>$record->id])?>" target="_blank" data-toggle="tooltip" title="Download Receipt"><i class="fa fa-download"></i></a>
-            <a href="<?=Url::to(['/cashbook/cashbook/reverse','cashbookID'=>$record->id])?>" target="_blank" data-toggle="tooltip" title="Reverse Transaction"><i class="fa fa-refresh"></i></a>
+            <a href="<?=Url::to(['/cashbook/cashbook/reverse','cashbookID'=>$record->id])?>" data-toggle="tooltip" title="Reverse Transaction"><i class="fa fa-refresh"></i></a>
         </td>
     </tr>
     <?php

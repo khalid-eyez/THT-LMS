@@ -821,6 +821,21 @@ class LoansController extends Controller
        $loan=CustomerLoan::findOne($loanID);
        return $this->renderAjax("/loans/docs/repaymentschedule",['loan'=>$loan]);
     }
+    public function actionUpdate($loanID)
+    {
+       $loan=CustomerLoan::findOne($loanID);
+       $loan->status=yii::$app->request->post('status');
+       if($loan->save())
+        {
+            yii::$app->session->setFlash("success","<i class='fa fa-info-circle'></i> Loan Status Updated Successfully!");
+            return $this->redirect(yii::$app->request->referrer);
+        }
+        else
+            {
+               yii::$app->session->setFlash("error","<i class='fa fa-info-circle'></i> Loan Status Updating Failed! ".json_encode($loan->getErrors()));
+             return $this->redirect(yii::$app->request->referrer); 
+            }
+    }
     public function actionDownloadSummary($loanID)
     {
         $loan=CustomerLoan::findOne($loanID);

@@ -5,6 +5,7 @@ use yii\behaviors\TimestampBehavior;
 
 use Yii;
 use yii\db\Expression;
+use yii\base\UserException;
 
 /**
  * This is the model class for table "cashbook".
@@ -19,6 +20,7 @@ use yii\db\Expression;
  * @property string $created_at
  * @property string $updated_at
  * @property string $payment_document
+ * @property string $status
  *
  * @property Customer $customer
  */
@@ -53,7 +55,7 @@ class Cashbook extends \yii\db\ActiveRecord
         return [
             [['credit','debit'], 'default', 'value' => 0.00],
             [['reference_no', 'description', 'category', 'balance', 'payment_document'], 'required'],
-            [['created_at','updated_at'],'safe'],
+            [['created_at','updated_at','status'],'safe'],
             [['debit', 'credit', 'balance'], 'number'],
             [['reference_no', 'description', 'category', 'payment_document'], 'string', 'max' => 255]
         ];
@@ -76,7 +78,18 @@ class Cashbook extends \yii\db\ActiveRecord
         ];
     }
    
-   
+    public function beforeSave($insert)
+    {
+    if (!$insert) {
+
+    // If status is being changed AND it was already reversed before
+    if ($this->getOldAttribute('status') === 'reversed') {
+    throw new UserException('Cannot update a reversed transaction.');
+    }
+    }
+
+    return parent::beforeSave($insert);
+    }
 
     /**
      * {@inheritdoc}
@@ -110,6 +123,11 @@ class Cashbook extends \yii\db\ActiveRecord
     }
     public function reverse()
     {
+        $this->status="reversed";
+        if(!$this->save())
+            {
+                throw new UserException("Could not update transaction". json_encode($this->getErrors()));
+            }
         $debit=$this->debit;
         $credit=$this->credit;
 

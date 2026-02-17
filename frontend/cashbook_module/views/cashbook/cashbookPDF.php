@@ -63,8 +63,8 @@ if (!empty($records)) {
 
     $obalance = $records[0]->openingBalance();
     $balancedisp = ($obalance < 0)
-        ? Yii::$app->formatter->asDecimal(abs($obalance), 2) . ' Cr'
-        : Yii::$app->formatter->asDecimal(abs($obalance), 2) . ' Dr';
+        ? Yii::$app->formatter->asDecimal(abs($obalance), 2) . ' C'
+        : Yii::$app->formatter->asDecimal(abs($obalance), 2) . ' D';
 ?>
 
     <!-- Opening Balance -->
@@ -105,8 +105,8 @@ if (!empty($records)) {
             <td class="text-right"><?= Yii::$app->formatter->asDecimal(abs($record->credit), 2) ?></td>
             <td class="text-right">
                 <?= ($record->balance < 0)
-                    ? Yii::$app->formatter->asDecimal(abs($record->balance), 2) . ' Cr'
-                    : Yii::$app->formatter->asDecimal(abs($record->balance), 2) . ' Dr'
+                    ? Yii::$app->formatter->asDecimal(abs($record->balance), 2) . ' C'
+                    : Yii::$app->formatter->asDecimal(abs($record->balance), 2) . ' D'
                 ?>
             </td>
         </tr>
