@@ -1,6 +1,7 @@
 
 <?php
 use yii;
+use yii\helpers\Url;
 [$start, $end] = explode(' - ', $model->date_range);
 ?>
 
@@ -50,7 +51,7 @@ use yii;
 
 <table id="cashtable" class="table table-striped nowrap">
     
-<tr id="heading" class="bg-primary text-white nowrap"><td>DATE</td><td>REFERENCE</td><td>DESCRIPTION</td><td>DEBIT</td><td>CREDIT</td><td>BALANCE</td><td>DOC</td></tr>
+<tr id="heading" class="bg-primary text-white nowrap"><td>DATE</td><td>REFERENCE</td><td>DESCRIPTION</td><td>DEBIT</td><td>CREDIT</td><td>BALANCE</td><td></td></tr>
     <?php
     $totaldebit=0;
     $totalcredit=0;
@@ -70,7 +71,11 @@ use yii;
         <td><?=yii::$app->formatter->asDecimal(abs($record->credit),2)?></td>
         
         <td><?=($record->balance<0)?yii::$app->formatter->asDecimal(abs($record->balance),2).' Cr':yii::$app->formatter->asDecimal(abs($record->balance),2).' Dr'?></td>
-        <td><a href="<?=$record->payment_document?>" target="_blank"><i class="fa fa-file-o"></i></a></td>
+        <td>
+            <a href="<?=$record->payment_document?>" target="_blank" data-toggle="tooltip" title="Reference Document"><i class="fa fa-file-o"></i></a>
+            <a href="<?=Url::to(['/cashbook/cashbook/receipt-pdf','cashbookID'=>$record->id])?>" target="_blank" data-toggle="tooltip" title="Download Receipt"><i class="fa fa-download"></i></a>
+            <a href="<?=Url::to(['/cashbook/cashbook/reverse','cashbookID'=>$record->id])?>" target="_blank" data-toggle="tooltip" title="Reverse Transaction"><i class="fa fa-refresh"></i></a>
+        </td>
     </tr>
     <?php
     }

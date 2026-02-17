@@ -34,20 +34,8 @@ class CustomerController extends Controller
             ]
         );
     }
-      public function actions()
-    {
-    return [
-    'error' => [
-        'class' => ErrorAction::class,
-        'view'  => 'error', 
-    ],
-    ];
-    }
-    /**
-     * Lists all Customer models.
-     *
-     * @return string
-     */
+
+  
     public function actionIndex()
     {
         Yii::error(['GET'=>Yii::$app->request->get(), 'POST'=>Yii::$app->request->post()], 'export-debug');
@@ -60,8 +48,8 @@ class CustomerController extends Controller
     if (Yii::$app->request->isAjax) {
         return $this->renderAjax('index', compact('searchModel','dataProvider'));
     }
-    return $this->render('index', compact('searchModel','dataProvider'));
-    }
+    return $this->redirect('/loans/dashboard');
+}
 public function actionExport()
 {
     $this->layout = false; // no layout for export response

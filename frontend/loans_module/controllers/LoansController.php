@@ -458,7 +458,11 @@ class LoansController extends Controller
               $model->load(yii::$app->request->post());
               return $this->renderAjax('excutivesummaryview',['model'=>$model]); 
             } 
+            if(yii::$app->request->isAjax)
+                {
         return $this->renderAjax('excutivesummary_reporter',['model'=>$model]);
+                }
+                return $this->redirect('dashboard');
        
     }
     public function actionExcutiveSummaryPdf()
@@ -492,18 +496,7 @@ class LoansController extends Controller
         ]);
             }
             else{
-                 $this->layout="user_dashboard";
-        $searchModel = new CustomerLoanSearch();
-        $params = array_merge(
-        Yii::$app->request->queryParams,
-        Yii::$app->request->post()
-        );
-        $dataProvider = $searchModel->search($params);
-
-        return $this->render('/loans_crud/index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]); 
+               return $this->redirect('/loans/loans/dashboard'); 
             }
        
     }
@@ -591,7 +584,11 @@ class LoansController extends Controller
     }
     public function actionApplications()
     {
+        if(yii::$app->request->isAjax)
+            {
         return $this->renderAjax('pending_applications');
+            }
+            return $this->redirect('/loans/dashboard');
     }
     public function actionCreateLoanReg($customerID){
         if(yii::$app->request->isPost){
@@ -838,7 +835,11 @@ class LoansController extends Controller
                 $loan=(new TopUp)->topUp($loanID,yii::$app->request);
                 return $this->render("/loans/docs/loansummaryview",['loan'=>$loan]);
             }
+            if(yii::$app->request->isAjax)
+                {
        return $this->renderAjax("topup_form",['model'=>new TopUp()]);
+                }
+                return $this->redirect("/loans/dashboard");
     }
 
     public function actionRepay($loanID)
@@ -851,7 +852,11 @@ class LoansController extends Controller
               $repayment_model->payment_doc=$uploaded;
               return $this->renderAjax('repayment_receipt',['payment_details'=>$repayment_model->pay_dry_run($loanID)]);
             }
-         return $this->renderAjax('loanRepayment',['model'=>$repayment_model]);
+             if(yii::$app->request->isAjax)
+                {
+                 return $this->renderAjax('loanRepayment',['model'=>$repayment_model]);
+                }
+                return $this->redirect("/loans/dashboard");
     }
     public function actionRepaymentOverdues($loanID,$payment_date)
     {
@@ -901,7 +906,11 @@ class LoansController extends Controller
                
                return $this->renderAjax('loansearchresult',['loans'=>$loans]);
             }
-        return $this->renderAjax('loanssearch',['model'=>$searchmodel]);
+            if(yii::$app->request->isAjax)
+                {
+                 return $this->renderAjax('loanssearch',['model'=>$searchmodel]);
+                }
+                return $this->redirect("/loans/dashboard");
     }
      public function actionDownloadScheduleReportPdf($loanID)
     {
@@ -926,7 +935,11 @@ class LoansController extends Controller
                
                return $this->renderAjax('loansearchresulttwo',['loans'=>$loans]);
             }
-        return $this->renderAjax('loanssearchtwo',['model'=>$searchmodel]);
+            if(yii::$app->request->isAjax)
+                {
+                 return $this->renderAjax('loanssearchtwo',['model'=>$searchmodel]);
+                }
+                return $this->redirect("/loans/dashboard");
     }
     public function actionDownloadRepaymentStatementReportPdf($loanID)
     {
@@ -949,7 +962,11 @@ class LoansController extends Controller
             $model->load(yii::$app->request->post());
             return $this->renderAjax('/loans/docs/calculatedrepaymentschedule',['repaymentschedules'=>$model->calculate()]);
         }
-      return $this->renderAjax('calculator',['model'=>$model]);
+        if(yii::$app->request->isAjax)
+            {
+             return $this->renderAjax('calculator',['model'=>$model]);
+            }
+            return $this->redirect("/loans/dashboard");
     }
      public function actionLoanCalculatorPdf()
     {
@@ -964,7 +981,12 @@ class LoansController extends Controller
 
     public function actionCategories()
     {
-        return $this->renderAjax('loan_categories');
+        if(yii::$app->request->isAjax)
+            {
+             return $this->renderAjax('loan_categories');
+            }
+
+            return $this->redirect("/loans/dashboard");
     }
     public function actionAddCategory()
     {
@@ -1054,6 +1076,13 @@ class LoansController extends Controller
                 {
                      return $this->asJson(['success'=>false,'error'=>'Loan Type Adding Failed ! '.Html::errorSummary($type)]);
                 }
+    }
+    public function actionLoanTypes()
+    {
+        return $this->render('loan_types',[
+        'model'=>new LoanType(),
+        'loanTypes'=>LoanType::find()->orderBy(['id'=>SORT_DESC])->all()
+        ]);
     }
 
 }

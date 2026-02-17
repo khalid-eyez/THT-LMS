@@ -10,6 +10,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use yii;
 
 class Cashbook extends Model{
 
@@ -31,6 +32,9 @@ public function __construct($data=[],$config = [])
 }
 public function save($reference_prefix,$suffix_no)
 {
+    $transaction=yii::$app->db->beginTransaction();
+    try
+    {
     if($this->record==null)
         {
             throw new UserException('Cashbook record empty');
@@ -46,10 +50,61 @@ public function save($reference_prefix,$suffix_no)
 
                 if(!$cashbook->save())
                     {
-                        throw new \Exception("unable to save cashbook record.". json_encode($cashbook->getErrors()));
+                        throw new UserException("unable to save cashbook record.". json_encode($cashbook->getErrors()));
                     }
+                    $transaction->commit();
+                    $cashbook->refresh();
+
+                    return $cashbook;
+    }
+    catch(UserException $e)
+    {
+        $transaction->rollBack();
+        throw $e;
+    }
+    catch(\Throwable $t)
+    {
+       $transaction->rollBack();
+       throw $t;
+    }
+}
+public function save_with_reference()
+{
+     $transaction=yii::$app->db->beginTransaction();
+    try
+    {
+    if($this->record==null)
+        {
+            throw new UserException('Cashbook record empty');
+        }
+                $cashbook=new Book();
+                $cashbook->credit=$this->record['credit'];
+                $cashbook->debit=$this->record['debit'];
+                $cashbook->reference_no=$this->record['reference'];
+                $cashbook->description=$this->record['description'];
+                $cashbook->payment_document=$this->record['payment_doc'];
+                $cashbook->category=$this->record['category'];
+                $cashbook->balance=$cashbook->updatedBalance();
+
+                if(!$cashbook->save())
+                    {
+                        throw new UserException("Unable to save cashbook record.". json_encode($cashbook->getErrors()));
+                    }
+                    $transaction->commit();
                     $cashbook->refresh();
                     return $cashbook;
+
+                      }
+    catch(UserException $e)
+    {
+        $transaction->rollBack();
+        throw $e;
+    }
+    catch(\Throwable $t)
+    {
+       $transaction->rollBack();
+       throw $t;
+    }
 }
 
 public function getCashFlows()

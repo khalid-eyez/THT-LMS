@@ -108,5 +108,24 @@ class Cashbook extends \yii\db\ActiveRecord
 
         return ($prev==null)?0:$prev->balance;
     }
+    public function reverse()
+    {
+        $debit=$this->debit;
+        $credit=$this->credit;
+
+        //exchanging 
+
+        $this->debit=$credit;
+        $this->credit=$debit;
+
+        // marking the reference and description as reversed
+
+        $this->reference_no.="-REV";
+        $this->description.="-REV";
+
+        //no persistence at all
+
+        return $this;
+    }
 
 }
