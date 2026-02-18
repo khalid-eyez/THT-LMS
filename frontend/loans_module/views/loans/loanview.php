@@ -33,8 +33,38 @@ use yii\helpers\Html;
                                     <a href="<?=Url::toRoute(['/loans/loans/pay','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="left" title="Disbursement" class="btn btn-primary pay"><i class="fa fa-bank"></i></a>
                                     <a href="<?=Url::toRoute(['/loans/loans/top-up','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Top Up" class="btn btn-primary pay"><i class="fa fa-plus-circle"></i></a>
                                     <a href="<?=Url::toRoute(['/loans/loans/repay','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Repayment" class="btn btn-primary pay"><i class="fa fa-money"></i></a>
-									<a href="<?=Url::toRoute(['/loans/loans/approve','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Approve" class="btn btn-primary"><i class="fa fa-check-circle"></i></a>
-                                    <a href="<?=Url::toRoute(['/loans/loans/disapprove','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Disapprove" class="btn btn-primary"><i class="fa fa-times-circle"></i></a>
+                                    <?= Html::a(
+                                    '<i class="fa fa-check-circle"></i>',
+                                    ['/loans/loans/approve', 'loanID' => $loan->id],
+                                    [
+                                    'class' => 'btn btn-primary',
+                                    'style' => 'background-color:#0a6ab3!important',
+                                    'title' => 'Approve',
+                                    'data-toggle' => 'tooltip',
+                                    'data-placement' => 'top',
+
+                                    // IMPORTANT PART
+                                    'data-confirm' => 'Are you sure you want to approve this loan?',
+                                    'data-method' => 'post',
+                                    ]
+                                    ) ?>
+
+                                    <?=Html::a(
+                                    '<i class="fa fa-times-circle"></i>',
+                                    ['/loans/loans/disapprove', 'loanID' => $loan->id],
+                                    [
+                                    'class' => 'btn btn-primary',
+                                    'style' => 'background-color:#0a6ab3!important',
+                                    'title' => 'Disapprove',
+                                    'data-toggle' => 'tooltip',
+                                    'data-placement' => 'top',
+
+                                    // confirmation
+                                    'data-confirm' => 'Are you sure you want to disapprove this loan?',
+                                    'data-method' => 'post',
+                                    ]
+                                    ) ?>
+
 
                                     <!-- ✅ NEW: Update Status button (same style family) -->
                                     <button
