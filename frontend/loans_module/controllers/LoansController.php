@@ -651,7 +651,7 @@ class LoansController extends Controller
             yii::$app->session->setFlash('success','<i class="fa fa-check-circle"></i> Loan status updated successfully!');
             return $this->redirect(yii::$app->request->referrer);
         }
-         }
+        //  }
         // catch(UserException $e)
         // {
         //  return $this->asJson(['error'=>'Loan status updating failed!'.$e->getMessage()]);
