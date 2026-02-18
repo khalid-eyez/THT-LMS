@@ -636,8 +636,8 @@ class LoansController extends Controller
     }
     public function actionApprove($loanID)
     {
-         try
-        {
+        //  try
+        // {
         $loan=CustomerLoan::findOne($loanID);
 
           if ($loan->customer && $loan->customer->hasActiveLoan()) {
@@ -652,14 +652,14 @@ class LoansController extends Controller
             return $this->redirect(yii::$app->request->referrer);
         }
          }
-        catch(UserException $e)
-        {
-         return $this->asJson(['error'=>'Loan status updating failed!'.$e->getMessage()]);
-        }
-         catch(Exception $i)
-        {
-          return $this->asJson(['error'=>'Loan status updating failed! An unknown error occured']); 
-        }
+        // catch(UserException $e)
+        // {
+        //  return $this->asJson(['error'=>'Loan status updating failed!'.$e->getMessage()]);
+        // }
+        //  catch(Exception $i)
+        // {
+        //   return $this->asJson(['error'=>'Loan status updating failed! An unknown error occured']); 
+        // }
 
     }
     public function actionDisapprove($loanID)
