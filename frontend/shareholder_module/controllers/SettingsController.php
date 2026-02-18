@@ -18,7 +18,10 @@ class SettingsController extends Controller
      */
     public function actionSettings()
     {
+        if(yii::$app->request->isAjax){
         return $this->renderAjax('settings');
+        }
+        return $this->redirect("/loans/dashboard");
     }
     public function actionAddSetting()
     {

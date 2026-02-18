@@ -6,6 +6,7 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
 use frontend\admin_module\models\ChangePasswordForm;
+use common\models\User;
 class AuthController extends \yii\web\Controller
 {
         /**
@@ -24,7 +25,7 @@ class AuthController extends \yii\web\Controller
                         
                     ],
                     [
-                        'actions' => ['logout','view-profile', 'error','changepassword','changepassword-ajax','change-password-restrict'],
+                        'actions' => ['logout','view-profile','update-profile', 'error','changepassword','changepassword-ajax','change-password-restrict'],
                         'allow' => true,
                         'roles' =>['@']
                         
@@ -200,7 +201,22 @@ class AuthController extends \yii\web\Controller
     }
     public function actionViewProfile()
     {
+        if(yii::$app->request->isAjax)
+            {
         return $this->renderAjax('profile');
+            }
+            return $this->redirect("/loans/dashboard");
+    }
+    public function actionUpdateProfile($id)
+    {
+        $userID=base64_decode(urldecode($id));
+        $user=User::findOne($userID);
+        if($user->load(yii::$app->request->post()) && $user->save())
+            {
+                return $this->asJson(['success'=>'Profile Updated Successfully !']);
+            }
+           
+        return $this->asJson(['error'=>'Profile Updating failed !'.json_encode($user->getErrors())]); 
     }
     
 
