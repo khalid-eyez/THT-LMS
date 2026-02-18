@@ -58,10 +58,10 @@ AppAsset::register($this);
       <?php endif ?>
        </div>
        </div>
-<div class="container-fluid   p-0 d-flex justify-content-center text-center mt-5 pt-2" style="border-radius:7px 7px 7px 7px!important; min-height:400px">
+<div class="container-fluid   p-0 d-flex justify-content-center text-center mt-5 pt-2" style="border-radius:7px 7px 7px 7px!important; min-height:450px;margin-top:6%!important">
   <div class="row shadow-lg bg-white login" style="width:60%; border-radius:6px 6px 6px 6px !important">
   <div class="col-sm-6  bg-white p-5 m-0 mt-0 d-none d-md-block">
-    <img src="/img/logo.png" class="img-responsive m-2 " style="width:72%;height:66%;border:none;"/>
+    <img src="/img/logo.png" class="img-responsive m-2 " style="width:65%;height:67%;border:none;"/>
   </div>
   <div class="col-sm-6 " style="border:none">
 <?= $content ?>

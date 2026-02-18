@@ -1,7 +1,7 @@
-<?php 
+<?php
 use yii\helpers\Url;
+use yii\helpers\Html;
 ?>
-
 
 <div class="breadcomb-area">
 
@@ -35,6 +35,19 @@ use yii\helpers\Url;
                                     <a href="<?=Url::toRoute(['/loans/loans/repay','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Repayment" class="btn btn-primary pay"><i class="fa fa-money"></i></a>
 									<a href="<?=Url::toRoute(['/loans/loans/approve','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Approve" class="btn btn-primary"><i class="fa fa-check-circle"></i></a>
                                     <a href="<?=Url::toRoute(['/loans/loans/disapprove','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Disapprove" class="btn btn-primary"><i class="fa fa-times-circle"></i></a>
+
+                                    <!-- ✅ NEW: Update Status button (same style family) -->
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        style="background-color: #0a6ab3!important"
+                                        data-toggle="modal"
+                                        data-target="#updateStatusModal"
+                                        title="Update Status"
+                                    >
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+
                                     <a href="<?=Url::toRoute(['/loans/loans/download-summary','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="Download Summary" class="btn btn-primary"><i class="fa fa-file-pdf-o"></i></a>
 								</div>
 							</div>
@@ -45,7 +58,54 @@ use yii\helpers\Url;
 		</div>
 	</div>
 	<!-- Breadcomb area End-->
-    <!-- Wizard area Start-->
+
+    <!-- ✅ MODAL (copied design language from your LoanTypeModal) -->
+    <div class="modal fade animated rubberBand" id="updateStatusModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header bg-primary text-white" style="padding-top:2px;padding-bottom:2px">
+                    <span id="updateStatusModalTitle">Change Status</span>
+                    <button type="button" class="close text-white" data-dismiss="modal" style="opacity:1;">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <form method="post" action="<?= Url::to(['/loans/loans/update','loanID'=>$loan->id]) ?>">
+                    <div class="modal-body">
+
+                        <?= Html::hiddenInput(Yii::$app->request->csrfParam, Yii::$app->request->csrfToken) ?>
+                        <div class="form-group">
+                            <label for="loan-status">Status</label>
+                            <?= Html::dropDownList(
+                                'status',
+                                $loan->status,
+                                $loan->optsStatus(),
+                                [
+                                    'id' => 'loan-status',
+                                    'class' => 'form-control',
+                                    'required' => true
+                                ]
+                            ) ?>
+                        </div>
+
+                        <!-- Buttons INSIDE modal-body (same as your sample modal) -->
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                            Close
+                        </button>
+
+                        <button type="submit" class="btn btn-primary pull-right">
+                            <i class="fa fa-save"></i> Force Status Change
+                        </button>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+	<!-- Wizard area Start-->
     <div class="wizard-area">
         <div class="container">
             <div class="row">
@@ -97,16 +157,14 @@ use yii\helpers\Url;
             </div>
         </div>
     </div>
-     <?php $this->registerJs("
-                    
-                    $('document').ready(function(){
-                        //$('.loans').addClass('active');
-                         $('.notika-menu-wrap > li').each(function(){
-                         $(this).removeClass('active')
-                         })
-                        
-                       //$('input').wrap('<div class='col-lg-6'></div>'); 
-                    })
-                    "
-                    );
-                ?>
+
+<?php $this->registerJs("
+    $('document').ready(function(){
+        $('[data-toggle=\"tooltip\"]').tooltip();
+
+        $('.notika-menu-wrap > li').each(function(){
+            $(this).removeClass('active')
+        });
+    });
+");
+?>

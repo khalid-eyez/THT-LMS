@@ -7,6 +7,7 @@ use frontend\cashbook_module\models\Cashbook;
 use common\models\Cashbook as Book;
 use yii;
 use common\helpers\PdfHelper;
+use yii\base\UserException;
 
 /**
  * Default controller for the `cashbook` module
@@ -25,7 +26,13 @@ class CashbookController extends Controller
               $model->load(yii::$app->request->post());
               return $this->renderAjax('cashbookview',['model'=>$model]); 
             } 
-        return $this->renderAjax('cashbooksearchresults',['model'=>$model]);
+        if(yii::$app->request->isAjax)
+            {
+              return $this->renderAjax('cashbooksearchresults',['model'=>$model]);
+            }
+
+            return $this->redirect("/loans/dashboard");
+        
     }
      public function actionCashbookPdf()
     {
@@ -56,6 +63,8 @@ class CashbookController extends Controller
     }
     public function actionReverse($cashbookID)
     {
+        $transaction=yii::$app->db->beginTransaction();
+        try{
         $cashbook=Book::findOne($cashbookID);
         $cashbook_rev=$cashbook->reverse();
 
@@ -66,11 +75,25 @@ class CashbookController extends Controller
             'reference'=>$cashbook_rev->reference_no,
             'description'=>$cashbook_rev->description,
             'payment_doc'=>$cashbook_rev->payment_document,
-            'category'=>$cashbook_rev->category,
+            'category'=>$cashbook_rev->category
         ];
 
         $saver_book=new Cashbook($rev_buffer);
 
         $saver_book->save_with_reference();
+        $transaction->commit();
+        yii::$app->session->setFlash("success","<i class='fa fa-info-circle'></i> Transaction reversed successfully! ");
+        return $this->redirect(yii::$app->request->referrer);
+        }
+        catch(UserException $u)
+        {
+          $transaction->rollBack();
+          throw $u;
+        }
+        catch(\Throwable $t)
+        {
+          $transaction->rollBack();
+          throw $t;
+        }
     }
 }

@@ -20,5 +20,6 @@ class Report extends \yii\base\Module
         parent::init();
 
         // custom initialization code goes here
+        \Yii::$app->errorHandler->errorAction = '/loans/loans/error';
     }
 }

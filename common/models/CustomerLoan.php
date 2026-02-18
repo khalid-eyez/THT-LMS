@@ -155,6 +155,13 @@ public function beforeSave($insert)
             throw new UserException('Customer has another active loan !');
             }
                 }
+
+                if(!$insert && $this->isAttributeChanged('status') && ($this->status==self::STATUS_APPROVED || $this->status==self::STATUS_ACTIVE ))
+                    {
+                        if ($this->customer && $this->customer->hasActiveLoan()) {
+                        throw new UserException('Customer has another active loan !');
+                        }
+                    }
     
           
     return parent::beforeSave($insert);
@@ -780,6 +787,15 @@ public function getRepaymentExecutiveSummary(): array
         ],
         array_map('floatval', $totals ?? [])
     );
+}
+public function isDisbursable()
+{
+    return $this->isStatusApproved();
+}
+public function isRepayable()
+{
+    return ($this->isStatusActive && !$this->isStatusFinished());
+    
 }
 
 }
