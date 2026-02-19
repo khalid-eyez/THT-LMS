@@ -78,7 +78,13 @@ class LoansController extends Controller
     $weekEnd   = $today->modify('sunday this week')->setTime(23,59,59);
 
     // ---------- KPI: totals (all-time) ----------
-    $totalCustomers = (int) Customer::find()->where(['isDeleted' => 0])->count();
+   $totalCustomers = (int) Customer::find()
+    ->alias('c')
+    ->joinWith('shareholder s', false, 'LEFT JOIN')
+    ->where(['c.isDeleted' => 0])
+    ->andWhere(['s.CustomerID' => null])
+    ->count();
+
 
     $totalShareholders = (int) Shareholder::find()->where(['isDeleted' => 0])->count();
 
@@ -801,7 +807,7 @@ class LoansController extends Controller
              catch(UserException $r)
              {
                 $transaction->rollBack();
-               throw $r;
+                throw $r;
              }
              catch(Exception $w)
              {

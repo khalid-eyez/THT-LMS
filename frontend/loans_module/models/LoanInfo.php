@@ -46,8 +46,8 @@ class LoanInfo extends Model
         $loan->loan_type_ID=$this->loan_type_ID;
         $loan->customerID=$customerID;
         $loan->status="new";
-        $padcustomerID = str_pad($customerID, 3, '0', STR_PAD_LEFT);
-        $loan->loanID=UniqueCodeHelper::generate('CL',5)."-".$padcustomerID;
+        // $padcustomerID = str_pad($customerID, 3, '0', STR_PAD_LEFT);
+        $loan->loanID=UniqueCodeHelper::generate('CL',5)."-".date('y').substr($customerID, -1);
         $loan->initializedby=yii::$app->user->identity->id;
         // loan type information
         $loanType=LoanType::findOne($this->loan_type_ID);

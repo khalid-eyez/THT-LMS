@@ -74,7 +74,7 @@ class LoanCalculator extends Model
         );
 
         if ($date === false) {
-        throw new RuntimeException('Invalid MySQL DATETIME value');
+        throw new \Exception('Invalid MySQL DATETIME value');
         }
 
         return $date;
