@@ -110,8 +110,8 @@
                                 <ul id="AccountMob" class="collapse dropdown-header-top">
                                     <li><a href="/admin/auth/view-profile">Profile Info</a></li>
                                     <li><a href="/admin/auth/changepassword-ajax">Change Password</a></li>
-                                    <li><a href="/auth/logout" role="button" aria-expanded="false" class="nav-link no-ajax">
-                                    <span><i class="fa fa-sign-out"></i> Log Out</span>
+                                    <li><a href="/auth/logout" class="no-ajax">
+                                    <i class="fa fa-sign-out"></i> Log Out
                                     </a></li>
                                 </ul>
                             </li>
