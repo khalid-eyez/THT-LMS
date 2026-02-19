@@ -114,6 +114,22 @@
                         
                         
                      });
+                         $('body').on('click','.dropdown-header-top li a',function(e){
+                          if($(this).hasClass('no-ajax')){return;}
+                        e.preventDefault();
+                         $('#global-loader').show();
+                        let url=$(this).attr('href');
+                        $('.content').load(url, function () {
+                        history.pushState({ url: url }, '', url);
+                        if ($('.meanmenu-reveal').hasClass('meanclose')) {
+                        $('.meanmenu-reveal').trigger('click');
+                        }
+                        $('#global-loader').hide();
+                        
+                        });
+                        
+                        
+                     });
 
                         $('body').on('click', '.del', function (e) {
                         e.preventDefault();

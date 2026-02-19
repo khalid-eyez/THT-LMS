@@ -125,7 +125,7 @@ Pjax::begin([
                         </ul>
                     </div>
                 </div>
-
+                 <div class="table-responsive">
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
@@ -197,7 +197,7 @@ Pjax::begin([
                 ]); ?>
 
 <?php Pjax::end(); ?>
-
+</div>
             </div>
         </div>
     </div>

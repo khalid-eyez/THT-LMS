@@ -136,6 +136,29 @@ $gridcolumns = [
         cursor:pointer !important;
         filter:none !important;
     }
+    /* Make the grid container scroll horizontally on small screens */
+@media (max-width: 767px) {
+  #dynagrid-1 .kv-grid-container{
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      display: block;
+  }
+
+  /* Stop the table from shrinking to fit the phone */
+  #dynagrid-1 .kv-grid-table{
+      min-width: 1100px !important;   /* <-- adjust if needed */
+      width: auto !important;
+      table-layout: auto !important;
+  }
+
+  /* Keep cells from wrapping into ugly multi-line rows */
+  #dynagrid-1 .kv-grid-table th,
+  #dynagrid-1 .kv-grid-table td{
+      white-space: nowrap;
+  }
+}
 </style>
 
 <!-- ✅ Frontend export libs -->
@@ -187,6 +210,9 @@ Pjax::begin([
                     'gridOptions' => [
                         'dataProvider' => $dataProvider,
                         'filterModel'  => $searchModel,
+                        'responsive' => true,
+                        'responsiveWrap' => false,
+                        'tableOptions' => ['class' => 'table table-bordered table-striped kv-grid-table'],
                         'pjax' => false, // outer PJAX only
                         'toolbar' => false,
                         'panel' => [

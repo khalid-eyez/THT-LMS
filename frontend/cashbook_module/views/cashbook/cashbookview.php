@@ -49,7 +49,7 @@ use yii\helpers\Html;
 </div>
 
 
-
+<div class="table-responsive">
 <table id="cashtable" class="table table-striped nowrap">
     
 <tr id="heading" class="bg-primary text-white nowrap"><td>DATE</td><td>REFERENCE</td><td>DESCRIPTION</td><td>DEBIT</td><td>CREDIT</td><td>BALANCE</td><td></td></tr>
@@ -94,5 +94,6 @@ use yii\helpers\Html;
     
 </tr>
 </table>
+</div>
 <?php } ?>
 </div>

@@ -77,6 +77,52 @@ use kartik\daterange\DateRangePicker;
         cursor:pointer !important;
         filter:none !important;
     }
+    /* Force tablet-like behavior on phones: keep table width, scroll horizontally */
+.grid-scroll-x{
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
+}
+
+/* Prevent the table from squeezing into tiny widths */
+.grid-scroll-x .kv-grid-table{
+    width: max-content !important; /* keeps natural column widths */
+    min-width: 100% !important;    /* at least fill container */
+    table-layout: auto !important;
+    white-space: nowrap;           /* keep cells on one line */
+}
+
+/* Optional: make header look good while scrolling */
+.grid-scroll-x .kv-grid-table th,
+.grid-scroll-x .kv-grid-table td{
+    white-space: nowrap;
+}
+/* Make the grid container scroll horizontally on small screens */
+@media (max-width: 767px) {
+  #dynagrid-1 .kv-grid-container{
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      display: block;
+  }
+
+  /* Stop the table from shrinking to fit the phone */
+  #dynagrid-1 .kv-grid-table{
+      min-width: 1100px !important;   /* <-- adjust if needed */
+      width: auto !important;
+      table-layout: auto !important;
+  }
+
+  /* Keep cells from wrapping into ugly multi-line rows */
+  #dynagrid-1 .kv-grid-table th,
+  #dynagrid-1 .kv-grid-table td{
+      white-space: nowrap;
+  }
+}
+
+
 </style>
 
 <!-- ✅ Frontend export libs -->
@@ -181,7 +227,7 @@ Pjax::begin([
         </ul>
     </div>
 </div>
-
+<div class="grid-scroll-x">
 <?= DynaGrid::widget([
     'columns' => $gridcolumns,
     'storage' => DynaGrid::TYPE_COOKIE,
@@ -190,6 +236,9 @@ Pjax::begin([
         'dataProvider' => $dataProvider,
         'filterModel'  => $searchModel,
         'pjax' => false, // outer PJAX only
+          'responsive' => true,
+    'responsiveWrap' => false,
+        'tableOptions' => ['class' => 'table table-bordered table-striped kv-grid-table'],
         'toolbar' => false,
         'panel' => [
             'heading' => false,
@@ -199,7 +248,7 @@ Pjax::begin([
     ],
     'options' => ['id' => 'dynagrid-1'],
 ]); ?>
-
+</div>
 <?php Pjax::end(); ?>
 
 <?php

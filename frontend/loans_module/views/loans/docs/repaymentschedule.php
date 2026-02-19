@@ -2,6 +2,7 @@
 
 
 </style>
+<div style="overflow-x:auto; width:100%;">
 <table class="table table-striped">
     <tr class="heading"><th>#</th><th>Repayment Date</th><th class="">Loan Amount</th><th>Principal</th><th>Interest</th><th>Installment</th><th>Loan Balance</th></tr>
     <?php
@@ -39,3 +40,4 @@
         <th><?= Yii::$app->formatter->asDecimal($loan_balance,2) ?></th>
     </tr>
 </table>
+</div>

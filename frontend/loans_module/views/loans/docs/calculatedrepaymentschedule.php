@@ -74,7 +74,7 @@ if (!empty($schedules)) {
                     </div>
                 </div>
             <?php endif; ?>
-
+            <div class="table-responsive">
             <!-- TABLE -->
             <table class="table table-striped table-hover mb-0 repay-table">
                 <thead class="table-light">
@@ -143,4 +143,5 @@ if (!empty($schedules)) {
 
         </div>
     </div>
+</div>
 </div>

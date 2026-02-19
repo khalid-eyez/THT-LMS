@@ -141,6 +141,23 @@ $css = <<<CSS
   width: 100% !important;
   margin: 0 auto 10px auto !important;
 }
+/* 📱 Make the whole view horizontally scrollable on phones */
+@media (max-width: 991px){
+
+  /* scroll container */
+  .page-x-scroll{
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* force inner content to be wider than the phone so scrolling actually happens */
+  .page-x-scroll .page-x-scroll-inner{
+    min-width: 1100px; /* adjust: 900-1400 depending on how wide you want */
+  }
+}
+
 CSS;
 
 $this->registerCss($css);
@@ -151,6 +168,8 @@ $this->registerCss($css);
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bg-white">
         <div class="wizard-wrap-int">
+          <div class="page-x-scroll">
+  <div class="page-x-scroll-inner">
           <div class="new-loans-pending">
 
             <!-- ✅ WHOLE VIEW WRAP (reloadable) -->
@@ -299,6 +318,8 @@ $this->registerCss($css);
 
             </div><!-- /#loansWrap -->
 
+          </div>
+          </div>
           </div>
         </div>
       </div>

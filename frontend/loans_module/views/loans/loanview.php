@@ -2,7 +2,30 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 ?>
+<style>
+    /* Mobile fix: keep top action buttons visible */
+@media (max-width: 767px){
 
+  .breadcomb-list .breadcomb-report{
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-start;
+      margin-top: 10px;
+      float: none !important;
+      text-align: left !important;
+  }
+
+  .breadcomb-list .breadcomb-report .btn{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      margin: 0 !important;
+  }
+}
+
+    </style>
 <div class="breadcomb-area">
 
 		<div class="container">
@@ -28,7 +51,7 @@ use yii\helpers\Html;
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 								<div class="breadcomb-report" >
                                     <a href="<?=Url::toRoute(['/loans/loans/pay','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="left" title="Disbursement" class="btn btn-primary pay"><i class="fa fa-bank"></i></a>
                                     <a href="<?=Url::toRoute(['/loans/loans/top-up','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Top Up" class="btn btn-primary pay"><i class="fa fa-plus-circle"></i></a>

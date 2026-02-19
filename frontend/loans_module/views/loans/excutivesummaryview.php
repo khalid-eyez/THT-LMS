@@ -82,7 +82,7 @@ foreach ($columns as $key => $config) {
     </div>
 
     <?php if (!empty($loans)) : ?>
-
+         <div class="table-responsive">
         <table id="summarytable" class="table table-striped nowrap">
             <tr id="heading">
                 <td>CUSTOMER ID</td>
@@ -116,7 +116,7 @@ foreach ($columns as $key => $config) {
                     </td>
                 <?php endforeach; ?>
             </tr>
-        </table>
+        </table></div>
 
     <?php else : ?>
         <div class="alert alert-warning">

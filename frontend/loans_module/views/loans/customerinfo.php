@@ -1,3 +1,4 @@
+<div style="overflow-x:auto; width:100%;">
 <table class="table table-bordered table-striped">
     <tbody>
         <tr>
@@ -68,3 +69,4 @@
         <?php endif; ?>
     </tbody>
 </table>
+</div>

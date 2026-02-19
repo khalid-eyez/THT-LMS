@@ -100,7 +100,7 @@ $csrfToken = Yii::$app->request->getCsrfToken();
 </div>
 
 <!-- MODAL -->
-<div class="modal fade animated rubberBand" id="categoryModal" tabindex="-1" role="dialog">
+<div class="modal fade animated rubberBand" id="categoryModal" tabindex="-1" role="dialog" style="z-index: index 99999;!important">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
 
