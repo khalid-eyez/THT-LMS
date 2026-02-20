@@ -14,6 +14,49 @@ use yii\base\UserException;
  */
 class CashbookController extends Controller
 {
+  public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => \yii\filters\AccessControl::className(),
+            'rules' => [
+
+                // View cashbook report screen + filtering results
+                [
+                    'actions' => ['cashbook-reporter'],
+                    'allow'   => true,
+                    'roles'   => ['view_cashbook_report'],
+                ],
+
+                // Export reports
+                [
+                    'actions' => ['cashbook-pdf'],
+                    'allow'   => true,
+                    'roles'   => ['download_cashbook_report'],
+                ],
+                [
+                    'actions' => ['cashbook-excel'],
+                    'allow'   => true,
+                    'roles'   => ['download_cashbook_report'],
+                ],
+
+                // Individual payment receipt
+                [
+                    'actions' => ['receipt-pdf'],
+                    'allow'   => true,
+                    'roles'   => ['download_cashbook_receipt'],
+                ],
+
+                // Reverse a transaction (sensitive accounting action)
+                [
+                    'actions' => ['reverse'],
+                    'allow'   => true,
+                    'roles'   => ['reverse_cashbook_transaction'],
+                ],
+            ],
+        ],
+    ];
+}
     /**
      * Renders the index view for the module
      * @return string

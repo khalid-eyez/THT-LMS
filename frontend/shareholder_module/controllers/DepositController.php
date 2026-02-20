@@ -19,6 +19,7 @@ use common\models\Deposit;
 use common\models\DepositInterest;
 use frontend\shareholder_module\models\ShareholderInterestForm;
 use yii\helpers\Html;
+use yii\filters\AccessControl;
 
 /**
  * DepositController implements the CRUD actions for Deposit model.
@@ -28,20 +29,104 @@ class DepositController extends Controller
     /**
      * @inheritDoc
      */
-    public function behaviors()
-    {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
+     public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => AccessControl::className(),
+            'rules' => [
+
+                // List deposits (admin/global listing page)
+                [
+                    'actions' => ['index'],
+                    'allow'   => true,
+                    'roles'   => ['view_deposits_list'],
                 ],
-            ]
-        );
-    }
+
+                // View single deposit details
+                [
+                    'actions' => ['view'],
+                    'allow'   => true,
+                    'roles'   => ['view_deposit_details'],
+                ],
+
+                // Shareholder deposits (modal wrapper + ajax table results)
+                [
+                    'actions' => ['shareholder-deposits'],
+                    'allow'   => true,
+                    'roles'   => ['view_shareholder_deposits'],
+                ],
+
+                // Shareholder deposits exports
+                [
+                    'actions' => ['shareholder-deposits-pdf-report'],
+                    'allow'   => true,
+                    'roles'   => ['download_shareholder_deposits_report'],
+                ],
+                [
+                    'actions' => ['shareholder-deposits-excel-report'],
+                    'allow'   => true,
+                    'roles'   => ['download_shareholder_deposits_report'],
+                ],
+
+                // Record deposit for a shareholder (also generates receipt PDF)
+                [
+                    'actions' => ['create'],
+                    'allow'   => true,
+                    'roles'   => ['record_shareholder_deposit'],
+                ],
+
+                // Delete deposit (you have BOTH delete + delete-deposit endpoints)
+                [
+                    'actions' => ['delete-deposit', 'delete'],
+                    'allow'   => true,
+                    'roles'   => ['delete_shareholder_deposit'],
+                ],
+
+                // Update deposit
+                [
+                    'actions' => ['update'],
+                    'allow'   => true,
+                    'roles'   => ['update_shareholder_deposit'],
+                ],
+
+                // Claims screens + approve/delete claim
+                [
+                    'actions' => ['claims'],
+                    'allow'   => true,
+                    'roles'   => ['view_interest_claims'],
+                ],
+                [
+                    'actions' => ['approve-claim'],
+                    'allow'   => true,
+                    'roles'   => ['approve_interest_claims'],
+                ],
+                [
+                    'actions' => ['delete-claim'],
+                    'allow'   => true,
+                    'roles'   => ['delete_interest_claims'],
+                ],
+
+                // Shareholder interest statement (screen + exports)
+                [
+                    'actions' => ['shareholder-interest-statement'],
+                    'allow'   => true,
+                    'roles'   => ['view_shareholder_interest_statement'],
+                ],
+                [
+                    'actions' => ['shareholder-interest-statement-pdf'],
+                    'allow'   => true,
+                    'roles'   => ['download_shareholder_interest_statement'],
+                ],
+                [
+                    'actions' => ['shareholder-interest-statement-excel'],
+                    'allow'   => true,
+                    'roles'   => ['download_shareholder_interest_statement'],
+                ],
+            ],
+        ],
+    ];
+}
 
     /**
      * Lists all Deposit models.

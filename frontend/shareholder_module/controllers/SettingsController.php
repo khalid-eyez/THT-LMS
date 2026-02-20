@@ -6,12 +6,44 @@ use common\models\Setting;
 use yii\web\Controller;
 use yii;
 use yii\helpers\Html;
+use yii\filters\AccessControl;
 
 /**
  * Default controller for the `shareholder` module
  */
 class SettingsController extends Controller
 {
+    public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => AccessControl::className(),
+            'rules' => [
+
+                // View settings screen
+                [
+                    'actions' => ['settings'],
+                    'allow'   => true,
+                    'roles'   => ['view_settings'],
+                ],
+
+                // Add new setting (AJAX JSON)
+                [
+                    'actions' => ['add-setting'],
+                    'allow'   => true,
+                    'roles'   => ['add_setting'],
+                ],
+
+                // Update existing setting (AJAX JSON)
+                [
+                    'actions' => ['update-setting'],
+                    'allow'   => true,
+                    'roles'   => ['update_setting'],
+                ],
+            ],
+        ],
+    ];
+}
     /**
      * Renders the index view for the module
      * @return string

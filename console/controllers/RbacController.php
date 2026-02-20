@@ -53,11 +53,92 @@ public function actionInit(){
                'delete_user'=>'A permission for deleting a user',
                'unlock_user'=>'A permission for unlocking a user',
                'lock_user'=>'A permission for locking a user',
-               'view_dashboard'=>'A user level permission for viewing their dashboard'
+               'view_dashboard'=>'A user level permission for viewing their dashboard',
+               
+    // ===== Shareholders =====
+    'view_shareholders_list' => 'A permission for viewing the shareholders list',
+    'view_deposits_summary' => 'A permission for viewing shareholders deposits summary',
+    'download_deposits_summary_report' => 'A permission for downloading deposits summary reports',
+    'download_interest_summary_report' => 'A permission for downloading interest summary reports',
+    'approve_interest_claims' => 'A permission for approving shareholder interest claims',
+    'delete_shareholder_deposit' => 'A permission for deleting a shareholder deposit',
+    'pay_shareholder_interests' => 'A permission for paying shareholder interests',
+    'claim_interest' => 'A permission for claiming shareholder interest',
+    'register_shareholder' => 'A permission for registering a new shareholder',
+    'download_shareholder_proof_of_registration' => 'A permission for downloading shareholder proof of registration',
+    'record_monthly_deposit' => 'A permission for recording monthly shareholder deposits',
+    'update_shareholder' => 'A permission for updating shareholder information',
 
-//add user permissions
+    // ===== Deposits =====
+    'view_deposits_list' => 'A permission for viewing deposits list',
+    'view_deposit_details' => 'A permission for viewing deposit details',
+    'view_shareholder_deposits' => 'A permission for viewing deposits of a specific shareholder',
+    'download_shareholder_deposits_report' => 'A permission for downloading shareholder deposits report',
+    'record_shareholder_deposit' => 'A permission for recording a shareholder deposit',
+    'update_shareholder_deposit' => 'A permission for updating a shareholder deposit',
+    'view_interest_claims' => 'A permission for viewing deposit interest claims',
+    'delete_interest_claims' => 'A permission for deleting interest claims',
+    'view_shareholder_interest_statement' => 'A permission for viewing shareholder interest statement',
+    'download_shareholder_interest_statement' => 'A permission for downloading shareholder interest statement',
+
+    // ===== Settings =====
+    'view_settings' => 'A permission for viewing system settings',
+    'add_setting' => 'A permission for adding a system setting',
+    'update_setting' => 'A permission for updating a system setting',
+
+    // ===== Cashbook =====
+    'view_cashbook_report' => 'A permission for viewing the cashbook report',
+    'download_cashbook_report' => 'A permission for downloading the cashbook report',
+    'download_cashbook_receipt' => 'A permission for downloading payment receipts',
+    'reverse_cashbook_transaction' => 'A permission for reversing a cashbook transaction',
+
+    // ===== Loans =====
+    'view_loans_dashboard' => 'A permission for viewing the loans dashboard',
+    'view_executive_summary' => 'A permission for viewing executive loan summary',
+    'download_executive_summary_report' => 'A permission for downloading executive summary reports',
+    'view_loans_list' => 'A permission for viewing loans list',
+    'export_loans_data' => 'A permission for exporting loans data',
+    'view_loan_applications' => 'A permission for viewing loan applications',
+    'create_loan_application' => 'A permission for creating a loan application',
+    'view_loan_details' => 'A permission for viewing loan details',
+    'approve_loan_application' => 'A permission for approving a loan application',
+    'disapprove_loan_application' => 'A permission for disapproving a loan application',
+    'disburse_loan' => 'A permission for disbursing a loan',
+    'update_loan_status' => 'A permission for updating loan status',
+    'download_loan_summary' => 'A permission for downloading loan summary',
+    'topup_loan' => 'A permission for topping up a loan',
+    'repay_loan' => 'A permission for recording a loan repayment',
+    'view_repayment_overdues' => 'A permission for viewing repayment overdues',
+    'confirm_loan_repayment' => 'A permission for confirming loan repayment',
+    'cancel_loan_repayment' => 'A permission for cancelling a loan repayment',
+    'view_repayment_statement' => 'A permission for viewing repayment statement',
+    'view_repayment_schedule' => 'A permission for viewing repayment schedule',
+    'download_repayment_schedule_report' => 'A permission for downloading repayment schedule report',
+    'download_repayment_statement_report' => 'A permission for downloading repayment statement report',
+    'search_loans' => 'A permission for searching loans',
+    'use_loan_calculator' => 'A permission for using the loan calculator',
+    'download_loan_calculator_report' => 'A permission for downloading loan calculator report',
+
+    // ===== Loan Configurations =====
+    'view_loan_categories' => 'A permission for viewing loan categories',
+    'manage_loan_categories' => 'A permission for managing loan categories',
+    'view_loan_types' => 'A permission for viewing loan types',
+    'manage_loan_types' => 'A permission for managing loan types',
+
+    // ===== Customers =====
+    'view_customers_list' => 'A permission for viewing customers list',
+    'export_customers' => 'A permission for exporting customers data',
+    'view_customer_details' => 'A permission for viewing customer details',
+    'create_customer' => 'A permission for creating a customer',
+    'update_customer' => 'A permission for updating customer information',
+    'delete_customer' => 'A permission for deleting a customer',
+
+              
+
 
         ];
+
+
        //creating all the permissions
        $this->stdout("Creating Initial Permissions... \n ");
        foreach($permissions as $permission=>$description)

@@ -33,6 +33,7 @@ use common\models\Shareholder;
 use frontend\loans_module\models\ExcutiveSummary;
 use yii\helpers\Html;
 use common\models\Deposit;
+use yii\filters\AccessControl;
 
 //use frontend\loans_module\models\LoanCalculatorForm;
 
@@ -40,6 +41,203 @@ use common\models\Deposit;
 class LoansController extends Controller
 {
     public $layout="user_dashboard";
+
+public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => AccessControl::className(),
+            'rules' => [
+
+                // Dashboard
+                [
+                    'actions' => ['dashboard'],
+                    'allow'   => true,
+                    'roles'   => ['view_loans_dashboard'],
+                ],
+
+                // Executive summary (screen + exports)
+                [
+                    'actions' => ['excutive-summary-reporter'],
+                    'allow'   => true,
+                    'roles'   => ['view_executive_summary'],
+                ],
+                [
+                    'actions' => ['excutive-summary-pdf', 'excutive-summary-excel'],
+                    'allow'   => true,
+                    'roles'   => ['download_executive_summary_report'],
+                ],
+
+                // Loans list + export JSON
+                [
+                    'actions' => ['loans'],
+                    'allow'   => true,
+                    'roles'   => ['view_loans_list'],
+                ],
+                [
+                    'actions' => ['export-loans-json'],
+                    'allow'   => true,
+                    'roles'   => ['export_loans_data'],
+                ],
+
+                // Applications screen
+                [
+                    'actions' => ['applications'],
+                    'allow'   => true,
+                    'roles'   => ['view_loan_applications'],
+                ],
+
+                // Create loan (normal + registered customer flow)
+                [
+                    'actions' => ['create-loan', 'create-loan-reg'],
+                    'allow'   => true,
+                    'roles'   => ['create_loan_application'],
+                ],
+
+                // Loan view + failure page
+                [
+                    'actions' => ['loan-view', 'loan-fail'],
+                    'allow'   => true,
+                    'roles'   => ['view_loan_details'],
+                ],
+                   [
+                    'actions' => ['loan-fail'],
+                    'allow'   => true,
+                    'roles'   => ['@'],
+                ],
+
+                // Approve / disapprove (both normal + ajax)
+                [
+                    'actions' => ['approve', 'approve-ajax'],
+                    'allow'   => true,
+                    'roles'   => ['approve_loan_application'],
+                ],
+                [
+                    'actions' => ['disapprove', 'disapprove-ajax'],
+                    'allow'   => true,
+                    'roles'   => ['disapprove_loan_application'],
+                ],
+
+                // Disbursement / activate loan (pay)
+                [
+                    'actions' => ['pay'],
+                    'allow'   => true,
+                    'roles'   => ['disburse_loan'],
+                ],
+
+                // Change loan status (your actionUpdate)
+                [
+                    'actions' => ['update'],
+                    'allow'   => true,
+                    'roles'   => ['update_loan_status'],
+                ],
+
+                // Download loan summary PDF
+                [
+                    'actions' => ['download-summary'],
+                    'allow'   => true,
+                    'roles'   => ['download_loan_summary'],
+                ],
+
+                // Top up loan
+                [
+                    'actions' => ['top-up'],
+                    'allow'   => true,
+                    'roles'   => ['topup_loan'],
+                ],
+
+                // Repayment flow (simulate, overdues, confirm, cancel, statements)
+                [
+                    'actions' => ['repay'],
+                    'allow'   => true,
+                    'roles'   => ['repay_loan'],
+                ],
+                [
+                    'actions' => ['repayment-overdues'],
+                    'allow'   => true,
+                    'roles'   => ['view_repayment_overdues'],
+                ],
+                [
+                    'actions' => ['repayment-confirm'],
+                    'allow'   => true,
+                    'roles'   => ['confirm_loan_repayment'],
+                ],
+                [
+                    'actions' => ['cancel-repayment'],
+                    'allow'   => true,
+                    'roles'   => ['cancel_loan_repayment'],
+                ],
+                [
+                    'actions' => ['repayment-statement'],
+                    'allow'   => true,
+                    'roles'   => ['view_repayment_statement'],
+                ],
+
+                // Repayment schedule mini + schedule reports
+                [
+                    'actions' => ['repayment-schedule-mini'],
+                    'allow'   => true,
+                    'roles'   => ['view_repayment_schedule'],
+                ],
+                [
+                    'actions' => ['download-schedule-report-pdf', 'download-schedule-report-excel'],
+                    'allow'   => true,
+                    'roles'   => ['download_repayment_schedule_report'],
+                ],
+
+                // Repayment statement reports
+                [
+                    'actions' => ['download-repayment-statement-report-pdf', 'download-repayment-statement-report-excel'],
+                    'allow'   => true,
+                    'roles'   => ['download_repayment_statement_report'],
+                ],
+
+                // Loan search (both screens)
+                [
+                    'actions' => ['loan-search', 'loan-search-two'],
+                    'allow'   => true,
+                    'roles'   => ['search_loans'],
+                ],
+
+                // Loan calculator (screen + pdf)
+                [
+                    'actions' => ['loan-calculator'],
+                    'allow'   => true,
+                    'roles'   => ['use_loan_calculator'],
+                ],
+                [
+                    'actions' => ['loan-calculator-pdf'],
+                    'allow'   => true,
+                    'roles'   => ['download_loan_calculator_report'],
+                ],
+
+                // Loan categories management (screen + CRUD ajax)
+                [
+                    'actions' => ['categories'],
+                    'allow'   => true,
+                    'roles'   => ['view_loan_categories'],
+                ],
+                [
+                    'actions' => ['add-category', 'category-update', 'category-delete'],
+                    'allow'   => true,
+                    'roles'   => ['manage_loan_categories'],
+                ],
+
+                // Loan types management (screen + CRUD ajax)
+                [
+                    'actions' => ['loan-types'],
+                    'allow'   => true,
+                    'roles'   => ['view_loan_types'],
+                ],
+                [
+                    'actions' => ['loantype-add', 'loantype-update', 'loantype-delete'],
+                    'allow'   => true,
+                    'roles'   => ['manage_loan_types'],
+                ],
+            ],
+        ],
+    ];
+}
     public function actions()
     {
     return [

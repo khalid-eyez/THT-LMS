@@ -27,6 +27,7 @@ use frontend\shareholder_module\models\ShareholderInterestForm;
 use yii\web\UploadedFile;
 use kartik\mpdf\Pdf;
 use common\models\Setting;
+use yii\filters\AccessControl;
 
 /**
  * ShareholderController implements the CRUD actions for Shareholder model.
@@ -41,19 +42,122 @@ class ShareholderController extends Controller
     /**
      * @inheritDoc
      */
-    public function behaviors()
+     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        //'delete' => ['POST'],
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' =>['view_shareholders_list']
+                        
                     ],
+                    [
+                        'actions' => ['deposits-summary'],
+                        'allow' => true,
+                        'roles' =>['view_deposits_summary']
+                        
+                    ],
+                     [
+                        'actions' => ['deposits-summary-reporter'],
+                        'allow' => true,
+                        'roles' =>['download_deposits_summary_report']
+                        
+                    ],
+                     [
+                        'actions' => ['interest-summary-reporter'],
+                        'allow' => true,
+                        'roles' =>['download_interest_summary_report']
+                        
+                    ],
+                     [
+                        'actions' => ['interest-summary-pdf'],
+                        'allow' => true,
+                        'roles' =>['download_interest_summary_report']
+                        
+                    ],
+                     [
+                        'actions' => ['interest-summary-excel'],
+                        'allow' => true,
+                        'roles' =>['download_interest_summary_report']
+                        
+                    ],
+                     [
+                        'actions' => ['deposits-summary-pdf'],
+                        'allow' => true,
+                        'roles' =>['download_deposits_summary_report']
+                        
+                    ],
+                     [
+                        'actions' => ['deposits-summary-excel'],
+                        'allow' => true,
+                        'roles' =>['download_deposits_summary_report']
+                        
+                    ],
+                    [
+                        'actions' => ['approve-interest'],
+                        'allow' => true,
+                        'roles' =>['approve_interest_claims']
+                        
+                    ],
+                    [
+                        'actions' => ['delete-deposit'],
+                        'allow' => true,
+                        'roles' =>['delete_shareholder_deposit']
+                        
+                    ],
+                    [
+                        'actions' => ['pay-interests'],
+                        'allow' => true,
+                        'roles' =>['pay_shareholder_interests']
+                        
+                    ],
+                    [
+                        'actions' => ['claim-interest'],
+                        'allow' => true,
+                        'roles' =>['claim_interest']
+                        
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => true,
+                        'roles' =>['register_shareholder']
+                        
+                    ],
+                       [
+                        'actions' => ['download-por'],
+                        'allow' => true,
+                        'roles' =>['download_shareholder_proof_of_registration']
+                        
+                    ],
+                       [
+                        'actions' => ['deposit'],
+                        'allow' => true,
+                        'roles' =>['record_monthly_deposit']
+                        
+                    ],
+              
+                       [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' =>['update_shareholder']
+                        
+                    ],
+                       [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' =>['delete_shareholder']
+                        
+                    ],
+                    
+                    
+                    
                 ],
-            ]
-        );
+            ],
+          
+        ];
     }
   public function actions()
     {

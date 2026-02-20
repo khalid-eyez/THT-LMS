@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
 use yii;
+use yii\filters\AccessControl;
 
 /**
  * CustomerController implements the CRUD actions for Customer model.
@@ -17,23 +18,59 @@ use yii;
 class CustomerController extends Controller
 {
     public $layout='user_dashboard';
-    /**
-     * @inheritDoc
-     */
-    public function behaviors()
-    {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        //'update' => ['POST'],
-                    ],
+
+public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => AccessControl::className(),
+            'rules' => [
+
+                // Customers list (index grid)
+                [
+                    'actions' => ['index'],
+                    'allow'   => true,
+                    'roles'   => ['view_customers_list'],
                 ],
-            ]
-        );
-    }
+
+                // Export customers (your ExportMenu view)
+                [
+                    'actions' => ['export'],
+                    'allow'   => true,
+                    'roles'   => ['export_customers'],
+                ],
+
+                // View customer profile/details
+                [
+                    'actions' => ['view'],
+                    'allow'   => true,
+                    'roles'   => ['view_customer_details'],
+                ],
+
+                // Create customer
+                [
+                    'actions' => ['create'],
+                    'allow'   => true,
+                    'roles'   => ['create_customer'],
+                ],
+
+                // Update customer (AJAX form + POST save)
+                [
+                    'actions' => ['update'],
+                    'allow'   => true,
+                    'roles'   => ['update_customer'],
+                ],
+
+                // Delete customer (AJAX JSON)
+                [
+                    'actions' => ['delete'],
+                    'allow'   => true,
+                    'roles'   => ['delete_customer'],
+                ],
+            ],
+        ],
+    ];
+}
 
   
     public function actionIndex()
