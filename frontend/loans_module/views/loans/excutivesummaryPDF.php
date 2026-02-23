@@ -1,7 +1,7 @@
 <?php
 use Yii;
 
-[$start, $end] = explode(' - ', $model->date_range);
+[$start, $end] = ($model->date_range==null)?[date("Y-m-d H:i:s"),date("Y-m-d H:i:s")]:explode(' - ', $model->date_range);
 
 $report  = $model->buildLoansExecutiveSummaryReport();
 $loans   = $report['loans'] ?? [];

@@ -6,6 +6,8 @@ use yii\helpers\VarDumper;
 use yii\base\Model;
 use common\models\User;
 use yii\web\NotFoundHttpException;
+use kartik\password\StrengthValidator;
+use yii\base\UserException;
 
 /**
  * Signup form
@@ -16,6 +18,8 @@ class ChangePasswordForm extends Model
     public $new_password;
     public $confirm_new_password;
 
+    public $username;
+
     
 
     /**
@@ -25,6 +29,7 @@ class ChangePasswordForm extends Model
     {
         return [
             [['current_password', 'new_password', 'confirm_new_password'], 'required'],
+            [['new_password'], StrengthValidator::className(), 'preset' => 'normal','userAttribute' => 'username'],
             [
                 'confirm_new_password', 'compare', 'compareAttribute' => 'new_password',
                 'message' => "Passwords don't match", 
@@ -62,14 +67,16 @@ class ChangePasswordForm extends Model
                 if($user->save()){
                     return true;
                 }
-               
+              
             }
+             throw new UserException("The current password is wrong");
        
        }catch(\Throwable $e){
 
-            throw new NotFoundHttpException('fail to change password');
+            throw $e;
       }
-    return false;
+      
+  
 }
 
   

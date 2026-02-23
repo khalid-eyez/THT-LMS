@@ -69,7 +69,7 @@ class ShareholderController extends Controller
                      [
                         'actions' => ['interest-summary-reporter'],
                         'allow' => true,
-                        'roles' =>['download_interest_summary_report']
+                        'roles' =>['view_interest_summary_report']
                         
                     ],
                      [
@@ -158,6 +158,28 @@ class ShareholderController extends Controller
             ],
           
         ];
+    }
+         public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        // Only check for logged in users
+        if (!Yii::$app->user->isGuest) {
+
+            $identity = Yii::$app->user->identity;
+
+            if ($identity->hasDefaultPassword()) {
+
+                // Prevent redirect loop
+                if ($action->id !== 'change-password-restrict') {
+                    return $this->redirect(['/admin/auth/change-password-restrict']);
+                }
+            }
+        }
+
+        return true;
     }
   public function actions()
     {

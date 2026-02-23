@@ -275,10 +275,13 @@ $this->registerCss($css);
                           <td><?= Html::encode($createdAt) ?></td>
                           <td><?= Html::encode($updatedAt) ?></td>
 
-                          <td class="action-btns" style="padding:1px">
+                          <td class="action-btns" style="padding:2px!important">
+                            <?php if(yii::$app->user->can("view_loan_details")){ ?>
                              <a href="<?= $viewUrl($row->id) ?>" title="View Loan" class="btn btn-xs btn-primary">
                                 <i class="fa fa-eye"></i>
                              </a>
+                             <?php } ?>
+                              <?php if(yii::$app->user->can("approve_loan_application")){ ?>
                             <?= Html::button('<i class="fa fa-check"></i>', [
                               'type' => 'button',
                               'class' => 'btn btn-xs btn-primary js-loan-action',
@@ -289,6 +292,8 @@ $this->registerCss($css);
                               'data-toggle' => 'tooltip',
                               'data-placement' => 'top',
                             ]) ?>
+                             <?php } ?>
+                              <?php if(yii::$app->user->can("disapprove_loan_application")){ ?>
 
                             <?= Html::button('<i class="fa fa-times"></i>', [
                               'type' => 'button',
@@ -300,6 +305,7 @@ $this->registerCss($css);
                               'data-toggle' => 'tooltip',
                               'data-placement' => 'top',
                             ]) ?>
+                             <?php } ?>
                           </td>
                         </tr>
                       <?php endforeach; ?>

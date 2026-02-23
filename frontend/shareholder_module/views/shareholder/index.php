@@ -169,6 +169,11 @@ Pjax::begin([
                             'class' => ActionColumn::class,
                             'contentOptions' => ['class' => 'text-center'],
                             'template' => '{view} {update} {delete}',
+                            'visibleButtons' => [
+                            'view' => fn() => Yii::$app->user->can('view_customer_details'),
+                            'update' => fn() => Yii::$app->user->can('update_shareholder'),
+                            'delete' => fn() => Yii::$app->user->can('delete_shareholder'),
+                            ],
                             'buttons' => [
                                 'view' => function($url, $model, $key) {
                                     return Html::a('<i class="fa fa-eye"></i>',Url::to(['/loans/customer/view','customerID'=>$model->customer->id]), [

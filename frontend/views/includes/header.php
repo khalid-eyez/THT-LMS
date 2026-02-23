@@ -9,7 +9,7 @@
            <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 p-0 m-0 border-left border-success d-lg-none">
            </div>
            <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 p-0 m-0">
-    <span class="head text-bold float-left pt-1 pt-md-3 pt-lg-1 pl-0 responsivetext mt-1 ml-0" style="color:rgba(48, 63, 195, 0.8)">HTH ADMIN</span>
+    <span class="head text-bold float-left pt-1 pt-md-3 pt-lg-1 pl-0 responsivetext mt-1 ml-0" style="color:rgba(7, 95, 177, 0.8)">H2H ADMIN</span>
 </div>
 
 </div>

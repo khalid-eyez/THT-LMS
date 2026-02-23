@@ -71,6 +71,7 @@ CSS);
                 </div>
 
                 <div class="topbar-actions">
+                   <?php if(yii::$app->user->can("add_setting")){?>
                   <?= Html::button('<i class="fa fa-plus"></i> Add New', [
                     'type' => 'button',
                     'class' => 'btn btn-primary',
@@ -79,6 +80,7 @@ CSS);
                     'data-toggle' => 'modal',
                     'data-target' => '#settingModal',
                   ]) ?>
+                   <?php } ?>
                 </div>
               </div>
             </div>
@@ -115,6 +117,7 @@ CSS);
                         <td><?= Html::encode($name) ?></td>
                         <td><?= Html::encode($value) ?></td>
                         <td class="text-right">
+                          <?php if(yii::$app->user->can("update_setting")){?>
                           <button
                             type="button"
                             class="btn btn-sm btn-outline-primary js-setting-edit"
@@ -124,6 +127,7 @@ CSS);
                           >
                             <i class="fa fa-edit"></i>
                           </button>
+                          <?php } ?>
                         </td>
                       </tr>
                     <?php endforeach; ?>

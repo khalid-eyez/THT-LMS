@@ -238,6 +238,7 @@ $this->registerCss($css);
                           <td class="text-right"><?= number_format((float)$claim->interest_amount, 2) ?></td>
 
                           <td class="text-center action-btns">
+                            <?php if(yii::$app->user->can("approve_interest_claims")){?>
                             <?= Html::button('<i class="fa fa-check"></i>', [
                               'type' => 'button',
                               'class' => 'btn btn-xs btn-primary js-claim-action',
@@ -248,7 +249,8 @@ $this->registerCss($css);
                               'data-toggle' => 'tooltip',
                               'data-placement' => 'top',
                             ]) ?>
-
+                            <?php } ?>
+                            <?php if(yii::$app->user->can("delete_interest_claims")){?>
                             <?= Html::button('<i class="fa fa-trash"></i>', [
                               'type' => 'button',
                               'class' => 'btn btn-xs btn-danger js-claim-action',
@@ -259,6 +261,7 @@ $this->registerCss($css);
                               'data-toggle' => 'tooltip',
                               'data-placement' => 'top',
                             ]) ?>
+                            <?php } ?>
                           </td>
                         </tr>
                       <?php endforeach; ?>

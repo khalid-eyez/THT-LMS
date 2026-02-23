@@ -11,7 +11,15 @@ use yii\helpers\Html;
 $this->title = Yii::t('audit', 'Audit Module');
 $this->params['pageTitle']= $this->title;
 
-$this->registerCss('canvas {width: 100% !important;height: 400px;}');
+//$this->registerCss('canvas {width: 100% !important;height: 400px;}');
+
+$this->registerCss(<<<CSS
+.audit-chart-wrapper{
+    width: 100%;
+    height: 400px;     /* controls visible height */
+    position: relative;
+}
+CSS);
 ?>
 <div class="audit-index">
 
@@ -20,35 +28,58 @@ $this->registerCss('canvas {width: 100% !important;height: 400px;}');
             <h2><?php echo Html::a(Yii::t('audit', 'Entries'), ['/audit/entry/index']); ?></h2>
 
             <div class="well">
-                <?php
+<div class="audit-chart-wrapper">
+<?php
+echo ChartJs::widget([
+    'type' => 'line',
 
-                echo ChartJs::widget([
-                    'type' => 'line',
-                    'options' => [
-                        'height' => '220',
-                        
-                    ],
-                    'clientOptions' => [
-                        'legend' => ['display' => false],
-                        'tooltips' => ['enabled' => false],
-                      
-                    ],
-                    'data' => [
-                        'labels' => array_keys($chartData),
-                        'datasets' => [
-                            [
-                                'backgroundColor'=>'rgba(167, 199, 250,.2)',
-                                'borderColor'=>'rgba(4, 52, 128,.3)',
-                                'fillColor' => 'rgba(167, 199, 250,0.5)',
-                                'strokeColor' => 'rgba(167, 199, 250,1)',
-                                'pointColor' => 'rgba(151,187,205,1)',
-                                'pointStrokeColor' => '#fff',
-                                'data' => array_values($chartData),
-                            ],
-                        ],
-                    ]
-                ]);
-                ?>
+    // base render height (ChartJS will upscale internally)
+    'options' => [
+        'height' => 150,
+    ],
+
+    'clientOptions' => [
+        'responsive' => true,
+        'maintainAspectRatio' => false,
+
+        // THE MAGIC: match screen density (fixes blur on 2K/4K/Retina)
+        'devicePixelRatio' => new \yii\web\JsExpression('window.devicePixelRatio'),
+
+        // performance
+        'animation' => false,
+
+        // UI
+        'plugins' => [
+            'legend' => ['display' => false],
+            'tooltip' => ['enabled' => false],
+        ],
+
+        // ChartJS v2 compatibility (dosamigos uses v2)
+        'legend' => ['display' => false],
+        'tooltips' => ['enabled' => false],
+
+        // make lines nicer
+        'elements' => [
+            'line' => ['tension' => 0.3],
+            'point' => ['radius' => 2],
+        ],
+    ],
+
+    'data' => [
+        'labels' => array_keys($chartData),
+        'datasets' => [[
+            'backgroundColor' => 'rgba(167,199,250,.25)',
+            'borderColor' => 'rgba(4,52,128,.85)',
+            'pointBackgroundColor' => 'rgba(4,52,128,1)',
+            'pointBorderColor' => '#fff',
+            'borderWidth' => 2,
+            'fill' => true,
+            'data' => array_values($chartData),
+        ]],
+    ],
+]);
+?>
+</div>
             </div>
         </div>
 

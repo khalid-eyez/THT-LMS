@@ -57,6 +57,28 @@ class CashbookController extends Controller
         ],
     ];
 }
+     public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        // Only check for logged in users
+        if (!Yii::$app->user->isGuest) {
+
+            $identity = Yii::$app->user->identity;
+
+            if ($identity->hasDefaultPassword()) {
+
+                // Prevent redirect loop
+                if ($action->id !== 'change-password-restrict') {
+                    return $this->redirect(['/admin/auth/change-password-restrict']);
+                }
+            }
+        }
+
+        return true;
+    }
     /**
      * Renders the index view for the module
      * @return string

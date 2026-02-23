@@ -48,6 +48,11 @@ public function behaviors()
         'access' => [
             'class' => AccessControl::className(),
             'rules' => [
+                   [
+                        'actions' => ['login','error'],
+                        'allow' => true,
+                        
+                    ],
 
                 // Dashboard
                 [
@@ -96,7 +101,7 @@ public function behaviors()
 
                 // Loan view + failure page
                 [
-                    'actions' => ['loan-view', 'loan-fail'],
+                    'actions' => ['loan-view'],
                     'allow'   => true,
                     'roles'   => ['view_loan_details'],
                 ],
@@ -215,7 +220,7 @@ public function behaviors()
                 [
                     'actions' => ['categories'],
                     'allow'   => true,
-                    'roles'   => ['view_loan_categories'],
+                    'roles'   => ['view_loan_categories','view_loan_types'],
                 ],
                 [
                     'actions' => ['add-category', 'category-update', 'category-delete'],
@@ -246,6 +251,28 @@ public function behaviors()
         'view'  => 'error', 
     ],
     ];
+    }
+     public function beforeAction($action)
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        // Only check for logged in users
+        if (!Yii::$app->user->isGuest) {
+
+            $identity = Yii::$app->user->identity;
+
+            if ($identity->hasDefaultPassword()) {
+
+                // Prevent redirect loop
+                if ($action->id !== 'change-password-restrict') {
+                    return $this->redirect(['/admin/auth/change-password-restrict']);
+                }
+            }
+        }
+
+        return true;
     }
    public function actionDashboard()
 {

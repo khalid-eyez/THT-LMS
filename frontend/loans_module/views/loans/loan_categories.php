@@ -57,10 +57,12 @@ $model = new LoanCategory();
                             role="tabpanel"
                             aria-labelledby="loan-categories-tab"
                         >
+                        <?php if(yii::$app->user->can("view_loan_categories")){?>
                             <?= $this->render('categories', [
                                 'categories' => LoanCategory::find()->orderBy(['id'=>SORT_DESC])->all(),
                                 'model' => $model,
                             ]) ?>
+                            <?php }?>
                         </div>
 
                         <!-- Loan Types -->
@@ -70,10 +72,12 @@ $model = new LoanCategory();
                             role="tabpanel"
                             aria-labelledby="loan-types-tab"
                         >
+                         <?php if(yii::$app->user->can("view_loan_types")){?>
                                <?=$this->render('loan_types',[
                                 'model'=>new LoanType(),
                                 'loanTypes'=>LoanType::find()->orderBy(['id'=>SORT_DESC])->all()
                                 ]) ?>
+                                 <?php } ?>
                         </div>
 
                     </div><!-- /tab-content -->

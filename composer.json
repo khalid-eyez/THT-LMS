@@ -34,7 +34,8 @@
         "kartik-v/yii2-dynagrid": "@dev",
         "kartik-v/yii2-date-range": "^1.7@dev",
         "2amigos/yii2-chartjs-widget": "~2.0",
-        "bower-asset/chart.js": "2.9"
+        "bower-asset/chart.js": "2.9",
+        "kartik-v/yii2-password": "^1.5@dev"
     },
     "replace": {
     "bower-asset/datatables": "self.version"

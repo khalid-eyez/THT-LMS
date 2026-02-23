@@ -69,7 +69,7 @@ $csrfToken = Yii::$app->request->getCsrfToken();
                     <td><?= $i++ ?></td>
                     <td><?= Html::encode($cat->categoryName) ?></td>
                     <td class="text-right">
-
+                         <?php if(yii::$app->user->can("manage_loan_categories")){?>
                         <button
                             type="button"
                             class="btn btn-sm btn-outline-primary btn-edit-category"
@@ -90,6 +90,7 @@ $csrfToken = Yii::$app->request->getCsrfToken();
                         >
                             <i class="fa fa-trash"></i>
                         </button>
+                        <?php }?>
 
                     </td>
                 </tr>

@@ -52,7 +52,7 @@ use yii\helpers\Url;
                         [
                             'class' => 'btn btn-sm btn-outline-success',
                             'data-toggle' => 'tooltip',
-                            'title' => 'View Repayment Statement',
+                            'title' => 'View Repayment Schedule PDF',
                         ]
                     ) ?>
                       <?= Html::a(
@@ -61,7 +61,7 @@ use yii\helpers\Url;
                         [
                             'class' => 'btn btn-sm btn-outline-success',
                             'data-toggle' => 'tooltip',
-                            'title' => 'View Repayment Statement',
+                            'title' => 'View Repayment Schedule EXCEL',
                         ]
                     ) ?>
                 </div>

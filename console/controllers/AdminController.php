@@ -28,7 +28,7 @@ public function options($actionID) {
     	}
      
     }catch(\Exception $e){
-    	$this->stderr("An error occured while creating a user!".$e->getMessage()." \n ");
+    	$this->stderr("An error occured while creating a user! ".$e->getMessage()." \n ");
     } 
    }
 

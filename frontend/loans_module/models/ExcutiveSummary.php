@@ -24,7 +24,7 @@ public function rules()
 
 public function buildLoansExecutiveSummaryReport(): array
 {
-    [$startDate, $endDate] =explode(' - ', $this->date_range);
+    [$startDate, $endDate] =($this->date_range==null)?[date("Y-m-d H:i:s"),date("Y-m-d H:i:s")]:explode(' - ', $this->date_range);
 
     $startDateTime = $startDate;
     $endDateTime   = $endDate;
@@ -82,7 +82,7 @@ public function buildLoansExecutiveSummaryReport(): array
 }
 public function excutivesummaryExcel()
 {
-    [$start, $end] = explode(' - ', (string)$this->date_range);
+    [$start, $end] = ($this->date_range==null)?[date("Y-m-d H:i:s"),date("Y-m-d H:i:s")]:explode(' - ', (string)$this->date_range);
 
         $report = $this->buildLoansExecutiveSummaryReport();
         $loans  = $report['loans'] ?? [];

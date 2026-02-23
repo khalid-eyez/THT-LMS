@@ -30,7 +30,7 @@ class PdfHelper
         $mpdf->SetTitle($filename);
         $mpdf->SetAuthor(Yii::$app->name);
         $mpdf->SetDisplayMode('fullpage');
-        $mpdf->SetWatermarkText('HTH - HTH',0.09);
+        $mpdf->SetWatermarkText('H2H - H2H',0.09);
         $mpdf->showWatermarkText = true;
         $mpdf->WriteHTML($html);
 

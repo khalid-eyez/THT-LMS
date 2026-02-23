@@ -5,6 +5,7 @@ use yii\bootstrap4\ActiveForm;
 use yii\helpers\Url;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
+use kartik\password\PasswordInput;
 
 
 AppAsset::register($this);
@@ -18,7 +19,13 @@ AppAsset::register($this);
 
 ?>
 
-
+<style> 
+    .btn-primary{
+        color:white;
+        background-color: #0e70a8!important;
+        border-color: #2a7cc9!important;
+    }
+</style>
     <?php $form = ActiveForm::begin(["action"=>"/admin/auth/change-password-restrict"]); ?>
         <div class="container-fluid">
             <div class="row">
@@ -33,10 +40,17 @@ AppAsset::register($this);
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <?= $form->field($model, 'current_password')->passwordInput(['class'=>'form-control ', 'placeholder'=>'Current Password'])->label(false) ?>
+                                       
                                     </div>
 
                                     <div class="col-sm-12">
-                                        <?= $form->field($model, 'new_password')->passwordInput(['class'=>'form-control ', 'placeholder'=>'New Password'])->label(false) ?>
+                                         <?=$form->field($model, 'new_password')->widget(PasswordInput::classname(), [
+                                        'size' => "md",
+                                        'options' => [
+                                        'placeholder' => "New Password"
+                                        ],
+                                        'pluginOptions' => ['toggleMask' => false,'placeholder' => "New Password",'class'=>'form-control ']
+                                        ])->label(false);?>
                                     </div>
 
                                     <div class="col-sm-12">

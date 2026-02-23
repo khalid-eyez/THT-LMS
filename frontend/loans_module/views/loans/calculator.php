@@ -90,7 +90,7 @@ use common\models\CustomerLoan;
                                         'encode' => false,
                                     ]
                                 ) ?>
-
+                                <?php if(yii::$app->user->can("download_loan_calculator_report")){?>
                                 <?= Html::button(
                                     '<i class="fa fa-file-pdf-o me-1"></i> PDF',
                                     [
@@ -101,6 +101,7 @@ use common\models\CustomerLoan;
                                         'encode' => false,
                                     ]
                                 ) ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>

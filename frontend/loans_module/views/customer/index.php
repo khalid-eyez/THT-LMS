@@ -43,7 +43,7 @@ $gridcolumns = [
     ],
     [
         'class' => 'yii\grid\ActionColumn',
-        'template' => '{view}',
+        'template' => (yii::$app->user->can("view_customer_details"))?'{view}':null,
         'buttons' => [
             'view' => static fn($url, $model) => Html::a(
                 '<i class="fa fa-eye"></i>',
@@ -192,6 +192,7 @@ Pjax::begin([
                     </div>
 
                     <!-- ✅ Custom Export dropdown (PDF + Excel) -->
+                     <?php if(yii::$app->user->can("export_customers")){ ?>
                     <div class="export-dd" id="custom-export-dd-customers">
                         <button type="button" class="btn btn-default" id="btn-export-toggle-customers" data-pjax="0" aria-expanded="false">
                             <i class="fa fa-download"></i> Export <span class="caret"></span>
@@ -201,6 +202,7 @@ Pjax::begin([
                             <li><a href="#" data-export="xlsx" data-pjax="0"><i class="fa fa-file-excel-o"></i> Excel</a></li>
                         </ul>
                     </div>
+                    <?php } ?>
                 </div>
 
                 <?= DynaGrid::widget([

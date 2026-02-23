@@ -53,9 +53,16 @@ use yii\helpers\Html;
 							</div>
 							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 								<div class="breadcomb-report" >
+                                    <?php if(yii::$app->user->can("disburse_loan")){ ?>
                                     <a href="<?=Url::toRoute(['/loans/loans/pay','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="left" title="Disbursement" class="btn btn-primary pay"><i class="fa fa-bank"></i></a>
+                                    <?php } ?>
+                                    <?php if(yii::$app->user->can("topup_loan")){ ?>
                                     <a href="<?=Url::toRoute(['/loans/loans/top-up','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Top Up" class="btn btn-primary pay"><i class="fa fa-plus-circle"></i></a>
+                                    <?php } ?>
+                                    <?php if(yii::$app->user->can("repay_loan")){ ?>
                                     <a href="<?=Url::toRoute(['/loans/loans/repay','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="top" title="Repayment" class="btn btn-primary pay"><i class="fa fa-money"></i></a>
+                                    <?php } ?>
+                                    <?php if(yii::$app->user->can("approve_loan_application")){ ?>
                                     <?= Html::a(
                                     '<i class="fa fa-check-circle"></i>',
                                     ['/loans/loans/approve', 'loanID' => $loan->id],
@@ -71,7 +78,8 @@ use yii\helpers\Html;
                                     'data-method' => 'post',
                                     ]
                                     ) ?>
-
+                                    <?php } ?>
+                                    <?php if(yii::$app->user->can("disapprove_loan_application")){ ?>
                                     <?=Html::a(
                                     '<i class="fa fa-times-circle"></i>',
                                     ['/loans/loans/disapprove', 'loanID' => $loan->id],
@@ -87,7 +95,8 @@ use yii\helpers\Html;
                                     'data-method' => 'post',
                                     ]
                                     ) ?>
-
+                                      <?php } ?>
+                                      <?php if(yii::$app->user->can("update_loan_status")){ ?>
 
                                     <!-- ✅ NEW: Update Status button (same style family) -->
                                     <button
@@ -100,8 +109,10 @@ use yii\helpers\Html;
                                     >
                                         <i class="fa fa-refresh"></i>
                                     </button>
-
+                                    <?php } ?>
+                                     <?php if(yii::$app->user->can("download_loan_summary")){ ?>
                                     <a href="<?=Url::toRoute(['/loans/loans/download-summary','loanID'=>$loan->id]) ?>" data-toggle="tooltip" style="background-color: #0a6ab3!important" data-placement="right" title="Download Summary" class="btn btn-primary"><i class="fa fa-file-pdf-o"></i></a>
+                                    <?php } ?>
 								</div>
 							</div>
 						</div>

@@ -93,7 +93,7 @@ public function loadExisting($shareholderId): bool
             /* ---------- SAVE SHAREHOLDER ---------- */
             $shareholder = new Shareholder();
             $shareholder->customerID     = $customer->id;
-            $shareholder->memberID       =UniqueCodeHelper::generate('SH', 5)."-".date('y').substr($this->NIN, -1);
+            $shareholder->memberID       =UniqueCodeHelper::generate('HTHO', 5)."-".date('y').substr($this->NIN, -1);
             $shareholder->initialCapital = 0;
             $shareholder->shares         = 0;
 

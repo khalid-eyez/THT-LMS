@@ -112,6 +112,9 @@ public function getCashFlows()
         if (!empty($this->date_range)) {
             [$start, $end] = explode(' - ', $this->date_range);
             }
+            else{
+               [$start, $end] = [date("Y-m-d H:i:s"),date("Y-m-d H:i:s")]; 
+            }
             $flows=Book::find()->where(['between','created_at',$start, $end])->all();
 
             return $flows;
@@ -121,7 +124,7 @@ public function getCashFlows()
 public function cashbookExcel()
 {
     $model=$this;
-    [$start, $end] = explode(' - ', $model->date_range);
+    [$start, $end] = ($model->date_range==null)?[date("Y-m-d H:i:s"),date("Y-m-d H:i:s")]:explode(' - ', $model->date_range);
 $records = $model->getCashFlows();
 
 // Create Spreadsheet

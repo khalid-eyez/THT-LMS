@@ -25,11 +25,11 @@ class AddChildren extends Model
     }
     public function getRoles()
     {
-        return ArrayHelper::map(yii::$app->authManager->getRoles(),'name','name');
+        return ArrayHelper::map(yii::$app->authManager->getRoles(),'name','description','name');
     }
     public function getPermissions()
     {
-        return ArrayHelper::map(yii::$app->authManager->getPermissions(),'name','name');
+        return ArrayHelper::map(yii::$app->authManager->getPermissions(),'name','description','name');
     }
     public function addTo($name,$type)
     {

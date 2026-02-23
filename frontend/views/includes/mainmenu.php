@@ -40,66 +40,99 @@
                        
                         <div id="mailbox" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
+                                <?php if(yii::$app->user->can("view_loans_list")){?>
                                 <li><a href="/loans">Loans List</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("create_loan_application")){?>
                                 <li><a href="<?=Url::toRoute(['/loans/create-loan']) ?>">New Application</a>
 
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_loan_applications")){?>
                                 <li><a href="<?=Url::toRoute(['/loans/loans/applications']) ?>">Pending Applications</a>
                                 
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("use_loan_calculator")){?>
                                  <li><a href="<?=Url::toRoute(['/loans/loans/loan-calculator']) ?>">Loan Calculator</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_loan_categories")){?>
                                  <li><a href="<?=Url::toRoute(['/loans/loans/categories']) ?>">Loan Categories</a>
                                 </li>
+                                <?php } ?>
                            </ul>
                         </div>
                         <div id="Interface" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
+                                <?php if(yii::$app->user->can("jj")){?>
                                 <li><a href="/shareholder/settings/settings">Settings</a>
                                 </li>
+                                <?php } ?>
                             </ul>
                         </div>
                         <div id="Charts" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
+                                <?php if(yii::$app->user->can("view_cashbook_report")){?>
                                 <li><a href="/cashbook/cashbook/cashbook-reporter">Cashbook</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_repayment_schedule")){?>
                                 <li><a href="/loans/loans/loan-search" class="">Repayment Schedule</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_repayment_statement")){?>
                                 <li><a href="/loans/loans/loan-search-two">Repayment Statement</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_executive_summary")){?>
                                 <li><a href="/loans/loans/excutive-summary-reporter">Excutive Summary</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_deposits_summary")){?>
                                  <li><a href="<?=Url::toRoute(['/shareholder/shareholder/deposits-summary']) ?>">Shareholder Deposits Summary</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_interest_summary_report")){?>
                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/interest-summary-reporter']) ?>">Shareholder Interests Summary</a>
                                 </li>
+                                <?php } ?>
                             </ul>
                         </div>
                         <div id="Tables" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
+                                <?php if(yii::$app->user->can("view_customers_list")){?>
                                 <li><a href="/loans/customer/index">Customers List</a>
                                 </li>
-                                <li><a href="data-table.html"></a>
-                                </li>
+                                <?php } ?>
+                              
                             </ul>
                         </div>
                         <div id="Forms" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
+                                <?php if(yii::$app->user->can("view_shareholders_list")){?>
                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/index']) ?>">Shareholders List</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("register_shareholder")){?>
                                 <li><a href="<?=Url::toRoute(['/shareholder/shareholder/create']) ?>">New Shareholder</a>
                                 </li>
+                                <?php } ?>
+                                <?php if(yii::$app->user->can("view_interest_claims")){?>
                                  <li><a href="<?=Url::toRoute(['/shareholder/deposit/claims']) ?>">Interest Claims</a>
                                 </li>
+                                <?php } ?>
                                
                                  
                             </ul>
                         </div>
                         <div id="Appviews" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">
                             <ul class="notika-main-menu-dropdown">
+                                 <?php if(yii::$app->user->can("view_settings")){?>
                                <li><a href="/shareholder/settings/settings">Settings</a>
                                 </li>
+                                 <?php } ?>
                             </ul>
                         </div>
                         <div id="Page" class="tab-pane notika-tab-menu-bg animated flipInX" style="margin-bottom:0px!important;">

@@ -177,7 +177,7 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                         <hr>
 
                                         <div class="mt-3 icon-actions">
-
+                                             <?php if(yii::$app->user->can("create_loan_application")){?>
                                             <?= Html::a(
                                                 '<i class="fa fa-money"></i>',
                                                 $applyLoanUrl,
@@ -188,7 +188,8 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'data-pjax' => '0',
                                                 ]
                                             ) ?>
-
+                                            <?php } ?>
+                                           <?php if(yii::$app->user->can("update_customer")){?>
                                             <?= Html::a(
                                                 '<i class="fa fa-edit"></i>',
                                                 $updateUrl,
@@ -200,7 +201,9 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'data-pjax' => '0',
                                                 ]
                                             ) ?>
+                                            <?php } ?>
                                 <?php if ($shareholder): ?>
+                                    <?php if(yii::$app->user->can("download_shareholder_proof_of_registration")){?>
                                 <?= Html::a(
                                 '<i class="fa fa-file-o"></i>',
                                 $PoRUrl,
@@ -211,10 +214,12 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                 'data-pjax' => '0',
                                 ]
                                 ) ?>
+                                <?php } ?>
                                 <?php endif; ?>
 
 
                                             <?php if ($shareholder && $depositCreateUrl): ?>
+                                                <?php if(yii::$app->user->can("record_shareholder_deposit")){?>
                                                 <?= Html::a(
                                                     '<i class="fa fa-plus-circle"></i>',
                                                     'javascript:void(0)',
@@ -226,8 +231,9 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                         'data-pjax' => '0',
                                                     ]
                                                 ) ?>
+                                                <?php } ?>
                                             <?php endif; ?>
-
+                                             <?php if(yii::$app->user->can("delete_customer")){?>
                                             <?= Html::a(
                                                 '<i class="fa fa-trash"></i>',
                                                 'javascript:void(0)',
@@ -238,6 +244,7 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'data-toggle' => 'tooltip',
                                                 ]
                                             ) ?>
+                                             <?php } ?>
 
                                         </div>
 
@@ -313,6 +320,7 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                     <p class="share-row">
                                         <span><strong>Total Deposits:</strong> <?= Yii::$app->formatter->asDecimal($totalDeposits) ?></span>
                                         <span class="right-actions">
+                                            <?php if(yii::$app->user->can("view_shareholder_deposits")){?>
                                             <?= Html::a(
                                                 '<i class="fa fa-file-text-o"></i>',
                                                 'javascript:void(0)',
@@ -328,12 +336,14 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'onclick' => $depositsBtn['onclick'],
                                                 ]
                                             ) ?>
+                                            <?php } ?>
                                         </span>
                                     </p>
 
                                     <p class="share-row">
                                         <span><strong>Total Interest:</strong> <?= Yii::$app->formatter->asDecimal($totalInterestPaidApproved) ?></span>
                                         <span class="right-actions">
+                                            <?php if(yii::$app->user->can("view_shareholder_interest_statement")){?>
                                             <?= Html::a(
                                                 '<i class="fa fa-line-chart"></i>',
                                                 'javascript:void(0)',
@@ -349,12 +359,14 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'onclick' => $interestBtn['onclick'],
                                                 ]
                                             ) ?>
+                                            <?php } ?>
                                         </span>
                                     </p>
 
                                     <p class="share-row">
                                         <span><strong>Approvable Interest:</strong> <?= Yii::$app->formatter->asDecimal($totalApprovable) ?></span>
                                         <span class="right-actions">
+                                            <?php if(yii::$app->user->can("approve_interest_claims")){?>
                                             <?= Html::a(
                                                 '<i class="fa fa-check"></i>',
                                                 $approveUrl ?: 'javascript:void(0)',
@@ -369,12 +381,14 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'onclick' => $approveBtn['onclick'],
                                                 ]
                                             ) ?>
+                                            <?php } ?>
                                         </span>
                                     </p>
 
                                     <p class="share-row">
                                         <span><strong>Payable Interests:</strong> <?= Yii::$app->formatter->asDecimal($payableInterests) ?></span>
                                         <span class="right-actions">
+                                            <?php if(yii::$app->user->can("pay_shareholder_interests")){ ?>
                                             <?= Html::a(
                                                 '<i class="fa fa-credit-card"></i>',
                                                 'javascript:void(0)',
@@ -390,12 +404,14 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'onclick' => $payableBtn['onclick'],
                                                 ]
                                             ) ?>
+                                            <?php } ?>
                                         </span>
                                     </p>
 
                                     <p class="share-row">
                                         <span><strong>Claimable Interest:</strong> <?= Yii::$app->formatter->asDecimal($claimableInterest) ?></span>
                                         <span class="right-actions">
+                                             <?php if(yii::$app->user->can("claim_interest")){ ?>
                                             <?= Html::a(
                                                 '<i class="fa fa-money"></i>',
                                                 ($claimInterestUrl) ? $claimInterestUrl : 'javascript:void(0)',
@@ -410,6 +426,7 @@ $claimableBtn  = btnDisableAttrs(((float)$claimableInterest > 0), 'Claim interes
                                                     'onclick' => $claimableBtn['onclick'],
                                                 ]
                                             ) ?>
+                                             <?php } ?>
                                         </span>
                                     </p>
 

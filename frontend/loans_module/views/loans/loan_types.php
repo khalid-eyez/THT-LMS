@@ -97,6 +97,7 @@ if (!isset($model) || $model === null) {
                     <td class="text-right"><?= Html::encode($t->penalty_grace_days) ?></td>
 
                     <td class="text-right">
+                        <?php if(yii::$app->user->can("manage_loan_types")){?>
                         <button
                             type="button"
                             class="btn btn-sm btn-outline-primary btn-edit-loantype"
@@ -123,6 +124,7 @@ if (!isset($model) || $model === null) {
                         >
                             <i class="fa fa-trash"></i>
                         </button>
+                        <?php } ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
