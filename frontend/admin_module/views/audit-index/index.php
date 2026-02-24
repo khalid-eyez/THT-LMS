@@ -24,7 +24,7 @@ $this->registerCss(<<<CSS
 }
 .audit-chart-wrapper-sm{
     width: 100%;
-    height: 160px;     /* small charts height */
+    height: 200px;     /* small charts height */
     position: relative;
 }
 
