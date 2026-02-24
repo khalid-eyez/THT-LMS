@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\admin_module\controllers;
+use Exception;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -73,7 +74,7 @@ class AuthController extends \yii\web\Controller
              
              if(Yii::$app->user->can("ADMIN"))
              {
-                return $this->redirect(['/admin/users-list']); 
+                return $this->redirect(['/admin/admin/users-list']); 
              }
              else
              {
@@ -88,7 +89,7 @@ class AuthController extends \yii\web\Controller
              }
              if(Yii::$app->user->can("ADMIN"))
              {
-                return $this->redirect(['/admin/users-list']); 
+                return $this->redirect(['/admin/admin/users-list']); 
              }
              else
              {
