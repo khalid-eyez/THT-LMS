@@ -39,7 +39,7 @@ echo ChartJs::widget([
 
     'clientOptions' => [
         'responsive' => true,
-        'maintainAspectRatio' => true,
+        'maintainAspectRatio' => false,
 
         // 🔥 Retina / 2K / 4K blur fix
         'devicePixelRatio' => new \yii\web\JsExpression('window.devicePixelRatio'),
