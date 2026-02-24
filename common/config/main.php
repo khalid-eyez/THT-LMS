@@ -69,6 +69,7 @@ return [
                 '/audit-index'=>'/admin/audit-index/index',
                 '/admin/audit'=>'/admin/admin/audit',
                 '/auth/login'=>'/admin/auth/login',
+                '/'=>'/admin/auth/login',
                 '/auth/logout'=>'/admin/auth/logout',
                 '/auth/changepassword'=>'/admin/auth/changepassword',
                 '/auth/changepasswordrestrict'=>'/admin/auth/change-password-restrict',
@@ -103,6 +104,6 @@ return [
     
     ],
     'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-        'defaultRoute'=>'auth',
+        'defaultRoute'=>'/',
         
 ];

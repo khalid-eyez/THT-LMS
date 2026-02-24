@@ -115,7 +115,7 @@ class AuthController extends \yii\web\Controller
         $saved=yii::$app->user->identity->saveLastLogin();
         Yii::$app->user->logout();
         
-        return $this->redirect(['auth/login']);
+        return $this->redirect(['/']);
     }
     /**
      * Changes the user password
