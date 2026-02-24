@@ -966,6 +966,18 @@ public function behaviors()
             {
              try{
                 $transaction=yii::$app->db->beginTransaction();
+                if($loan->isStatusActive() || $loan->isStatusFinished())
+                    {
+                        throw new UserException("Cannot disburse the same loan twice ! ");
+                    }
+                    if($loan->isStatusNew())
+                        {
+                          throw new UserException("Loan not yet approved  ! ");  
+                        }
+                        if($loan->isStatusDisapproved())
+                            {
+                                throw new UserException("Cannot disburse a rejected loan application ! "); 
+                            }
                 $loan->load(yii::$app->request->post());
                 $loan->status="active";
                 $loan->paidby=yii::$app->user->identity->id;

@@ -422,6 +422,10 @@ public function beforeSave($insert)
     {
         $this->status = self::STATUS_FINISHED;
     }
+       public function isStatusDisapproved()
+    {
+        return $this->status == self::STATUS_DISAPPROVED;
+    }
      public function setStatusToDisapproved()
     {
         $this->status = self::STATUS_DISAPPROVED;
