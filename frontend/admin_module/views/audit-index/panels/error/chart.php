@@ -9,13 +9,13 @@ echo ChartJs::widget([
     'type' => 'bar',
 
     // base render height (ChartJS will upscale internally)
-    'options' => [
-        'height' => 150,
-    ],
+    // 'options' => [
+    //     'height' => 150,
+    // ],
 
     'clientOptions' => [
         'responsive' => true,
-        'maintainAspectRatio' => true,
+        'maintainAspectRatio' => false,
 
         // Fix blur on Retina / 2K / 4K
         'devicePixelRatio' => new \yii\web\JsExpression('window.devicePixelRatio'),
