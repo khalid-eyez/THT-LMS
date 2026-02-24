@@ -9,9 +9,9 @@ echo ChartJs::widget([
     'type' => 'bar',
 
     // base render height (ChartJS will upscale internally)
-    // 'options' => [
-    //     'height' => 150,
-    // ],
+    'options' => [
+        'height' => 20,
+    ],
 
     'clientOptions' => [
         'responsive' => true,
