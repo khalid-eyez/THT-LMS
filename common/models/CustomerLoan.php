@@ -158,7 +158,7 @@ public function beforeSave($insert)
 
                 if(!$insert && $this->isAttributeChanged('status') && ($this->status==self::STATUS_APPROVED || $this->status==self::STATUS_ACTIVE ))
                     {
-                        if ($this->customer && $this->customer->hasActiveLoan()) {
+                        if ($this->customer && $this->customer->hasActiveLoan($this->id)) {
                         throw new UserException('Customer has another active loan !');
                         }
                     }

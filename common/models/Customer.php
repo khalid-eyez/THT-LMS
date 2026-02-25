@@ -223,20 +223,18 @@ class Customer extends \yii\db\ActiveRecord
         $this->status = self::STATUS_INACTIVE;
     }
 
-    public function hasActiveLoan()
+    public function hasActiveLoan(?int $excludeLoanId = null)
     {
-        $loans=$this->customerLoans;
+         $query = $this->getCustomerLoans()
+        ->andWhere(['in', 'status', [
+            CustomerLoan::STATUS_ACTIVE,
+            CustomerLoan::STATUS_APPROVED,
+        ]]);
 
-        if($loans==null){return false;}
+    if ($excludeLoanId !== null) {
+        $query->andWhere(['<>', 'id', $excludeLoanId]);
+    }
 
-        foreach($loans as $loan)
-            {
-                if($loan->isStatusActive() || $loan->isStatusApproved())
-                    {
-                        return true;
-                    }
-            }
-
-            return false;
+    return $query->exists();
     }
 }
