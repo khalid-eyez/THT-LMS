@@ -871,7 +871,7 @@ public function behaviors()
         // {
         $loan=CustomerLoan::findOne($loanID);
 
-          if ($loan->customer && $loan->customer->hasActiveLoan()) {
+          if ($loan->customer && $loan->customer->hasActiveLoan($loan->id)) {
             throw new UserException('Customer has another active loan !');
             }
         $loan->status="approved";
@@ -919,6 +919,9 @@ public function behaviors()
         try
         {
         $loan=CustomerLoan::findOne($loanID);
+         if ($loan->customer && $loan->customer->hasActiveLoan($loan->id)) {
+            throw new UserException('Customer has another active loan !');
+            }
         $loan->status="approved";
         $loan->approvedby=yii::$app->user->identity->id;
         $loan->approved_at = date('Y-m-d H:i:s');
