@@ -74,12 +74,12 @@
 
         <tr>
             <th>Initialized By</th>
-            <td><?= $model->initializedby0->name ?> [<?= $model->initializedby0->username ?>]</td>
+            <td><?= $model->initializedby0?->name ?? '-' ?> [<?= $model->initializedby0?->username ?? '-' ?>]</td>
         </tr>
 
         <tr>
             <th>Approved By</th>
-            <td><?=$model->approvedby0->name ?? '-' ?> [<?= $model->approvedby0->username ?? '-' ?>]</td>
+            <td><?=$model->approvedby0?->name ?? '-' ?> [<?= $model->approvedby0?->username ?? '-' ?>]</td>
         </tr>
 
         <tr>
