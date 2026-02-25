@@ -999,7 +999,7 @@ public function behaviors()
 
                 $cashbook=new Cashbook();
                 $cashbook->credit=$loan->deposit_amount;
-                $cashbook->reference_no=UniqueCodeHelper::generate("LD").'-'.$loan->id.date("Y");
+                $cashbook->reference_no=UniqueCodeHelper::generate("LD",5).'-'.$loan->id.date("y");
                 $cashbook->description="[$loan->loanID] Loan disbursement";
                 $cashbook->payment_document=$savedfile;
                 $cashbook->category="disbursement";
