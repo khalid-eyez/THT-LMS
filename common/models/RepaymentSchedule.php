@@ -317,10 +317,9 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $penalty_rate=$penalty_rate/100;
             $penalty=round(($statement->unpaid_amount*$penalty_rate),2);
             $statement->penalty_amount=($isdelayed)?$penalty:0;
-            if($penaltyPaid<0)
-                {
+            
                     throw new UserException($penaltyPaid." =>".$islast." =>".$isdelayed);
-                }
+                
            
             $statement->penalty_amount-=($isdelayed && $islast)?($penaltyPaid-$overdues['due_penalty']):$penaltyPaid;
             $statement->prepayment=$prepayment;
