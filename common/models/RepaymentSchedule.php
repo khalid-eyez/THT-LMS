@@ -317,7 +317,8 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $penalty_rate=$penalty_rate/100;
             $penalty=round(($statement->unpaid_amount*$penalty_rate),2);
             $statement->penalty_amount=($isdelayed)?$penalty:0;
-            $statement->penalty_amount-=($isdelayed && $islast)?($penaltyPaid+$overdues['due_penalty']):$penaltyPaid;
+            $red_pen=($isdelayed && $islast)?($penaltyPaid-$overdues['due_penalty']):$penaltyPaid;
+            $statement->penalty_amount-=$red_pen;
             $statement->prepayment=$prepayment;
             $balance=$statement->loan_amount-($statement->paid_amount-$penaltyPaid); // updated
             if($balance<=-1)
