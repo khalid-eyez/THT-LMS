@@ -1129,6 +1129,11 @@ public function behaviors()
         $schedule=RepaymentSchedule::findOne($scheduleID);
         $paid=$schedule->pay($payment_date,$paid_amount,$payment_doc);
 
+        if($schedule->isLastDue() && $schedule->isDelayed($payment_date))
+            {
+                throw new Exception(json_encode($paid));
+            }
+
         PdfHelper::download($this->renderPartial('/loans/docs/repayment_receipt_pdf',['paid'=>$paid]),'payment_receipt_'.$paid['reference']);
 
         //return $this->render('/loans/docs/repayment_receipt_pdf',['paid'=>$paid]);
