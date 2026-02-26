@@ -369,8 +369,6 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
 
              $transaction->commit();
               return [
-                'paid_pen'=>$penaltyPaid,
-                'curr_pen'=>$overdues['due_penalty'],
                 'statement'=>$statement,
                 'reference'=>$bookrecord?->reference_no
               ];
