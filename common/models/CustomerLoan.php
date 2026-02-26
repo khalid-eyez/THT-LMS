@@ -511,6 +511,20 @@ public function beforeSave($insert)
                     $due->pay($payment_date);
                     continue;
                 }
+
+                if($due->isDelayed($payment_date) && $due->isLastDue())
+                {
+                    $overdues=$this->overdues();
+                    $overdues['installment']=$due->installment_amount;
+                    $penalty_rate=($this->penalty_rate)/100;
+                    $new_penalty_payable=$overdues['installment']*$penalty_rate;
+                    $overdues['total_penalties']+=$new_penalty_payable;
+                    $overdues['due_penalty']=$new_penalty_payable;
+                    $overdues['total_repayment']=$overdues['installment']+$overdues['total_penalties']+$overdues['total_unpaid'];
+                    $overdues['due']=$due;
+                    return $overdues;
+                }
+                
                 $overdues=$this->overdues();
                 $overdues['installment']=$due->installment_amount;
                 $overdues['total_repayment']=$overdues['installment']+$overdues['total_penalties']+$overdues['total_unpaid'];
@@ -539,9 +553,9 @@ public function beforeSave($insert)
     }
     public function isTopupAllowed()
     {
-        if($this->isToppedUp()){
-            throw new UserException("Loan top-up is allowed only once !");
-        }
+        // if($this->isToppedUp()){
+        //     throw new UserException("Loan top-up is allowed only once !");
+        // }
         $topup_rate=$this->topup_rate;
         $paid_installments=$this->getRepaymentSchedules()
     ->andWhere(['status' => 'paid'])

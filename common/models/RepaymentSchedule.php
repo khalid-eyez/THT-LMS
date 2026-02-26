@@ -256,6 +256,7 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
                     throw new UserException("Repayment Due Not Payable");
                 }
             $isdelayed=$this->isDelayed($payment_date);
+            $islast=$this->isLastDue();
       
             $statement=new RepaymentStatement();
             $lastRepayment=$this->loan->getLastRepayment();
@@ -268,13 +269,13 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $statement->installment=$this->installment_amount;
             $statement->paid_amount=$paid_amount;
 
-            $overdues=$this->loan->overdues();
+            $overdues=$this->overdues($payment_date);
 
             //if it's the last due must clear all overdues
             if($this->isLastDue())
                 {
                $total_penalties=$overdues['total_penalties'];
-               $loan_balance=$lastRepayment->balance; 
+               $loan_balance=$lastRepayment?->balance??$this->loan->totalRepayment(); 
                
                 $total_dues=$total_penalties+$loan_balance;
                 if(round($paid_amount)<round($total_dues))
@@ -317,9 +318,9 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $penalty=round(($statement->unpaid_amount*$penalty_rate),2);
             $statement->penalty_amount=($isdelayed)?$penalty:0;
 
-            $statement->penalty_amount-=$penaltyPaid;
+            $statement->penalty_amount-=($isdelayed && $islast)?$penaltyPaid-$overdues['due_penalty']:$penaltyPaid;
             $statement->prepayment=$prepayment;
-            $balance=($isdelayed)?$statement->loan_amount:($statement->loan_amount-($statement->paid_amount-$penaltyPaid));
+            $balance=$statement->loan_amount-($statement->paid_amount-$penaltyPaid); // updated
             if($balance<=-1)
                 {
                   throw new UserException('Overpayment detected !');
@@ -383,8 +384,27 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
              $transaction->rollBack();
              throw $e;
             }
+            catch(\Throwable $t)
+            {
+              $transaction->rollBack();
+              throw $t;  
+            }
 
             
+        }
+        public function overdues($payment_date)
+        {
+                 $overdues_initial=$this->loan->overdues();
+                if($this->isLastDue() && $this->isDelayed($payment_date))
+                    {
+                       $delay_overdues=$this->loan->computeOverdues($payment_date);
+
+                       return $delay_overdues;
+
+                    }
+
+                    return $overdues_initial;
+
         }
         public function isLastDue()
         {
@@ -422,11 +442,11 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $statement->installment=$this->installment_amount;
             $statement->paid_amount=$paid_amount;
 
-            $overdues=$this->loan->overdues();
+            $overdues=$this->overdues($payment_date);
               if($this->isLastDue())
                 {
                $total_penalties=$overdues['total_penalties'];
-               $loan_balance=$lastRepayment->balance; 
+               $loan_balance=$lastRepayment?->balance??$this->loan->totalRepayment(); 
                
                 $total_dues=$total_penalties+$loan_balance;
                 if(round($paid_amount)<round($total_dues))
