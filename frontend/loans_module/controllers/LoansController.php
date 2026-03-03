@@ -1122,12 +1122,13 @@ public function behaviors()
     public function actionRepaymentOverdues($loanID,$payment_date)
     {
         $loan=CustomerLoan::findOne($loanID);
+        //throw new UserException(json_encode($loan->overduesSimulate($payment_date)['due']->toArray()));
         return $this->renderAjax('total_repayment',['overdues'=>$loan->overduesSimulate($payment_date)]);
         
     }
     public function actionRepaymentConfirm($scheduleID, $paid_amount,$payment_date,$payment_doc){
         $schedule=RepaymentSchedule::findOne($scheduleID);
-        $paid=$schedule->pay($payment_date,$paid_amount,$payment_doc);
+        $paid=$schedule->payConfirm($payment_date,$paid_amount,$payment_doc);
 
         PdfHelper::download($this->renderPartial('/loans/docs/repayment_receipt_pdf',['paid'=>$paid]),'payment_receipt_'.$paid['reference']);
 

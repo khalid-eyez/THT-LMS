@@ -188,9 +188,45 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     {
         $this->status = self::STATUS_DELAYED;
     }
+
+    public function isPaymentDateBeforeFirstSchedule(string $payment_date): bool
+    {
+    // normalize payment date to date-only at midnight
+    $payTs = (new \DateTimeImmutable($payment_date))->setTime(0, 0, 0);
+
+    // get the earliest schedule for this loan
+    $first = self::find()
+    ->where([
+    'loanID'    => $this->loanID,
+    'isDeleted' => 0,
+    ])
+    ->orderBy(['repayment_date' => SORT_ASC, 'id' => SORT_ASC])
+    ->one();
+
+    if (!$first) {
+    // no schedules => can't be "before first schedule"
+    return false;
+    }
+
+    // normalize first schedule repayment_date (DATETIME) to date-only at midnight
+    $firstTs = (new \DateTimeImmutable($first->repayment_date))->setTime(0, 0, 0);
+
+    return $payTs < $firstTs;
+    }
     public function isDue($payment_date)
     {
+        if($this->isPaymentDateBeforeFirstSchedule($payment_date))
+            {
+                return false;
+            }
+
+        if($this->isLastDue() && !$this->isStatusPaid())
+            {
+                return true;
+            }
+            
         if($this->isStatusPaid() || $this->isStatusDelayed()){ return false;}
+        
         $dueTs   = (new \DateTimeImmutable($this->repayment_date))->setTime(0, 0,0);
         $todayTs = (new \DateTimeImmutable($payment_date))->setTime(0, 0,0);
 
@@ -244,10 +280,82 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     }
     public function isPayable()
     {
-        return ($this->status!="delayed" && $this->status!="paid");
+        if($this->isLastDue() && $this->status!="paid")
+            {
+                return true;
+            }
+        return ($this->status!="paid");
     }
-    public function pay($payment_date,$paid_amount=0,$paymentdoc=null)
+    public function isLatestDelayed(string $payment_date): bool
+{
+    // If this one isn't delayed for that date, it can't be the latest delayed one
+    if (!$this->isDelayed($payment_date)) {
+        return false;
+    }
+
+    // Get schedules for same loan (not deleted), newest first
+    $schedules = self::find()
+        ->where([
+            'loanID'    => $this->loanID,
+            'isDeleted' => 0,
+        ])
+        ->orderBy(['repayment_date' => SORT_DESC, 'id' => SORT_DESC])
+        ->all();
+
+    // Find the first schedule that is delayed => that's the latest delayed
+    foreach ($schedules as $sch) {
+        /** @var self $sch */
+        if ($sch->isDelayed($payment_date)) {
+            return (int)$sch->id === (int)$this->id;
+        }
+    }
+
+    // none delayed in this loan for that payment date
+    return false;
+}
+
+public function getNextDue($payment_date): ?self
+{
+    $payStart = (new \DateTimeImmutable($payment_date))
+        ->setTime(0, 0, 0);
+
+    $payEnd = $payStart->setTime(23, 59, 59);
+
+    $next = self::find()
+        ->where([
+            'loanID'    => $this->loanID,
+            'isDeleted' => 0,
+        ])
+        ->andWhere([
+            'or',
+            ['>', 'repayment_date', $this->repayment_date],
+            [
+                'and',
+                ['=', 'repayment_date', $this->repayment_date],
+                ['>', 'id', $this->id],
+            ],
+        ])
+        // IMPORTANT: compare against end of that day
+        ->andWhere(['<=', 'repayment_date', $payEnd->format('Y-m-d H:i:s')])
+        ->orderBy(['repayment_date' => SORT_ASC, 'id' => SORT_ASC])
+        ->one();
+
+    if (!$next) {
+        return null;
+    }
+
+    return $next->isDue($payment_date) ? $next : null;
+}
+  public function payConfirm($payment_date,$paid_amount=0,$paymentdoc=null)
     {
+        if(($this->isLastDue() && $this->isStatusDelayed()) || $this->isLatestDelayed($payment_date))
+            {
+                if($paid_amount<=0)
+                    {
+                        return null;
+                    }
+                return $this->overdues_pay($payment_date,$paid_amount,$paymentdoc);
+            }
         $transaction=yii::$app->db->beginTransaction();
             try{
             
@@ -271,17 +379,167 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $overdues=$this->loan->overdues();
 
             //if it's the last due must clear all overdues
-            if($this->isLastDue())
-                {
-               $total_penalties=$overdues['total_penalties'];
-               $loan_balance=$lastRepayment->balance; 
+            // if($this->isLastDue())
+            //     {
+            //    $total_penalties=$overdues['total_penalties'];
+            //    $loan_balance=$lastRepayment->balance; 
                
-                $total_dues=$total_penalties+$loan_balance;
-                if(round($paid_amount)<round($total_dues))
-                    {
-                        throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
-                    }
+            //     $total_dues=$total_penalties+$loan_balance;
+            //     if(round($paid_amount)<round($total_dues))
+            //         {
+            //             throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
+            //         }
+            //     }
+          
+            $paid_installment=min($this->installment_amount,$paid_amount);
+            $paid_amount-=$paid_installment;
+
+
+            //clearing the unpaid
+
+            $unpaidPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_unpaid'] > 0) {
+            $unpaidPaid = min($paid_amount, $overdues['total_unpaid']);
+            $paid_amount -= $unpaidPaid;
+            }
+
+            //clearing the penalties
+
+            $penaltyPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_penalties'] > 0) {
+            $penaltyPaid = min($paid_amount, $overdues['total_penalties']);
+            $paid_amount -= $penaltyPaid;
+            }
+
+
+           //prepayment
+           $prepayment = max(0, $paid_amount);
+
+
+            //resolving the unpaid amount
+            $statement->unpaid_amount  =
+            $this->installment_amount - ($paid_installment+$unpaidPaid);
+
+            $penalty_rate=$this->loan->penalty_rate;
+            $penalty_rate=$penalty_rate/100;
+            $penalty=round(($statement->unpaid_amount*$penalty_rate),2);
+            $statement->penalty_amount=($isdelayed)?$penalty:0;
+
+            $statement->penalty_amount-=$penaltyPaid;
+            $statement->prepayment=$prepayment;
+            $balance=($isdelayed)?$statement->loan_amount:($statement->loan_amount-($statement->paid_amount-$penaltyPaid));
+
+            if($balance<=-1)
+                {
+                  throw new UserException('Overpayment detected !');
                 }
+            $statement->balance=$balance;
+            $statement->loanID=$this->loan->id;
+
+            //updating the loan if the balance is 0 then the loan is marked
+            //as finished
+
+             $loan=$this->loan;
+             if($balance<1)
+                {
+                    $loan->status="finished";
+                    if(!$loan->save())
+                        {
+                            throw new UserException("Could not update loan status!");
+                        }
+                }
+
+            //persistence
+
+            if(!$statement->save()){
+                throw new UserException("could not update loan statement".json_encode($statement->getErrors()));
+            }
+            $loan->halfBalanceDissatisfaction($this->installment_amount);
+            $this->status="paid";
+
+            if(!$this->save()){
+                throw new UserException("could not update repayment schedule");
+            }
+
+            //now time for the cashbook record
+            $bookrecord=null;
+         if($statement->paid_amount!=0)
+            {
+            $cashbook_record=[
+                'credit'=>0,
+                'debit'=>$statement->paid_amount,
+                'description'=>'['.$this->loan->loanID.'] Repayment',
+                'payment_doc'=>$paymentdoc,
+                'category'=>'Repayment'
+                
+            ];
+            $book=new Book($cashbook_record);
+            $bookrecord=$book->save('RP',$this->loan->id);
+            }
+
+             $transaction->commit();
+              return [
+                'statement'=>$statement,
+                'reference'=>$bookrecord?->reference_no
+              ];
+            }
+            catch(UserException $u)
+            {
+             $transaction->rollBack();
+             throw $u;
+            }
+            catch(\Exception $e)
+            {
+             $transaction->rollBack();
+             throw $e;
+            }
+
+            
+        }
+    public function pay_record_delayed($payment_date,$paid_amount=0,$paymentdoc=null)
+    {
+            //  if(($this->isLastDue() && $this->isStatusDelayed()) || $this->isLatestDelayed($payment_date))
+            // {
+            //     if($paid_amount<=0)
+            //         {
+            //             return null;
+            //         }
+            //     return $this->overdues_pay($payment_date,$paid_amount,$paymentdoc);
+            // }
+        $transaction=yii::$app->db->beginTransaction();
+            try{
+            
+            if(!$this->isPayable())
+                {
+                    throw new UserException("Repayment Due Not Payable");
+                }
+            $isdelayed=$this->isDelayed($payment_date);
+      
+            $statement=new RepaymentStatement();
+            $lastRepayment=$this->loan->getLastRepayment();
+
+            $statement->scheduleID=$this->id;
+            $statement->payment_date=$payment_date;
+            $statement->loan_amount=$lastRepayment?->balance??$this->loan->totalRepayment(); // handle balance for the first repayment
+            $statement->principal_amount=$this->principle_amount;
+            $statement->interest_amount=$this->interest_amount;
+            $statement->installment=$this->installment_amount;
+            $statement->paid_amount=$paid_amount;
+
+            $overdues=$this->loan->overdues();
+
+            //if it's the last due must clear all overdues
+            // if($this->isLastDue())
+            //     {
+            //    $total_penalties=$overdues['total_penalties'];
+            //    $loan_balance=$lastRepayment->balance; 
+               
+            //     $total_dues=$total_penalties+$loan_balance;
+            //     if(round($paid_amount)<round($total_dues))
+            //         {
+            //             throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
+            //         }
+            //     }
           
             $paid_installment=min($this->installment_amount,$paid_amount);
             $paid_amount-=$paid_installment;
@@ -345,7 +603,143 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             if(!$statement->save()){
                 throw new UserException("could not update loan statement".json_encode($statement->getErrors()));
             }
-            $this->status=($isdelayed)?"delayed":"paid";
+           $this->status=($isdelayed)?"delayed":"paid";;
+            //$this->status=($isdelayed)?"delayed":"paid";
+
+            if(!$this->save()){
+                throw new UserException("could not update repayment schedule");
+            }
+
+            //now time for the cashbook record
+            $bookrecord=null;
+         if($statement->paid_amount!=0)
+            {
+            $cashbook_record=[
+                'credit'=>0,
+                'debit'=>$statement->paid_amount,
+                'description'=>'['.$this->loan->loanID.'] Repayment',
+                'payment_doc'=>$paymentdoc,
+                'category'=>'Repayment'
+                
+            ];
+            $book=new Book($cashbook_record);
+            $bookrecord=$book->save('RP',$this->loan->id);
+            }
+
+             $transaction->commit();
+              return [
+                'statement'=>$statement,
+                'reference'=>$bookrecord?->reference_no
+              ];
+            }
+            catch(UserException $u)
+            {
+             $transaction->rollBack();
+             throw $u;
+            }
+            catch(\Exception $e)
+            {
+             $transaction->rollBack();
+             throw $e;
+            }
+
+            
+        }
+         public function overdues_pay($payment_date,$paid_amount=0,$paymentdoc=null)
+    {
+        $transaction=yii::$app->db->beginTransaction();
+            try{
+            
+            if(!$this->isPayable())
+                {
+                    throw new UserException("Repayment Due Not Payable");
+                }
+            $isdelayed=$this->isDelayed($payment_date);
+      
+            $statement=new RepaymentStatement();
+            $lastRepayment=$this->loan->getLastRepayment();
+
+            $statement->scheduleID=$this->id;
+            $statement->payment_date=$payment_date;
+            $statement->loan_amount=$lastRepayment?->balance??$this->loan->totalRepayment(); // handle balance for the first repayment
+            $statement->principal_amount=0;
+            $statement->interest_amount=0;
+            $statement->installment=0;
+            $statement->paid_amount=$paid_amount;
+
+            $overdues=$this->loan->overdues();
+
+            //if it's the last due must clear all overdues
+            if($this->isLastDue())
+                {
+               $total_penalties=$overdues['total_penalties'];
+               $loan_balance=$lastRepayment->balance; 
+               
+                $total_dues=$total_penalties+$loan_balance;
+                if(round($paid_amount)<round($total_dues))
+                    {
+                        throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
+                    }
+                }
+          
+            $paid_installment=min(0,$paid_amount);
+            $paid_amount-=$paid_installment;
+
+
+            //clearing the unpaid
+
+            $unpaidPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_unpaid'] > 0) {
+            $unpaidPaid = min($paid_amount, $overdues['total_unpaid']);
+            $paid_amount -= $unpaidPaid;
+            }
+
+            //clearing the penalties
+
+            $penaltyPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_penalties'] > 0) {
+            $penaltyPaid = min($paid_amount, $overdues['total_penalties']);
+            $paid_amount -= $penaltyPaid;
+            }
+            
+
+           //prepayment
+           $prepayment = max(0, $paid_amount);
+
+
+            //resolving the unpaid amount
+            $statement->unpaid_amount =-$unpaidPaid;
+            $statement->penalty_amount=0;
+
+            $statement->penalty_amount-=$penaltyPaid;
+            $statement->prepayment=$prepayment;
+            $balance=$statement->loan_amount-($statement->paid_amount-$penaltyPaid);
+            if($balance<=-1)
+                {
+                  throw new UserException('Overpayment detected !');
+                }
+            $statement->balance=$balance;
+            $statement->loanID=$this->loan->id;
+
+            //updating the loan if the balance is 0 then the loan is marked
+            //as finished
+
+             $loan=$this->loan;
+             if($balance<1)
+                {
+                    $loan->status="finished";
+                    if(!$loan->save())
+                        {
+                            throw new UserException("Could not update loan status!");
+                        }
+                }
+
+            //persistence
+
+            if(!$statement->save()){
+                throw new UserException("could not update loan statement");
+            }
+            $this->status="paid";
 
             if(!$this->save()){
                 throw new UserException("could not update repayment schedule");
@@ -399,16 +793,103 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
         if (!$lastDue) {
         return false;
         }
-
+          //throw new UserException($lastDue->id ."==>".$this->id);
         return (int)$lastDue->id === (int)$this->id;
         }
-        public function pay_dry_run($payment_date,$paid_amount=0,$paymentdoc=null)
+        public function overdues_pay_dry_run($payment_date,$paid_amount=0,$paymentdoc=null)
         {
-           
+   
             $isdelayed=$this->isDelayed($payment_date);
               if(!$this->isPayable())
                 {
                     throw new UserException("Repayment Due Not Payable");
+                }
+      
+            $statement=new RepaymentStatement();
+            $lastRepayment=$this->loan->getLastRepayment();
+
+            $statement->scheduleID=$this->id;
+            $statement->payment_date=$payment_date;
+            $statement->loan_amount=$lastRepayment?->balance??$this->loan->totalRepayment(); // handle balance for the first repayment
+            $statement->principal_amount=0;
+            $statement->interest_amount=0;
+            $statement->installment=0;
+            $statement->paid_amount=$paid_amount;
+
+            $overdues=$this->loan->overdues();
+                    
+            
+              if($this->isLastDue())
+                {
+               $total_penalties=$overdues['total_penalties'];
+               $loan_balance=$lastRepayment->balance; 
+               
+                $total_dues=$total_penalties+$loan_balance;
+                if(round($paid_amount)<round($total_dues))
+                    {
+                        throw new UserException("Last repayment due must close the loan, please pay the whole amount of ".yii::$app->formatter->asDecimal($total_dues));
+                    }
+                }
+            
+            $paid_installment=min(0,$paid_amount);
+            $paid_amount-=$paid_installment;
+
+        
+            //clearing the unpaid
+
+            $unpaidPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_unpaid'] > 0) {
+            $unpaidPaid = min($paid_amount, $overdues['total_unpaid']);
+            $paid_amount -= $unpaidPaid;
+            }
+          
+            //clearing the penalties
+
+            $penaltyPaid = 0;
+            if ($paid_amount > 0 && $overdues['total_penalties'] > 0) {
+            $penaltyPaid = min($paid_amount, $overdues['total_penalties']);
+            $paid_amount -= $penaltyPaid;
+            
+            }
+  
+            //throw new UserException(round($paid_amount,2));
+           //prepayment
+           $prepayment = max(0, $paid_amount);
+
+
+            //resolving the unpaid amount
+            $statement->unpaid_amount  =-($paid_installment+$unpaidPaid);
+            $statement->penalty_amount=0;
+            $statement->penalty_amount-=$penaltyPaid;
+            $statement->prepayment=$prepayment;
+            $balance=$statement->loan_amount-($statement->paid_amount-$penaltyPaid);
+          
+            if($balance<=-1)
+                {
+                  throw new UserException('Overpayment detected !');
+                }
+            $statement->balance=$balance;
+            $statement->loanID=$this->loan->id;
+            return [
+                'statement'=>$statement,
+                'repayment_due'=>$this,
+                'payment_doc'=>$paymentdoc
+            ];
+           
+        }
+        public function pay_dry_run($payment_date,$paid_amount=0,$paymentdoc=null)
+        {
+             //throw new UserException(()?"true":"false");
+            if(($this->isLastDue() && $this->isStatusDelayed()) || $this->isLatestDelayed($payment_date))
+                {
+                    
+                    return $this->overdues_pay_dry_run($payment_date,$paid_amount,$paymentdoc);
+                }
+           
+            $isdelayed=$this->isDelayed($payment_date);
+              if(!$this->isPayable())
+                {
+                    throw new UserException("Repayment Due Not Payable ");
                 }
       
             $statement=new RepaymentStatement();
@@ -423,6 +904,8 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             $statement->paid_amount=$paid_amount;
 
             $overdues=$this->loan->overdues();
+            
+              //throw new UserException($this->isLastDue());
               if($this->isLastDue())
                 {
                $total_penalties=$overdues['total_penalties'];

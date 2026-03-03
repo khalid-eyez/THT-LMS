@@ -8,6 +8,7 @@ use yii\db\Expression;
 use Yii;
 use common\helpers\UniqueCodeHelper;
 use Throwable;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "customer_loans".
@@ -455,6 +456,17 @@ public function beforeSave($insert)
         ];
 
     }
+
+    public function halfBalanceDissatisfaction($installment)
+    {
+        $overdues=$this->overdues();
+        $balance =($this->getLastRepayment())->balance;
+
+        if($overdues['total_unpaid']==0 && $overdues['total_penalties']==0 && $balance>=1 && $balance<$installment)
+            {
+                throw new UserException("Resulting Balance not enough for the next repayment installment! ");
+            }
+    }
     public function totalRepayment()
     {
         return $this->getRepaymentSchedules()->sum('installment_amount');
@@ -494,6 +506,40 @@ public function beforeSave($insert)
          throw new UserException("Could not fetch any payment dues for the selected date");
       }
     }
+    public function isLatestDelayed(RepaymentSchedule $schedule, string $repaymentDate): bool
+    {
+    // Must belong to this loan
+    if ((int)$schedule->loanID !== (int)$this->id) {
+    return false;
+    }
+
+    // If it isn't delayed for that date, it can't be the latest delayed one
+    if (!$schedule->isDelayed($repaymentDate)) {
+    return false;
+    }
+
+    // Load schedules (not deleted), newest first
+    $schedules = $this->getRepaymentSchedules()
+    ->andWhere(['isDeleted' => 0])
+    ->orderBy(['repayment_date' => SORT_DESC, 'id' => SORT_DESC])
+    ->all();
+
+    // Find the latest delayed one (by repayment_date desc, id desc)
+    $latestDelayed = null;
+    foreach ($schedules as $sch) {
+    /** @var RepaymentSchedule $sch */
+    if ($sch->isDelayed($repaymentDate)) {
+    $latestDelayed = $sch;
+    break; // because we sorted DESC
+    }
+    }
+
+    if (!$latestDelayed) {
+    return false;
+    }
+
+    return (int)$latestDelayed->id === (int)$schedule->id;
+    }
     public function computeOverdues($payment_date)
     {
         if($this->isStatusFinished())
@@ -501,20 +547,37 @@ public function beforeSave($insert)
                 throw new UserException("Loan Repayment Finished !");
             }
        $dues=$this->repaymentSchedules;
+       //throw new UserException(json_encode(ArrayHelper::map($dues,'id','repayment_date',function($due)use($payment_date){return $due->isDelayed($payment_date);})));
 
        foreach($dues as $due)
         {
-              if(!$due->isDue($payment_date)){ continue; }
-            
-              if($due->isDelayed($payment_date) && !$due->isLastDue())
+              if(!$due->isDue($payment_date)){ 
+                continue; 
+                }
+              if($due->isDelayed($payment_date))
                 {
-                    $due->pay($payment_date);
+                          
+                    $due->pay_record_delayed($payment_date);
+    
+                    if($due->isLastDue() || $this->isLatestDelayed($due,$payment_date))
+                        {
+                            //throw new UserException( $due->getNextDue($payment_date)==null?"true":"false");
+                            $overdues=$this->overdues();
+                            $overdues['installment']=($due->isLastDue() || $due->getNextDue($payment_date)==null)?0:$due->installment_amount;
+                            $overdues['total_repayment']=$overdues['installment']+$overdues['total_penalties']+$overdues['total_unpaid'];
+                            $overdues['due']=($due->getNextDue($payment_date)!=null)?$due->getNextDue($payment_date):$due;
+                            return $overdues;  
+                        }
+                        
+
                     continue;
                 }
+               
                 $overdues=$this->overdues();
                 $overdues['installment']=$due->installment_amount;
                 $overdues['total_repayment']=$overdues['installment']+$overdues['total_penalties']+$overdues['total_unpaid'];
                 $overdues['due']=$due;
+                
                 return $overdues;
         }
 

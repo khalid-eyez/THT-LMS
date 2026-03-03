@@ -45,26 +45,26 @@ use yii\helpers\Url;
                             <table class="table table-striped table-bordered table-sm mb-0">
                                 <tbody>
                                 <tr>
-                                    <th style="width:40%">Installment Paid</th>
+                                    <th style="width:40%">Paid Installment</th>
                                     <td>
                                         <?= Yii::$app->formatter->asDecimal(
-                                            abs($payment_details['statement']->installment), 2
+                                            abs(min($payment_details['statement']->paid_amount,$payment_details['statement']->installment)), 2
                                         ) ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Overdues Paid</th>
+                                    <th>Outstanding Adjustment</th>
                                     <td class="text-danger">
                                         <?= Yii::$app->formatter->asDecimal(
-                                            abs($payment_details['statement']->unpaid_amount), 2
+                                            $payment_details['statement']->unpaid_amount, 2
                                         ) ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Penalty Paid</th>
+                                    <th>Penalty Adjustment</th>
                                     <td>
                                         <?= Yii::$app->formatter->asDecimal(
-                                            abs($payment_details['statement']->penalty_amount), 2
+                                            $payment_details['statement']->penalty_amount, 2
                                         ) ?>
                                     </td>
                                 </tr>

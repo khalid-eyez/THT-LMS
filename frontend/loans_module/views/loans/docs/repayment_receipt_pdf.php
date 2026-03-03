@@ -44,21 +44,21 @@ $statement = $paid['statement'];
     <div style="margin-bottom:20px;">
         <table width="100%" cellpadding="6" cellspacing="0">
             <tr>
-                <td width="40%"><strong>Principal Paid</strong></td>
+                <td width="40%"><strong>Installment Paid</strong></td>
                 <td>
-                    <?= Yii::$app->formatter->asDecimal(abs($statement->paid_amount), 2) ?>
+                    <?= Yii::$app->formatter->asDecimal(abs(min($statement->paid_amount,$statement->installment)), 2) ?>
                 </td>
             </tr>
             <tr>
-                <td><strong>Overdue Paid</strong></td>
+                <td><strong>Outstanding Adjustment</strong></td>
                 <td>
-                    <?= Yii::$app->formatter->asDecimal(abs(($statement->unpaid_amount<0)?$statement->unpaid_amount:0), 2) ?>
+                    <?= Yii::$app->formatter->asDecimal(($statement->unpaid_amount), 2) ?>
                 </td>
             </tr>
             <tr>
-                <td><strong>Penalty Paid</strong></td>
+                <td><strong>Penalty  Adjustment</strong></td>
                 <td>
-                    <?= Yii::$app->formatter->asDecimal(abs($statement->penalty_amount), 2) ?>
+                    <?= Yii::$app->formatter->asDecimal($statement->penalty_amount, 2) ?>
                 </td>
             </tr>
             <tr>
