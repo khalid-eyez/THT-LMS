@@ -99,6 +99,8 @@ class CustomerLoanSearch extends CustomerLoan
             $query->andFilterWhere(['between', 'DATE(customer_loans.created_at)', $start, $end]);
             }
 
+            $query->orderBy(['id' => SORT_DESC]);
+
         return $dataProvider;
     }
 }
