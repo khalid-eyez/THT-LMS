@@ -602,9 +602,6 @@ public function beforeSave($insert)
     }
     public function isTopupAllowed()
     {
-        if($this->isToppedUp()){
-            throw new UserException("Loan top-up is allowed only once !");
-        }
         $topup_rate=$this->topup_rate;
         $paid_installments=$this->getRepaymentSchedules()
     ->andWhere(['status' => 'paid'])
