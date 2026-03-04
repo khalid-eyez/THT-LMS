@@ -462,7 +462,7 @@ public function beforeSave($insert)
         $overdues=$this->overdues();
         $balance =($this->getLastRepayment())->balance;
 
-        if($overdues['total_unpaid']==0 && $overdues['total_penalties']==0 && $balance>=1 && $balance<$installment)
+        if($overdues['total_unpaid']<=0 && $overdues['total_penalties']<=0 && $balance>=1 && $balance<$installment)
             {
                 throw new UserException("Resulting Balance not enough for the next repayment installment! ");
             }
