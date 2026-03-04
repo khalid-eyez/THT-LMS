@@ -49,7 +49,7 @@ class LoanRepayment extends Model{
          catch(\Throwable $t)
          {
            $transaction->rollBack();
-           throw $t;
+           //throw $t;
            throw new UserException("Repayment failed ! An unknown error happened !");
          }
      }

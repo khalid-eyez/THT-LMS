@@ -673,7 +673,7 @@ public function getNextDue($payment_date): ?self
             if($this->isLastDue())
                 {
                $total_penalties=$overdues['total_penalties'];
-               $loan_balance=$lastRepayment->balance; 
+               $loan_balance=$lastRepayment?->balance??$this->loan->totalRepayment(); 
                
                 $total_dues=$total_penalties+$loan_balance;
                 if(round($paid_amount)<round($total_dues))
@@ -822,7 +822,7 @@ public function getNextDue($payment_date): ?self
               if($this->isLastDue())
                 {
                $total_penalties=$overdues['total_penalties'];
-               $loan_balance=$lastRepayment->balance; 
+               $loan_balance=$lastRepayment?->balance??$this->loan->totalRepayment(); 
                
                 $total_dues=$total_penalties+$loan_balance;
                 if(round($paid_amount)<round($total_dues))
@@ -909,7 +909,7 @@ public function getNextDue($payment_date): ?self
               if($this->isLastDue())
                 {
                $total_penalties=$overdues['total_penalties'];
-               $loan_balance=$lastRepayment->balance; 
+               $loan_balance=$lastRepayment?->balance??$this->loan->totalRepayment(); 
                
                 $total_dues=$total_penalties+$loan_balance;
                 if(round($paid_amount)<round($total_dues))
