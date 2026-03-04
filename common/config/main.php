@@ -107,7 +107,7 @@ return [
         'audit' => [
             'class' => 'bedezign\yii2\audit\Audit',
             // the layout that should be applied for views within this module
-            'layout' => '@frontend/admin_module/views/layouts/audit.php',
+            'layout' => '@backend/admin_module/views/layouts/audit.php',
             'userIdentifierCallback' => ['common\models\User', 'userIdentifierCallback'],
             'userFilterCallback' => ['common\models\User', 'filterByUserIdentifierCallback'],
             // Name of the component to use for database access
