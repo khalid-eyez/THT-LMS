@@ -146,7 +146,7 @@ body{
 
      <!-- Preloader -->
   <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__shake rounded" src="<?php echo Yii::getAlias('@web/img/logo.png'); ?>" alt="LOGO" height="80" width="110">
+    <img class="animation__shake rounded" src="<?php echo Yii::getAlias('@web/img/logo.png'); ?>" alt="LOGO" height="75" width="100">
   </div> 
      <!-- Navbar 
       //$this->render('/includes/header') -->
