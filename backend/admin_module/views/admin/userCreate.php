@@ -1,5 +1,5 @@
 <?php
-use frontend\admin_module\models\RegisterUserForm;
+use backend\admin_module\models\RegisterUserForm;
 $this->params['pageTitle']="Add User";
 ?>
 <div class="modal fade" id="membermodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

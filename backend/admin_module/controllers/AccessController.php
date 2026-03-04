@@ -1,17 +1,17 @@
 <?php
 
-namespace frontend\admin_module\controllers;
+namespace backend\admin_module\controllers;
 
-use frontend\admin_module\models\AddPerm;
-use frontend\admin_module\models\AddRole;
-use frontend\admin_module\models\AddRule;
-use frontend\admin_module\models\AddUser;
+use backend\admin_module\models\AddPerm;
+use backend\admin_module\models\AddRole;
+use backend\admin_module\models\AddRule;
+use backend\admin_module\models\AddUser;
 use Yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
-use frontend\admin_module\models\AccessManager;
+use backend\admin_module\models\AccessManager;
 use yii\helpers\Html;
-use frontend\admin_module\models\AddChildren;
+use backend\admin_module\models\AddChildren;
 
 
 class AccessController extends Controller

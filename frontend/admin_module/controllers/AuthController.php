@@ -71,15 +71,8 @@ class AuthController extends \yii\web\Controller
     {
         $this->layout="login";
       if (!Yii::$app->user->isGuest) {
-             
-             if(Yii::$app->user->can("ADMIN"))
-             {
-                return $this->redirect(['/admin/admin/users-list']); 
-             }
-             else
-             {
+
                 return $this->redirect(['/loans/dashboard']); 
-             }
        }
       $model = new LoginForm();
       if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -87,14 +80,7 @@ class AuthController extends \yii\web\Controller
              {
                 return $this->redirect(['change-password-restrict']);
              }
-             if(Yii::$app->user->can("ADMIN"))
-             {
-                return $this->redirect(['/admin/admin/users-list']); 
-             }
-             else
-             {
                 return $this->redirect(['/loans/dashboard']); 
-             }
      }
 
        return $this->render('login', ['model'=>$model]);

@@ -11,19 +11,23 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'modules' => [
+        'admin' => [ 'class' => 'backend\admin_module\Admin']
+    ],
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-backend',
+            'csrfParam' => '_csrf-backend-h2h-2026',
         ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+            'loginUrl' => [ 'auth/login' ],
+            'authTimeout' => 1800,
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
+            'name' => 'admin-backend-h2h-2026',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -35,7 +39,8 @@ return [
             ],
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'error/error',
+            'class' => '\bedezign\yii2\audit\components\web\ErrorHandler'
         ],
         /*
         'urlManager' => [
@@ -46,5 +51,6 @@ return [
         ],
         */
     ],
+    'defaultRoute' => 'auth',
     'params' => $params,
 ];

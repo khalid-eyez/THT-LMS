@@ -1,5 +1,5 @@
 <?php
-namespace frontend\admin_module\models;
+namespace backend\admin_module\models;
 
 use yii\base\InvalidArgumentException;
 use yii\base\Model;

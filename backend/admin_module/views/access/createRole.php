@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use common\models\Meeting;
 ?>
 <div class="modal fade" id="rolemodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">

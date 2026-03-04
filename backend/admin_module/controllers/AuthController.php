@@ -1,12 +1,15 @@
 <?php
 
-namespace frontend\admin_module\controllers;
+namespace backend\admin_module\controllers;
+use Exception;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
-use frontend\admin_module\models\ChangePasswordForm;
+use backend\admin_module\models\ChangePasswordForm;
 use common\models\User;
+use yii\base\UserException;
+
 class AuthController extends \yii\web\Controller
 {
         /**
@@ -20,12 +23,12 @@ class AuthController extends \yii\web\Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login'],
+                        'actions' => ['login','error'],
                         'allow' => true,
                         
                     ],
                     [
-                        'actions' => ['logout','view-profile','update-profile', 'error','changepassword','changepassword-ajax','change-password-restrict'],
+                        'actions' => ['logout','view-profile','update-profile','changepassword','changepassword-ajax','change-password-restrict'],
                         'allow' => true,
                         'roles' =>['@']
                         
@@ -46,10 +49,6 @@ class AuthController extends \yii\web\Controller
     public function actions()
     {
         return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-                'view' => '@frontend/admin_module/views/auth/error.php',
-            ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
@@ -68,15 +67,8 @@ class AuthController extends \yii\web\Controller
     {
         $this->layout="login";
       if (!Yii::$app->user->isGuest) {
-             
-             if(Yii::$app->user->can("ADMIN"))
-             {
-                return $this->redirect(['/admin/users-list']); 
-             }
-             else
-             {
-                return $this->redirect(['/loans/dashboard']); 
-             }
+                return $this->redirect(['/admin/admin/users-list']); 
+          
        }
       $model = new LoginForm();
       if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -84,14 +76,10 @@ class AuthController extends \yii\web\Controller
              {
                 return $this->redirect(['change-password-restrict']);
              }
-             if(Yii::$app->user->can("ADMIN"))
-             {
-                return $this->redirect(['/admin/users-list']); 
-             }
-             else
-             {
-                return $this->redirect(['/loans/dashboard']); 
-             }
+         
+                return $this->redirect(['/admin/admin/users-list']); 
+             
+        
      }
 
        return $this->render('login', ['model'=>$model]);
@@ -112,7 +100,7 @@ class AuthController extends \yii\web\Controller
         $saved=yii::$app->user->identity->saveLastLogin();
         Yii::$app->user->logout();
         
-        return $this->redirect(['auth/login']);
+        return $this->redirect(['/']);
     }
     /**
      * Changes the user password
@@ -128,7 +116,7 @@ class AuthController extends \yii\web\Controller
                     Yii::$app->user->logout();
                     $destroySession = true;
                     Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i> Password changed successfully, Now login with the new password!');
-                    return $this->redirect(['auth']);
+                    return $this->redirect(['login']);
                 }else{
                     Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i> Password Not Changed, check your information then try again later!');
                     return $this->redirect(yii::$app->request->referrer);
@@ -137,7 +125,12 @@ class AuthController extends \yii\web\Controller
                     
              } 
             
-        }catch(\Exception $e){
+        }
+        catch(UserException $u){
+            Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i> '.$u->getMessage());
+            return $this->redirect(yii::$app->request->referrer);
+        }
+        catch(\Throwable $e){
             Yii::$app->session->setFlash('error', '<i class="fa fa-exclamation-triangle"></i> Password Not Changed! check your information then try again later');
             return $this->redirect(yii::$app->request->referrer);
         }
@@ -145,28 +138,7 @@ class AuthController extends \yii\web\Controller
         return $this->render('changePassword',['model' => $models]);
     }
 
-     public function actionChangepasswordAjax(){
-        $models = new ChangePasswordForm;
-        try{
-            if($models->load(Yii::$app->request->post())){
-                if($models->changePassword()){
-                    Yii::$app->user->logout();
-                    $destroySession = true;
-                    Yii::$app->session->setFlash('success', '<i class="fa fa-info-circle"></i> Password changed successfully, Now login with the new password!');
-                    return $this->redirect(['auth']);
-                }else{
-                    return $this->asJson(['error','Password changing failed !']);
-                }
-           
-                    
-             } 
-            
-        }catch(\Exception $e){
-            return $this->asJson(['error','Password changing failed !']);
-        }
-    
-        return $this->renderAjax('changePassword2',['model' => $models]);
-    }
+
     /**
      * Changes the user password on restriction (when the user still has the default password)
      * @return string|Yii\web\Response
@@ -183,7 +155,7 @@ class AuthController extends \yii\web\Controller
                       Yii::$app->user->logout();
                       $destroySession = true;
                       Yii::$app->session->setFlash('success', 'Password changed successfully, Now login with the new password!');
-                    return $this->redirect(['auth']);
+                    return $this->redirect(['login']);
                 }else{
                     Yii::$app->session->setFlash('error', 'The current password is wrong');
                     return $this->redirect(yii::$app->request->referrer);
@@ -192,20 +164,16 @@ class AuthController extends \yii\web\Controller
                     
              } 
             
-        }catch(\Exception $e){
-            Yii::$app->session->setFlash('error', 'Something went wrong! try again later');
+        }catch(UserException $u){
+          Yii::$app->session->setFlash('error', $u->getMessage());
+            return $this->redirect(yii::$app->request->referrer);
+        }
+        catch(\Throwable $e){
+            Yii::$app->session->setFlash('error', 'Something went wrong! try again later ');
             return $this->redirect(yii::$app->request->referrer);
         }
     
         return $this->render('changePasswordrestrict',['model' => $models]);  
-    }
-    public function actionViewProfile()
-    {
-        if(yii::$app->request->isAjax)
-            {
-        return $this->renderAjax('profile');
-            }
-            return $this->redirect("/loans/dashboard");
     }
     public function actionUpdateProfile($id)
     {

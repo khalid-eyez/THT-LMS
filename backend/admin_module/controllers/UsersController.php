@@ -1,9 +1,9 @@
 <?php
 
-namespace frontend\admin_module\controllers;
+namespace backend\admin_module\controllers;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use frontend\admin_module\models\RegisterUserForm;
+use backend\admin_module\models\RegisterUserForm;
 use common\models\User;
 use yii\helpers\Html;
 use Yii;

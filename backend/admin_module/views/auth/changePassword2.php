@@ -1,7 +1,13 @@
 <?php
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
+use kartik\password\PasswordInput;
 ?>
+<style>.help-block,
+.invalid-feedback,
+.has-error .help-block {
+    color: #dc3545 !important; /* Bootstrap red */
+}</style>
  <div class="wizard-area">
         <div class="container">
             <div class="row">
@@ -16,12 +22,18 @@ use yii\bootstrap4\ActiveForm;
   </h5>
 </div>
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['action'=>'/admin/auth/changepassword']); ?>
         
             
                                         <?= $form->field($model, 'current_password')->passwordInput(['class'=>'form-control form-control-sm', 'placeholder'=>'Current Password'])->label(false) ?>
                                    
-                                        <?= $form->field($model, 'new_password')->passwordInput(['class'=>'form-control form-control-sm', 'placeholder'=>'New Password'])->label(false) ?>
+                                          <?=$form->field($model, 'new_password')->widget(PasswordInput::classname(), [
+                                        'size' => "md",
+                                        'options' => [
+                                        'placeholder' => "New Password"
+                                        ],
+                                        'pluginOptions' => ['toggleMask' => false,'placeholder' => "New Password",'class'=>'form-control ']
+                                        ])->label(false);?>
                                    
                                         <?= $form->field($model, 'confirm_new_password')->passwordInput(['class'=>'form-control form-control-sm', 'placeholder'=>'Confirm Password'])->label(false) ?>
                                    
