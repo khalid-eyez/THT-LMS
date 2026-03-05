@@ -286,6 +286,8 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
             }
         return ($this->status!="paid");
     }
+
+ 
     public function isLatestDelayed(string $payment_date): bool
 {
     // If this one isn't delayed for that date, it can't be the latest delayed one
@@ -313,7 +315,25 @@ class RepaymentSchedule extends \yii\db\ActiveRecord
     // none delayed in this loan for that payment date
     return false;
 }
-
+public function getNextSchedule(): ?self
+{
+    return self::find()
+        ->where(['loanID' => $this->loanID])
+        ->andWhere([
+            'or',
+            ['>', 'repayment_date', $this->repayment_date],
+            [
+                'and',
+                ['=', 'repayment_date', $this->repayment_date],
+                ['>', 'id', $this->id],
+            ],
+        ])
+        ->orderBy([
+            'repayment_date' => SORT_ASC,
+            'id' => SORT_ASC,
+        ])
+        ->one();
+}
 public function getNextDue($payment_date): ?self
 {
     $payStart = (new \DateTimeImmutable($payment_date))
@@ -454,7 +474,7 @@ public function getNextDue($payment_date): ?self
             if(!$statement->save()){
                 throw new UserException("could not update loan statement".json_encode($statement->getErrors()));
             }
-            $loan->halfBalanceDissatisfaction($this->installment_amount);
+            $loan->haltBalanceDissatisfaction($this->getNextSchedule()?->principle_amount);
             $this->status="paid";
 
             if(!$this->save()){
@@ -879,10 +899,10 @@ public function getNextDue($payment_date): ?self
         }
         public function pay_dry_run($payment_date,$paid_amount=0,$paymentdoc=null)
         {
-             //throw new UserException(()?"true":"false");
+
+           
             if(($this->isLastDue() && $this->isStatusDelayed()) || $this->isLatestDelayed($payment_date))
                 {
-                    
                     return $this->overdues_pay_dry_run($payment_date,$paid_amount,$paymentdoc);
                 }
            

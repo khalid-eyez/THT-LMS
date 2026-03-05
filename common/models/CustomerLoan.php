@@ -457,12 +457,12 @@ public function beforeSave($insert)
 
     }
 
-    public function halfBalanceDissatisfaction($installment)
+    public function haltBalanceDissatisfaction($principal)
     {
         $overdues=$this->overdues();
         $balance =($this->getLastRepayment())->balance;
 
-        if($overdues['total_unpaid']<=0 && $overdues['total_penalties']<=0 && $balance>=1 && $balance<$installment)
+        if($principal!=null && $overdues['total_unpaid']<=0 && $overdues['total_penalties']<=0 && $balance>=1 && $balance<$principal)
             {
                 throw new UserException("Resulting Balance not enough for the next repayment installment! ");
             }
@@ -551,6 +551,8 @@ public function beforeSave($insert)
 
        foreach($dues as $due)
         {
+               //throw new UserException($due->isDue($payment_date)?"true":"false");
+                
               if(!$due->isDue($payment_date)){ 
                 continue; 
                 }

@@ -62,7 +62,7 @@ AppAsset::register($this);
           <?= $content ?>
        </div>
       
-<?= $this->render('@frontend/views/includes/loginfooter') ?>
+<?= $this->render('@backend/views/includes/loginfooter') ?>
 <!-- /.login-box -->
 <?php $this->endBody() ?>
     <style>

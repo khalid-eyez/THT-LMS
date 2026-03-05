@@ -113,8 +113,8 @@ body{
 </head>
 <body class="hold-transition  layout-fixed ">
 <?php $this->beginBody() ?>
-<?= $this->render("@frontend/views/includes/header.php") ?>
-<?=$this->render("@frontend/views/includes/sidebar")?>
+<?= $this->render("@backend/views/includes/header.php") ?>
+<?=$this->render("@backend/views/includes/sidebar")?>
 
 <!-- Page content -->
 <div class="sidecontent mt-0 pt-0" style="font-family:regulartext">

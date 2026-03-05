@@ -35,7 +35,6 @@ class LoanRepayment extends Model{
          $loan->refresh();
          $overdues=$loan->computeOverdues($this->payment_date);
          $due=$overdues['due'];
-         //throw new UserException(json_encode($due->toArray()));
          $overdues=$due->pay_dry_run($this->payment_date,$this->paid_amount,$this->saveFile());
          $transaction->commit();
         

@@ -4,12 +4,18 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'timeZone' => 'Africa/Dar_es_Salaam',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
             // uncomment if you want to cache RBAC items hierarchy
             // 'cache' => 'cache',
+        ],
+        'formatter' => [
+        'class' => yii\i18n\Formatter::class,
+        'timeZone' => 'Africa/Dar_es_Salaam',
+        'defaultTimeZone' => 'Africa/Dar_es_Salaam',
         ],
         'cdn' => [
             'class' => '\yii2cdn\Cdn',
@@ -41,9 +47,6 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                //this rule for classwork route
-               '<controller:[\w\-]+>/<action:[\w\-]+>/<cid:\w->/classwork' => '<controller>/
-                <action>',
                 '<controller:[\w\-]+>/<action:[\w\-]+>/<id:\w->' => '<controller>/
                 <action>',
                 '/access/access-manager'=>'/admin/access/access-manager',
