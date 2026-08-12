@@ -95,7 +95,7 @@ function btnDisableAttrs(bool $active, string $titleWhenActive, string $titleWhe
 }
 
 /* ✅ disable logic per number shown */
-$depositsBtn   = btnDisableAttrs(((float)$totalDeposits > 0), 'View deposits statement', 'No deposits to show');
+$depositsBtn   = btnDisableAttrs(((float)$totalDeposits >=0), 'View deposits statement', 'No deposits to show');
 $interestBtn   = btnDisableAttrs(((float)$totalInterestPaidApproved > 0), 'Interest statement', 'No interest to show');
 $approveBtn    = btnDisableAttrs(((float)$totalApprovable > 0), 'Approve Claim', 'No approvable interest');
 $payableBtn    = btnDisableAttrs(((float)$payableInterests > 0), 'Pay payable interests', 'No payable interests to pay');
