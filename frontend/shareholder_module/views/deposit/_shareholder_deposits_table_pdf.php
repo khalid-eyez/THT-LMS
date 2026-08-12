@@ -20,10 +20,7 @@ $formatter = Yii::$app->formatter;
 /** Totals */
 $totalDeposits = 0.0;
 foreach ($rows as $deposit) {
-    if($deposit->type=="capital")
-        {
-          continue;
-        }
+ 
     $totalDeposits += (float)$deposit->amount;
 }
 

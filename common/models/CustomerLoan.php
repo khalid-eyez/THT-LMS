@@ -547,11 +547,9 @@ public function beforeSave($insert)
                 throw new UserException("Loan Repayment Finished !");
             }
        $dues=$this->repaymentSchedules;
-       //throw new UserException(json_encode(ArrayHelper::map($dues,'id','repayment_date',function($due)use($payment_date){return $due->isDelayed($payment_date);})));
 
        foreach($dues as $due)
         {
-               //throw new UserException($due->isDue($payment_date)?"true":"false");
                 
               if(!$due->isDue($payment_date)){ 
                 continue; 
@@ -563,7 +561,6 @@ public function beforeSave($insert)
     
                     if($due->isLastDue() || $this->isLatestDelayed($due,$payment_date))
                         {
-                            //throw new UserException( $due->getNextDue($payment_date)==null?"true":"false");
                             $overdues=$this->overdues();
                             $overdues['installment']=($due->isLastDue() || $due->getNextDue($payment_date)==null)?0:$due->installment_amount;
                             $overdues['total_repayment']=$overdues['installment']+$overdues['total_penalties']+$overdues['total_unpaid'];

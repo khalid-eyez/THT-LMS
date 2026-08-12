@@ -100,6 +100,23 @@ class Deposit extends \yii\db\ActiveRecord
                     }
             }
 
+        if(!$insert && $this->type == self::TYPE_CAPITAL && $this->isAttributeChanged('amount'))
+        {
+        $shareholder = Shareholder::findOne($this->shareholderID);
+
+        if($shareholder === null)
+        {
+        throw new UserException("Shareholder not found!");
+        }
+
+        $shareholder->initialCapital = $this->amount;
+
+        if(!$shareholder->save())
+        {
+        throw new UserException("Could not update shareholder initial capital!");
+        }
+        }
+
             if($insert && $this->type==self::TYPE_MONTHLY)
                 {
                     if($this->shareholder->initialCapital==0 || $this->shareholder->initialCapital==null)

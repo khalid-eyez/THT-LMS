@@ -66,10 +66,6 @@ if ($dateRange && strpos($dateRange, ' - ') !== false) {
         <?php else: ?>
             <?php 
                 foreach ($rows as $i => $deposit): 
-                if($deposit->type=="capital")
-                {
-                continue;
-                }
                 ?>
                 <tr>
                     <td><?= $i + 1 ?></td>
