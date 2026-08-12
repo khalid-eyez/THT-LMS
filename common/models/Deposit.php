@@ -70,17 +70,43 @@ class Deposit extends \yii\db\ActiveRecord
             [['shareholderID'], 'exist', 'skipOnError' => true, 'targetClass' => Shareholder::class, 'targetAttribute' => ['shareholderID' => 'id']],
         ];
     }
-     public function beforeDelete()
-     {
-        $paid_deposits=$this->getDepositInterests()
-    ->andWhere(['IS NOT', 'payment_date', null])
-    ->andWhere(['IS NOT', 'approved_at', null])->all();
+        public function beforeDelete()
+        {
+        // Prevent deletion if this deposit has paid interest claims
+        $paid_deposits = $this->getDepositInterests()
+        ->andWhere(['IS NOT', 'payment_date', null])
+        ->andWhere(['IS NOT', 'approved_at', null])
+        ->all();
 
-        if($paid_deposits!=null){
-            throw new UserException('Cannot delete deposits having paid interests claims!');
+        if ($paid_deposits != null) {
+        throw new UserException(
+        'Cannot delete deposits having paid interests claims!'
+        );
         }
+
+        // If deleting the initial capital deposit,
+        // reset shareholder's initial capital
+        if ($this->type === self::TYPE_CAPITAL) {
+
+        $shareholder = Shareholder::findOne($this->shareholderID);
+
+        if ($shareholder === null) {
+        throw new UserException(
+            'Shareholder not found!'
+        );
+        }
+
+        $shareholder->initialCapital = 0;
+
+        if (!$shareholder->save()) {
+        throw new UserException(
+            'Could not reset shareholder initial capital!'
+        );
+        }
+        }
+
         return parent::beforeDelete();
-     }
+        }
 
      public function beforeSave($insert)
      {
